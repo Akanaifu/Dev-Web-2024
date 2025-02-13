@@ -19,3 +19,23 @@ Pour récupérer le template et l'utiliser dans le cadre de votre projet, vous a
 Il vous est demandé de respecter la table des matières du projet, afin que les enseignants puissent facilement retrouver les informations qu'ils cherchent.  Si vous souhaitez effectuer un changement dans sa structure, parlez-en d'abord avec votre coach.  
 
 Si vous trouvez que les pages sont trop longues, vous pouvez en créer de nouvelles, mais vous devez alors vous assurez que les liens sont mis à jour dans la table des matières.  
+
+
+# Projet Dev3
+
+Projet pour le cour de Dev
+
+### Site notation jeuxvideo
+* recherche de jeu en particulier
+* parametre
+* statistique sur temps de jeux
+* création de compte
+* ajoute de jeu
+* page d'un jeu avec dev, genre du jeu
+* modération d'ajoute de jeu
+* configguartion du PC
+* chat en temps réel (genre IRC)
+* etc ...
+
+### Site Casino ?
+
