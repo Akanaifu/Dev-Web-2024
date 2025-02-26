@@ -25,17 +25,5 @@ Si vous trouvez que les pages sont trop longues, vous pouvez en créer de nouvel
 
 Projet pour le cour de Dev
 
-### Site notation jeuxvideo
-* recherche de jeu en particulier
-* parametre
-* statistique sur temps de jeux
-* création de compte
-* ajoute de jeu
-* page d'un jeu avec dev, genre du jeu
-* modération d'ajoute de jeu
-* configguartion du PC
-* chat en temps réel (genre IRC)
-* etc ...
-
-### Site Casino ?
+### Site Casino
 
