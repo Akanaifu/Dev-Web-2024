@@ -2,6 +2,18 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.7.
 
+## Necessary packages
+
+try the following commands to make sure you have all the necessary packages :
+
+```bash
+pip install ng
+pip install node
+pip install npm
+npm install -g @angular/cli
+npm install
+```
+
 ## Development server
 
 To start a local development server, run:
