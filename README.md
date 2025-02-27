@@ -1,29 +1,59 @@
-# Dev-Web-2024-2025
-Template de repo pour le projet Dev Web 2024-2025
+# PlayingCards
 
-## Comment copier ce Wiki? 
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.7.
 
-Pour récupérer le template et l'utiliser dans le cadre de votre projet, vous allez devoir faire un "fork" de ce repo.  Cependant, le wiki n'est pas copié automatiquement.  Suivez donc la procédure ci-dessous : 
+## Development server
 
-1.  Créez un fork de ce repository.  Ce sera votre repo de projet, avec une URL de type `https://github.com/<username>/<repo-name>`.  
-2.  Créez un wiki dans ce nouveau repo, avec une Home page vide par exemple. 
-3.  Clonez le repo git du wiki original sur votre machine :  `git clone https://github.com/EphecLLN/Dev-Web-2024.wiki.git`
-4.  Pour "pousser" le wiki présent sur votre machine vers votre repository de projet, vous allez changer le pointeur "remote" de votre copie locale : 
-    `git remote add fork https://github.com/<username>/<repo-name>.wiki.git`
-6.  Forcez à présent la copie du wiki sur votre machine vers votre repository de projet.  Cela écrasera le wiki vide que vous aviez créé plus tôt avec le template :   `git push -f fork master`
+To start a local development server, run:
 
-## Utilisation
+```bash
+ng serve
+```
 
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+## Code scaffolding
 
-Il vous est demandé de respecter la table des matières du projet, afin que les enseignants puissent facilement retrouver les informations qu'ils cherchent.  Si vous souhaitez effectuer un changement dans sa structure, parlez-en d'abord avec votre coach.  
+Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
-Si vous trouvez que les pages sont trop longues, vous pouvez en créer de nouvelles, mais vous devez alors vous assurez que les liens sont mis à jour dans la table des matières.  
+```bash
+ng generate component component-name
+```
 
+For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-# Projet Dev3
+```bash
+ng generate --help
+```
 
-Projet pour le cour de Dev
+## Building
 
-### Site Casino
+To build the project run:
 
+```bash
+ng build
+```
+
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+
+## Running unit tests
+
+To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+
+```bash
+ng test
+```
+
+## Running end-to-end tests
+
+For end-to-end (e2e) testing, run:
+
+```bash
+ng e2e
+```
+
+Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Additional Resources
+
+For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
