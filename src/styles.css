@@ -1,9 +1,0 @@
-body,html{
-    font-family: Roboto,sans-serif;
-    height:  100%;
-    background: linear-gradient(
-        545deg,
-        rgb(252,228,252),
-        rgb(218,228,255)
-    );
-}
