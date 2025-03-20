@@ -5,7 +5,7 @@ const app = express();
 const PORT = 3000;
 
 // Connexion à la base SQLite
-const db = new sqlite3.Database('../db/casino.db', sqlite3.OPEN_READWRITE, (err) => {
+const db = new sqlite3.Database('db/casino.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
         console.error(err.message);
     } else {
