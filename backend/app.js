@@ -29,6 +29,28 @@ app.get('/utilisateurs', (req, res) => {
     });
 });
 
+// Route pour récupérer tous les jeux
+app.get('/jeux', (req, res) => {
+    db.all('SELECT * FROM jeux', [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
+// Route pour récupérer toutes les transactions
+app.get('/transactions', (req, res) => {
+    db.all('SELECT * FROM transactions', [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
+});
+
 // Démarrer le serveur
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
