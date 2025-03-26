@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+/* image de la personne*/
+html{
+    --background:#D9D9D9;
+    --couleur_bouton:#8C74E9;
+    --onglet:#FF77FF;
+    --navbar:rgba(40, 164, 169, 0.51);
+    --ecriture:'Comfortaa';
+    --couleur_ecriture:#000000;
+    --texte_bouton:#ffffff;
+    --police_paragraphe:1rem;
+    --police_titre:2rem;
+    --hover:grey;
+    --bordure:#000000;
+    height: 100vh;
+    width: 100vw;
+    --important:red;
+    
+    }

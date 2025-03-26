@@ -1,0 +1,102 @@
+
+    
+    div.bande_d_accueil {
+        position: fixed;
+        width: 100%;
+        height: auto;
+        left: 0px;
+        top: 0px;
+        background-color: var(--navbar);
+        z-index: 3;
+        display: flex;
+        flex-flow: row nowrap;
+        font-size: var(--police_paragraphe);
+
+    }
+    
+    ul.bande_d_accueil {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        /* background-color: var(--navbar); */
+        display: flex;
+        flex-flow: row nowrap;
+    }
+    
+    
+        ul.bande_d_accueil > li a:link {
+            color:var(--couleur_ecriture);
+            background-color: transparent;
+            text-decoration: none;
+            font-family: var(--ecriture);
+        }
+    
+        ul.bande_d_accueil > li a:visited {
+            color: var(--couleur_ecriture);
+            background-color: transparent;
+            text-decoration: none;
+            font-family: var(--ecriture);
+        }
+    
+        ul.bande_d_accueil > li a {
+            text-align: center;
+            display: block;
+            padding: 22px ;
+            height: 100%;
+            margin: 5px;
+            
+            /* background-color: var(--navbar); */
+            justify-content: center;
+            align-items: center;
+        }
+    
+            ul.bande_d_accueil > li a:hover {
+                background-color: var(--hover);
+            }
+    
+    .logo_entreprise{   
+        flex-grow : 3;
+        z-index: 3;
+        height: 100px;
+        width: auto;
+    }
+    .mon_profile{
+        width: 300px;
+        height: auto;
+        background-image: url(../../../../public/favicon.ico);/**modifier pour photo de la personne*/
+        background-size: contain;
+        background-repeat: no-repeat;
+        z-index: 3;
+    }
+    
+    @media (max-width: 1200px) {
+         .logo_entreprise{
+            cursor: pointer;
+        }
+    
+        ul.bande_d_accueil{
+            display: none;
+        }
+    
+        ul.bande_d_accueil li{
+            margin : 5px;
+            border : 2px solid #ffffff;
+        }
+        
+        div.bande_d_accueil{
+            position : relative;
+        }
+    
+    
+        div.bande_d_accueil:hover ul.bande_d_accueil, div.bande_d_accueil{
+            display : flex;
+            flex-flow: column nowrap;
+        } 
+    
+        
+    }
+    
+    
+    
