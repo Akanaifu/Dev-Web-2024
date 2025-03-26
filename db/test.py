@@ -1,7 +1,7 @@
 import sqlite3
 
 # Chemin absolu de la base de données
-DATABASE = "C:/Users/Arthur/Desktop/github/Dev-Web-2024/db/casino.db"
+DATABASE = "http://localhost:3000/"
 
 # Fonction pour se connecter à la base et exécuter une requête
 def interroger_db():
