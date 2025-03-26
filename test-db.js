@@ -1,3 +1,4 @@
+const dotenv = require('dotenv').config(); // Load environment variables from .env
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
