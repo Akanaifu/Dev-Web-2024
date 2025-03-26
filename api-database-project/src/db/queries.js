@@ -24,7 +24,7 @@ const getOneUser = (id) => {
             }
         });
     });
-}
+};
 
 // Function to fetch all games from the database
 const getAllGames = () => {
@@ -51,7 +51,6 @@ const getAllTransactions = () => {
         });
     });
 };
-
 
 module.exports = {
     getAllUsers,
