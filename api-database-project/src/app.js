@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 80; // port du serveur
-const HOST = process.env.HOST || '54.36.183.127'; // adresse du serveur
+const PORT = process.env.PORT || 8080; // Port for the server
+const HOST = process.env.HOST || '0.0.0.0'; // Bind to all interfaces
 
 // Middleware to parse JSON requests
 app.use(express.json());
