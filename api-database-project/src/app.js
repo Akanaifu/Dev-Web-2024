@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80; // port du serveur
 const HOST = process.env.HOST || '54.36.183.127'; // adresse du serveur
 
 // Middleware to parse JSON requests

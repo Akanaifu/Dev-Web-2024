@@ -57,4 +57,5 @@ module.exports = {
     getAllUsers,
     getAllGames,
     getAllTransactions,
+    getOneUser,
 };

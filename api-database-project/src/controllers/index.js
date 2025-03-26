@@ -27,8 +27,24 @@ const getTransactions = async (req, res) => {
     }
 };
 
+const getOneUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await queries.getOneUser(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
     getUsers,
     getGames,
     getTransactions,
+    getOneUser,
 };

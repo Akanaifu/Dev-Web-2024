@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getUsers, getGames, getTransactions } = require('../controllers/index');
+const { getUsers, getGames, getTransactions, getOneUser } = require('../controllers/index');
 
 // Route to get all users
 router.get('/utilisateurs', getUsers);
@@ -10,5 +10,8 @@ router.get('/jeux', getGames);
 
 // Route to get all transactions
 router.get('/transactions', getTransactions);
+
+// Route pour obtenir un utilisateur par ID
+router.get('/utilisateurs/:id', getOneUser);
 
 module.exports = router;
