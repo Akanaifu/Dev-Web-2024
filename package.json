@@ -2,5 +2,10 @@
   "dependencies": {
     "express": "^4.21.2",
     "sqlite3": "^5.1.7"
+  },
+  "name": "dev-web-2024",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npm --prefix ./api-database-project start"
   }
 }
