@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavigationBarComponent } from './component/navigation-bar/navigation-bar.component';
-import { RegisterComponent } from './component/register/register.component';
+import { RegisterComponent } from './register/register.component';
 
 @Component({
   selector: 'app-root',
