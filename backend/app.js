@@ -21,6 +21,10 @@ app.use('/bets', betRoutes);
 const transactionRoutes = require('./routes/transactions');
 app.use('/transactions', transactionRoutes);
 
+// Importation des routes des stats
+const statsRoutes = require('./routes/stats');
+app.use('/stats', statsRoutes);
+
 // // Importation des routes d'authentification
 // const authRoutes = require('./routes/auth');
 // app.use('/auth', authRoutes);
