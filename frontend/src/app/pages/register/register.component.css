@@ -1,0 +1,162 @@
+
+body {
+    background-color:var(--background);
+    font-family: var(--ecriture);
+}
+
+.page {
+    width: 100vw;
+    height: 100vh;
+    /* margin-top: 5%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+div.center {
+    width: 50%;
+    height : 65%;
+    border-radius: 50px;
+    background-color:var(--onglet);
+    /* margin-inline: 10%; */
+    position: relative;
+}
+
+.title {
+    position : relative;
+    left : 10%;
+    width: 80%;
+    height : 10%;
+    border-radius : 20px;
+    margin-bottom: 5% ;
+    background-color: var(--background);
+}
+
+.info {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-flow: row nowrap;
+    margin-inline: 10%;
+    margin:5%;
+}
+
+.title > h1 {
+    text-align : center;
+    padding-top : 1%;
+    font-family: var(--ecriture);
+    font-size: var(--police_titre);
+}
+
+p{
+    color:var(--important);
+}
+
+div.label {
+    width: 25%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--ecriture);
+    font-size: var(--police_paragraphe);
+}
+
+.label > div {
+    background-color: var(--background);
+    width : 75%;
+    height: 100%;
+    margin: 5px;
+    margin-left : 20%;
+    padding : 1px 2px;
+    padding-top : 2%;
+    border: 1px solid var(--bordure);
+    text-align : center;
+    font-size : 85%;
+}
+
+div.input {
+    width : 40%;
+    height : 100%;
+    font-family: var(--ecriture);
+    font-size: var(--police_paragraphe);
+}
+
+div.input > form {
+    width: 100%;
+    height : 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--ecriture);
+    font-size: var(--police_paragraphe);    
+}
+
+form.input_texte > input, form.input_texte > select {
+    height: 100%;
+    margin: 1%;
+    padding: 1px 2px;
+    font-family: var(--ecriture);
+}
+
+form.input_texte > select{
+    padding : 2px;
+    height : 5%;
+    font-family: var(--ecriture);
+    }
+
+input#id_card {
+        display: flex;
+        justify-content : center;
+        align-items : center;
+        font-family: var(--ecriture);
+        background-color: #ffffff;
+    }
+
+input#file-upload-button {
+    width: 100%;
+    display: flex;
+    justify-content : center;
+    align-items : center;
+    font-family: var(--ecriture);
+    background-color: var(--couleur_titre);
+}
+input[type="file"]:hover{
+    opacity: 70%;
+}
+
+.submit {
+    display: flex;
+    width: 70%;
+    height: 80%;
+    position: relative;
+    margin: auto;
+    font-family: var(--ecriture);
+
+}
+
+.submit > input[type="submit"] {
+    width: 100%;
+    height: 10%;
+    background-color: var(--background);
+    border-style: none;
+    border-radius: 20px;
+    font-family: var(--ecriture);
+    margin-bottom: 2%;
+}
+
+.submit:hover > input[type="submit"] {
+    background-color: var(--hover);
+    font-family: var(--ecriture);
+}
+
+@media (max-width: 800px) {
+    div.center{
+        width: 100%;
+    }
+
+    .title > h1 {
+    text-align : center;
+    padding-top : 5px;
+    font-size: 100%;
+}
+}
