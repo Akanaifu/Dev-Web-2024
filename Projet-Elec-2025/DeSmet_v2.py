@@ -1,3 +1,4 @@
+# code de Mr. De Smet adapté pour le Pico
 from machine import Pin, Timer, I2C, ADC
 import random
 import time, sys

@@ -1,3 +1,4 @@
+# code de Mr. De Smet adapté pour le Pico sans le décodeur numérique
 from machine import Pin, Timer
 import random
 import time, sys
