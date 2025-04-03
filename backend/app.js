@@ -21,6 +21,14 @@ app.use('/bets', betRoutes);
 const transactionRoutes = require('./routes/transactions');
 app.use('/transactions', transactionRoutes);
 
+// // Importation des routes d'authentification
+// const authRoutes = require('./routes/auth');
+// app.use('/auth', authRoutes);
+
+// // Importation des routes de la machine à sous
+// const slotRoutes = require('./routes/slots');
+// app.use('/slots', slotRoutes);
+
 // Démarrer le serveur
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
