@@ -1,33 +1,25 @@
-const sqlite3 = require('sqlite3').verbose();
 const express = require('express');
-const path = require('path');
 const app = express();
 const PORT = 3000;
 
-// Connexion à la base SQLite
-const db = new sqlite3.Database('db/casino.db', sqlite3.OPEN_READWRITE, (err) => {
-    if (err) {
-        console.error(err.message);
-    } else {
-        console.log('Connecté à la base SQLite.');
-    }
-});
+// Middleware pour parser le JSON
+app.use(express.json());
 
-// Route pour la page de base
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Importation des routes des jeux
+const gameRoutes = require('./routes/games');
+app.use('/games', gameRoutes);
 
-// Route pour récupérer tous les utilisateurs
-app.get('/utilisateurs', (req, res) => {
-    db.all('SELECT * FROM utilisateurs', [], (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json(rows);
-    });
-});
+// Importation des routes des utilisateurs
+const userRoutes = require('./routes/users');
+app.use('/users', userRoutes);
+
+// Importation des routes des mises
+const betRoutes = require('./routes/bets');
+app.use('/bets', betRoutes);
+
+// Importation des routes des transactions
+const transactionRoutes = require('./routes/transactions');
+app.use('/transactions', transactionRoutes);
 
 // Démarrer le serveur
 app.listen(PORT, () => {
