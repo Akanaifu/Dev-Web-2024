@@ -65,7 +65,7 @@
     .mon_profile{
         width: 300px;
         height: auto;
-        background-image: url(../../../../public/favicon.ico);/**modifier pour photo de la personne*/
+        background-image: url(/Dev-Web-2024/frontend/public/favicon.ico);/**modifier pour photo de la personne*/
         background-size: contain;
         background-repeat: no-repeat;
         z-index: 3;
