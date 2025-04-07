@@ -7,7 +7,7 @@
 }
 
 form {
-    background-color: white;
+    background-color: rgba(0, 0, 0, 0.699);
     padding: 20px;
     border-radius: 10px;
     display: flex;
@@ -17,4 +17,7 @@ form {
 
 mat-error {
     text-align: center;
+}
+h3{
+    color:rgb(212, 205, 104);
 }

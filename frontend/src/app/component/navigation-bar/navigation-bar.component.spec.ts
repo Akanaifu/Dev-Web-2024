@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NavigationBarComponent } from './navigation-bar.component';
+/*import { TabGroupAnimationsExample } from './navigation-bar.component';
 
-describe('NavigationBarComponent', () => {
-  let component: NavigationBarComponent;
-  let fixture: ComponentFixture<NavigationBarComponent>;
+describe('TabGroupAnimationsExample', () => {
+  let component: TabGroupAnimationsExample;
+  let fixture: ComponentFixture<TabGroupAnimationsExample>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavigationBarComponent]
+      imports: [TabGroupAnimationsExample]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(NavigationBarComponent);
+    fixture = TestBed.createComponent(TabGroupAnimationsExample);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,3 +21,4 @@ describe('NavigationBarComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+*/

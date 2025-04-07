@@ -5,12 +5,11 @@
  import { LoginCredentials, LoginService } from '../../services/login/login.service';
  import { Router } from '@angular/router';
  import { Subscription } from 'rxjs';
- import { NavigationBarComponent } from '../../component/navigation-bar/navigation-bar.component'
 
  @Component({
  	selector: 'app-login',
  	standalone: true,
- 	imports: [ReactiveFormsModule, MatInputModule, MatButtonModule,NavigationBarComponent],
+ 	imports: [ReactiveFormsModule, MatInputModule, MatButtonModule],
  	templateUrl: './login.component.html',
  	styleUrl: './login.component.css'
  })
