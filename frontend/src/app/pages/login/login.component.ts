@@ -30,13 +30,16 @@
 
  	login() {
  		this.loginSubscripton = this.loginService.login( this.loginFormGroup.value as LoginCredentials ).subscribe({
- 			next: result => { this.navigateHome(); },
- 			error: error => { this.invalidCredentials = true; }
+ 			next: result => { this.navigateJeux(); },
+ 			error: error => { 
+				console.log(error);
+				this.invalidCredentials = true; 
+			}
  		});
  	}
 
- 	navigateHome() {
- 		this.router.navigate(['home']);
+ 	navigateJeux() {
+ 		this.router.navigate(['jeux']);
  	}
 
  	ngOnDestroy(): void {

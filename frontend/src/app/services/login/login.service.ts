@@ -1,21 +1,23 @@
 import { inject, Injectable, signal } from '@angular/core';
- import { User } from '../../models/user.models';
- import { HttpClient } from '@angular/common/http';
- import { Observable, tap, map } from 'rxjs';
+import { User } from '../../models/user.models';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap, map } from 'rxjs';
 
- export interface LoginCredentials {
+export interface LoginCredentials {
  	username: string,
  	password: string
- }
+}
 
- @Injectable({ providedIn: 'root' })
- export class LoginService {
+@Injectable({ providedIn: 'root' })
+export class LoginService {
 
- 	private http = inject(HttpClient);
- 	private BASE_URL = 'http://localhost:8000';
- 	user = signal<User | undefined | null>(undefined);
+ private http = inject(HttpClient);
+ private BASE_URL = 'http://localhost:3000';
 
- 	login(credentials: LoginCredentials): Observable<User | null | undefined> {
+ user = signal<User | undefined | null>(undefined);
+
+ login(credentials: LoginCredentials): Observable<User | null | undefined> {
+
  		return this.http.post(this.BASE_URL + '/sessions/login/', credentials).pipe(
  			tap((result: any) => {
  				localStorage.setItem('token', result['token']);
@@ -24,10 +26,10 @@ import { inject, Injectable, signal } from '@angular/core';
  			}),
  			map((result: any) => { return this.user(); })
  		)
- 	}
+  }
 
-   getUser(): Observable<User | null | undefined> {
-    return this.http.get('http://localhost:8000/sessions/me/').pipe(
+  getUser(): Observable<User | null | undefined> {
+    return this.http.get(this.BASE_URL + '/sessions/me/').pipe(
       tap((result: any) => {
         const user = Object.assign(new User(), result);
         this.user.set(user);
@@ -37,7 +39,7 @@ import { inject, Injectable, signal } from '@angular/core';
   }
 
   logout() {
-    return this.http.get('http://localhost:8000/sessions/logout/').pipe(
+    return this.http.get(this.BASE_URL + '/sessions/logout/').pipe(
       tap((result: any) => {
         localStorage.removeItem('token');
         this.user.set(null);

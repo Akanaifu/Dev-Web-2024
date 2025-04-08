@@ -1,0 +1,32 @@
+.navigation-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  .flex-spacer {
+    flex: 1;
+  }
+  
+  .menu-container {
+    margin-left: auto; /* Ceci pousse le menu vers la droite */
+  }
+  .logo {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-image {
+    height: 70%; /* Utilisez un pourcentage de la hauteur du conteneur */
+    max-height: 40px; /* Définissez une hauteur maximale */
+    width: auto; /* Maintient le ratio d'aspect */
+    object-fit: contain; /* Assure que l'image s'adapte sans être déformée */
+  }
+
+  button[mat-button] {
+    color: #000000; /* Couleur du texte du bouton */
+    background-color: #ff000056; /* Couleur de fond du bouton */
+  }
