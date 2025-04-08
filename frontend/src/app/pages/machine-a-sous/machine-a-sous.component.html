@@ -1,0 +1,32 @@
+<div class="slot-machine-container">
+  <div class="slot-machine">
+    <div class="reel">7</div>
+    <div class="reel">7</div>
+    <div class="reel">7</div>
+  </div>
+
+  <button (click)="toggleTable()">
+    {{ showTable ? "Masquer les combinaisons" : "Afficher les combinaisons" }}
+  </button>
+</div>
+
+<div *ngIf="showTable" class="combinations-table">
+  <table>
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Combinaison</th>
+        <th>Multiplicateur</th>
+        <th>Exemple</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let combo of combinations">
+        <td>{{ combo.title }}</td>
+        <td>{{ combo.combination }}</td>
+        <td>{{ combo.multiplier }}</td>
+        <td>{{ combo.example }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
