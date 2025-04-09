@@ -1,8 +1,23 @@
 <div class="slot-machine-container">
+  <!-- Afficheur 1 -->
   <div class="slot-machine">
-    <div class="reel">7</div>
-    <div class="reel">7</div>
-    <div class="reel">7</div>
+    <div class="reel">
+      {{ getCurrentChiffre("afficheur1") }}
+    </div>
+  </div>
+
+  <!-- Afficheur 2 -->
+  <div class="slot-machine">
+    <div class="reel">
+      {{ getCurrentChiffre("afficheur2") }}
+    </div>
+  </div>
+
+  <!-- Afficheur 3 -->
+  <div class="slot-machine">
+    <div class="reel">
+      {{ getCurrentChiffre("afficheur3") }}
+    </div>
   </div>
 
   <button (click)="toggleTable()">
@@ -21,7 +36,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let combo of combinations">
+      <tr
+        *ngFor="let combo of combinations"
+        [id]="combo.id"
+        [class]="combo.class"
+        [class.highlight]="combo.id === highlightCombination"
+      >
         <td>{{ combo.title }}</td>
         <td>{{ combo.combination }}</td>
         <td>{{ combo.multiplier }}</td>

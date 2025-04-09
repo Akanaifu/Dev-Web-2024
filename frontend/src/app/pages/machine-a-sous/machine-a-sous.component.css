@@ -1,56 +1,81 @@
 .slot-machine-container {
   display: flex;
-  justify-content: center; /* Centre horizontalement le contenu */
-  align-items: center; /* Centre verticalement le contenu */
-  height: 100vh; /* Prend toute la hauteur de l'écran */
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
 }
 
 .slot-machine {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.reel {
-  width: 100px;
+  align-items: center;
+  width: 150px;
   height: 150px;
   background-color: #ddd;
   border: 2px solid #000;
   border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+}
+
+.reel {
   font-size: 48px;
   font-weight: bold;
   color: #000;
 }
-
+/* Bouton en jaune */
 button {
   background-color: yellow;
+  border: 2px solid #000;
   padding: 10px 20px;
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  border: none;
   border-radius: 5px;
-  margin-left: 20px; /* Ajoute un espace entre la machine à sous et le bouton */
 }
 
-.combinations-table table {
-  width: 80%;
+button:hover {
+  background-color: #ffd700; /* Couleur légèrement plus foncée au survol */
+  color: #000;
+}
+
+/* Centrer la table */
+.combinations-table {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+table {
+  border-collapse: collapse; /* Fusion des bordures */
+  width: 80%; /* Largeur de la table */
+  text-align: center; /* Centrer le texte */
+  border-radius: 10px; /* Arrondir les bords de la table */
+  overflow: hidden; /* Assure que les bordures internes restent dans les coins arrondis */
+  border: 1px solid #000; /* Bordure de la table */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour de la table */
+  margin-bottom: 20px; /* Marge en bas de la table */
+}
+
+th,
+td {
+  border: 1px solid #000; /* Bordures des cellules */
   padding: 10px;
-  border: 1px solid #ccc;
-  margin: 0 auto;
-  border-collapse: collapse;
 }
 
-.combinations-table th,
-.combinations-table td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: center;
+thead {
+  background-color: #f4f4f4; /* Couleur de fond pour l'en-tête */
+  font-weight: bold;
 }
 
-.combinations-table th {
-  background-color: #f4f4f4;
+/* Mise en évidence de la ligne survolée */
+tbody tr:hover {
+  background-color: #ffffcc; /* Couleur de fond jaune clair */
+  color: #000; /* Couleur du texte noir */
+  cursor: pointer; /* Curseur en main au survol */
+  transition: background-color 0.3s ease; /* Transition douce pour le changement de couleur */
+}
+
+/* Mise en évidence de la ligne correspondante */
+.highlight {
+  background-color: red;
+  color: white;
 }
