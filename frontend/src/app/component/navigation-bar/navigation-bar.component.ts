@@ -1,11 +1,16 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
+import { RouterLink } from '@angular/router';
 
+/**
+ * @title Menu positioning
+ */
 @Component({
-  selector: 'app-navigation-bar',
-  imports: [],
-  templateUrl: './navigation-bar.component.html',
-  styleUrl: './navigation-bar.component.css'
+  selector: 'navigation-bar',
+  templateUrl: 'navigation-bar.component.html',
+  styleUrl: 'navigation-bar.component.css',
+  standalone:true,
+  imports: [MatButtonModule, MatMenuModule, RouterLink],
 })
-export class NavigationBarComponent {
-
-}
+export class NavigationBarComponent {}

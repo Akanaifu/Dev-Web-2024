@@ -2,10 +2,14 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { JeuxComponent } from './pages/jeux/jeux.component';
+import { isLoggedInGuard } from './guards/is-logged-in.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent ,},
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
-  { path: '**', redirectTo: '', pathMatch: 'full' } // Route par défaut
+  { path: 'jeux', component: JeuxComponent, canActivate: [isLoggedInGuard]},
+  { path: '**', component: NotFoundComponent} // page d'erreur route inexistante
 ];

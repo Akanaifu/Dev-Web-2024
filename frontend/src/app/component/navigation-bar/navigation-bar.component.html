@@ -1,15 +1,18 @@
-<div class="bande_d_accueil">
-    <div class="logo_entreprise">
-        <a href=""><img src="../../../../public/favicon.ico"></a>
-    </div>
-    <ul class="bande_d_accueil">
-        <li><a href="">ACCUEIL</a></li> 
-        <li><a href="jeux">JEUX</a></li>
-        <li><a href="CGU">CGU</a></li>
-        <li><a href="statisque">STATISQUE</a></li>
-        <li><a href="contact">CONTACT</a></li>
-        <li><a href="friends">AMIS</a></li>
-        <li><a href="register">SE CONNECTER</a></li>
-        <li><a href="propos">A PROPROS</a></li>
-    </ul>
-</div>
+<!-- HTML du menu modifié pour utiliser vos routes existantes -->
+<nav class="navigation-bar">
+  <div class="logo">
+    <a routerLink="/"><img src="images/logo.png" alt="Logo" class="logo-image"></a>
+  </div>
+  <div class="menu-container">
+    <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item routerLink="/">Accueil</button>
+      <button mat-menu-item routerLink="/register">S'inscrire</button>
+      <button mat-menu-item routerLink="/login">S'identifier</button>
+      <!-- Si vous souhaitez ajouter d'autres pages à l'avenir -->
+      <!-- <button mat-menu-item routerLink="/statistique">Statistique</button> -->
+      <!-- <button mat-menu-item routerLink="/compte">Compte</button> -->
+      <!-- <button mat-menu-item routerLink="/jeux">Jeux</button> -->
+    </mat-menu>
+  </div>
+</nav>
