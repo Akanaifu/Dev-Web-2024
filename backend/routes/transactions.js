@@ -22,17 +22,17 @@ router.get('/', (req, res) => {
     });
 });
 
-// Endpoint pour récupérer un jeu spécifique par son ID
+// Endpoint pour récupérer une transaction spécifique par son ID
 router.get('/:id', (req, res) => {
     const query = "SELECT * FROM transactions WHERE id = ?";
-    const gameId = parseInt(req.params.id);
+    const transactionId = parseInt(req.params.id);
 
-    db.get(query, [gameId], (err, row) => {
+    db.get(query, [transactionId], (err, row) => {
         if (err) {
-            return res.status(500).json({ error: "Erreur lors de la récupération de la transactions." });
+            return res.status(500).json({ error: "Erreur lors de la récupération de la transaction." });
         }
         if (!row) {
-            return res.status(404).json({ error: "transactions non trouvé" });
+            return res.status(404).json({ error: "Transaction non trouvée" });
         }
         res.json(row);
     });
