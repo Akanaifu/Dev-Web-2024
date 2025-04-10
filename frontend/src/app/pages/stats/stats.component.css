@@ -7,6 +7,10 @@ h1 {
   padding: 20px;
 }
 
+mat-slider {
+    width: 300px;
+  }
+
 .stats-container {
   display: flex;
   justify-content: space-around;
