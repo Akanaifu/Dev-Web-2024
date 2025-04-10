@@ -6,6 +6,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { JeuxComponent } from './pages/jeux/jeux.component';
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
 import { MachineASousComponent } from './pages/machine-a-sous/machine-a-sous.component';
+import { StatsComponent } from './pages/stats/stats.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -21,5 +22,12 @@ export const routes: Routes = [
     component: MachineASousComponent,
     // canActivate: [isLoggedInGuard],
   }, // page de la machine à sous
-  { path: '**', component: NotFoundComponent }, // page d'erreur route inexistante. A mettre à la fin !!!!!!!!
+  {
+    path: 'stats',
+    component: StatsComponent 
+    // canActivate: [isLoggedInGuard],
+  }, // page de stats
+  { path: '**', component: NotFoundComponent }, 
+  // page d'erreur route inexistante. A mettre à la fin !!!!!!!!
+  
 ];

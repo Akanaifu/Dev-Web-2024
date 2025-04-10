@@ -1,0 +1,33 @@
+h1 {
+    text-align: center;
+  }
+
+.stats-page {
+  text-align: center;
+  padding: 20px;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.stats-card {
+  background-color: #ffb3ff; /* Couleur rose similaire à la maquette */
+  border-radius: 15px;
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card h2 {
+  margin-bottom: 10px;
+}
+
+.stats-card p {
+  color: #333;
+}
