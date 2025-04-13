@@ -22,17 +22,17 @@ router.get('/', (req, res) => {
     });
 });
 
-// Endpoint pour récupérer un jeu spécifique par son ID
+// Endpoint pour récupérer une mise spécifique par son ID
 router.get('/:id', (req, res) => {
     const query = "SELECT * FROM mise WHERE id = ?";
-    const gameId = parseInt(req.params.id);
+    const betId = parseInt(req.params.id);
 
-    db.get(query, [gameId], (err, row) => {
+    db.get(query, [betId], (err, row) => {
         if (err) {
             return res.status(500).json({ error: "Erreur lors de la récupération de la mise." });
         }
         if (!row) {
-            return res.status(404).json({ error: "Mise non trouvé" });
+            return res.status(404).json({ error: "Mise non trouvée" });
         }
         res.json(row);
     });
