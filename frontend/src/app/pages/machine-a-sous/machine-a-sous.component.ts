@@ -74,10 +74,10 @@ export class MachineASousComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.fetchFirebaseData();
   }
-  // {
-  // partie1: { timestamp: "2025-04-06T12:34:56Z",     gain: 50,     joueurId: "player1",     combinaison: [[1, 2, 3], [4, 5, 6]]   },
-  // partie2:  {     timestamp: "2025-04-07T12:09:56Z",    gain: 0,     joueurId: "player1",      combinaison : [[1, 2, 3], [4, 5, 8]]   }
-  // }
+  /*   data = {
+  partie1: { timestamp: "2025-04-06T12:34:56Z",     gain: 50,     joueurId: "player1",     combinaison: [[1, 2, 3], [4, 5, 6]]   },
+  partie2:  {     timestamp: "2025-04-07T12:09:56Z",    gain: 0,     joueurId: "player1",      combinaison : [[1, 2, 3], [4, 5, 8]]   }
+  } */
   fetchFirebaseData(): void {
     const dbRef = ref(this.db);
     get(child(dbRef, '/'))
@@ -86,14 +86,17 @@ export class MachineASousComponent implements OnInit, AfterViewInit {
           console.log('Firebase Data:', snapshot.val());
           const data = snapshot.val();
 
-          // Vérifie si partie1 et combinaison existent
+          // Récupère la dernière partie de data
+          const lastPartKey = Object.keys(data).pop(); // Récupère la dernière clé
+          const lastPart = lastPartKey ? data[lastPartKey] : null;
+
           if (
-            data.partie1 &&
-            data.partie1.combinaison &&
-            data.partie1.combinaison.length > 0
+            lastPart &&
+            lastPart.combinaison &&
+            lastPart.combinaison.length > 0
           ) {
-            const allCombinations = data.partie1.combinaison; // Récupère toutes les combinaisons
-            console.log('All Combinations:', allCombinations);
+            const allCombinations = lastPart.combinaison; // Récupère toutes les combinaisons
+            console.log('All Combinations from Last Part:', allCombinations);
 
             // Affiche toutes les combinaisons séquentiellement sur les afficheurs
             let index = 0;
@@ -118,7 +121,7 @@ export class MachineASousComponent implements OnInit, AfterViewInit {
             }, 1000); // Change de combinaison toutes les secondes
           } else {
             console.error(
-              'Invalid data structure: Missing partie1 or combinaison'
+              'Invalid data structure: Missing combinaison in the last part'
             );
           }
         } else {
