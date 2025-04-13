@@ -1,21 +1,21 @@
 from typing import List, Dict, Any
-from backend.python.menteur.cards.ACard import ACards
+from backend.python.ACard import ACard
 
 #cette classe est une pile de carte, elle contient une liste de carte
 # elle est utilisée pour les cartes qui sont posées sur la table
-class CardsStack([ACards]):
+class CardsStack([ACard]):
     def __init__(self, color: str, game: str):
         super().__init__(color, game)
-        self.__cards: List[ACards] = []
+        self.__cards: List[ACard] = []
 
-    def add_card(self, card: ACards) -> None:
+    def add_card(self, card: ACard) -> None:
         self.__cards.append(card)
 
-    # def remove_card(self, card: ACards):
+    # def remove_card(self, card: ACard):
     #     self.__cards.remove(card)
         #je dois garder les deniers cards dans la pile
 
-    def get_cardsSet(self) -> List[ACards]:
+    def get_cardsSet(self) -> List[ACard]:
         return self.__cards
 
     

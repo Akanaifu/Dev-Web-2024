@@ -1,5 +1,5 @@
-from backend.python.menteur.cards.ACard import ACards
-class As(ACards):
+from backend.python.ACard import ACard
+class As(ACard):
     if self.__jeux=='menteur':
         def __init__(self, color: str, jeux: str):
             super().__init__(color, jeux)
