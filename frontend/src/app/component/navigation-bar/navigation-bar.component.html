@@ -1,12 +1,15 @@
 <!-- HTML du menu modifié pour utiliser vos routes existantes -->
 <nav class="navigation-bar">
   <div class="logo">
-    <a routerLink="/"><img src="images/logo.png" alt="Logo" class="logo-image"></a>
+    <a routerLink="/"
+      ><img src="images/logo.png" alt="Logo" class="logo-image"
+    /></a>
   </div>
   <div class="menu-container">
     <button mat-button [matMenuTriggerFor]="menu">Menu</button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item routerLink="/">Accueil</button>
+      <button mat-menu-item routerLink="/jeux">Jeux</button>
       <button mat-menu-item routerLink="/register">S'inscrire</button>
       <button mat-menu-item routerLink="/login">S'identifier</button>
       <!-- Si vous souhaitez ajouter d'autres pages à l'avenir -->
