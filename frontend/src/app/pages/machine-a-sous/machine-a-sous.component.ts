@@ -117,6 +117,12 @@ export class MachineASousComponent implements OnInit, AfterViewInit {
                 index++;
               } else {
                 clearInterval(this.intervalId); // Arrête l'intervalle après avoir affiché toutes les combinaisons
+
+                // Injecte le gain dans l'élément avec l'ID "gain"
+                const gainElement = document.getElementById('gain');
+                if (gainElement) {
+                  gainElement.textContent = `Gain: ${lastPart.gain}`;
+                }
               }
             }, 1000); // Change de combinaison toutes les secondes
           } else {
@@ -158,39 +164,44 @@ export class MachineASousComponent implements OnInit, AfterViewInit {
       .map((afficheur) => afficheur.currentChiffre)
       .join('');
 
+    // Liste des combinaisons correspondantes
+    const matchedCombinations: string[] = [];
+
     // Vérifie les combinaisons
     if (combination === '777') {
-      this.highlightCombination = 'combo-1'; // Méga-jackpot
-      return;
+      matchedCombinations.push('combo-1'); // Méga-jackpot
     } else if (
       combination[0] === combination[1] &&
       combination[1] === combination[2]
     ) {
-      this.highlightCombination = 'combo-2'; // Jackpot
-      return;
+      matchedCombinations.push('combo-2'); // Jackpot
     } else if (
       (+combination[0] === +combination[1] + 1 &&
         +combination[1] === +combination[2] + 1) ||
       (+combination[0] === +combination[1] - 1 &&
         +combination[1] === +combination[2] - 1)
     ) {
-      this.highlightCombination = 'combo-3'; // Suite
+      matchedCombinations.push('combo-3'); // Suite
     } else if (combination[0] === combination[2]) {
-      this.highlightCombination = 'combo-4'; // Sandwich
-    } else {
-      this.highlightCombination = null; // Aucune combinaison correspondante
+      matchedCombinations.push('combo-4'); // Sandwich
     }
+
+    // Vérifie si tous les chiffres sont pairs ou impairs et qu'il ne s'agit pas d'un jackpot
     if (
-      (+combination[0] % 2 === 0 &&
+      ((+combination[0] % 2 === 0 &&
         +combination[1] % 2 === 0 &&
         +combination[2] % 2 === 0) ||
-      (+combination[0] % 2 !== 0 &&
-        +combination[1] % 2 !== 0 &&
-        +combination[2] % 2 !== 0)
+        (+combination[0] % 2 !== 0 &&
+          +combination[1] % 2 !== 0 &&
+          +combination[2] % 2 !== 0)) &&
+      !(combination[0] === combination[1] && combination[1] === combination[2])
     ) {
-      this.highlightCombination = 'combo-5'; // (Im)pair
+      matchedCombinations.push('combo-5'); // (Im)pair
     }
-    return;
+
+    // Met à jour les combinaisons à mettre en surbrillance
+    this.highlightCombination =
+      matchedCombinations.length > 0 ? matchedCombinations.join(', ') : null;
   }
 
   toggleTable() {

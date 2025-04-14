@@ -19,10 +19,18 @@
       {{ getCurrentChiffre("afficheur3") }}
     </div>
   </div>
+</div>
 
+<!-- Bouton pour afficher/masquer les combinaisons -->
+<div class="button-container">
   <button (click)="toggleTable()">
     {{ showTable ? "Masquer les combinaisons" : "Afficher les combinaisons" }}
   </button>
+</div>
+
+<!-- Affichage du gain -->
+<div class="gain-container">
+  <span id="gain" class="gain-display">Gain: 0</span>
 </div>
 
 <div *ngIf="showTable" class="combinations-table">
@@ -40,7 +48,7 @@
         *ngFor="let combo of combinations"
         [id]="combo.id"
         [class]="combo.class"
-        [class.highlight]="combo.id === highlightCombination"
+        [class.highlight]="highlightCombination?.includes(combo.id)"
       >
         <td>{{ combo.title }}</td>
         <td>{{ combo.combination }}</td>
