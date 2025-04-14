@@ -21,3 +21,6 @@ class M_CardsSet([ACard]):
     def set_cards(self,position:int, new_card: ACard) -> None:
         self.__cards.pop(position)
         self.__cards.insert(position,new_card)
+        
+    def pop_card(self,position:int) -> None:
+        return self.__cards.pop(position)

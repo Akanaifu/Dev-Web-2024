@@ -4,7 +4,7 @@ from backend.python.shared_games_cards.shared_cards.ACard import ACard
 
 class M_Rules:
     
-    def __init__(self,rules : str) -> None:
+    def __init__(self,game_name : str) -> None:
         self.__max_players = 4
         self.__max_Cards_per_player = 5
         self.__max_Cards_per_game = 20
@@ -14,7 +14,7 @@ class M_Rules:
         self.__nb_players : int
         self.__cards_for_the_game = M_CardsSet
         self.__game_cards =["As","King","Queen","Jack","10","9","8","7","6","5","4","3","2","Joker"]
-        self.__rules= rules
+        self.__game_name= game_name
         
 def get_game_cards(self):
     return self.__game_cards
@@ -30,6 +30,9 @@ def get_max_Cards_per_game(self):
 
 def get_nb_players(self):
     return self.__nb_players
+
+def get_game_name(self):
+    return self.__game_name
 
     #  def create_cards(self):
     #     self.__cards_for_the_game.add_card(self.__cards_for_the_game,ACard(self.__cards_for_the_game,f"{0}",self.__game_cards[len(self.__game_cards)-1],self.__rules))
