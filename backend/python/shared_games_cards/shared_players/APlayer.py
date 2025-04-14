@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import random
-from backend.python.menteur.cards.CardsSet import CardsSet
+from backend.python.menteur.cards.M_CardsSet import CardsSet
 
 class APlayer():
 #    """Classe abstraite représentant un joueur dans le jeu de cartes."""

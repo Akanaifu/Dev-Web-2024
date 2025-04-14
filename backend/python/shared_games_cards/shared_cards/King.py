@@ -1,4 +1,4 @@
-from backend.python.ACard import ACard
+from backend.python.shared_games_cards.shared_cards.ACard import ACard
 
 class King(ACard):
     def __init__(self, color: str, jeux: str):

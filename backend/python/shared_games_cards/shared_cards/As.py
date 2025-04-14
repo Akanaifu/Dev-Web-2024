@@ -1,9 +1,9 @@
-from backend.python.ACard import ACard
+from backend.python.shared_games_cards.shared_cards.ACard import ACard
 class As(ACard):
-    if self.__jeux=='menteur':
-        def __init__(self, color: str, jeux: str):
-            super().__init__(color, jeux)
-            self.__value = 14
+    def __init__(self, color: str, jeux: str):
+        self.__value = 14
+        super().__init__(color, jeux)
+        
             
             
     # if self.__jeux=='blackjack':

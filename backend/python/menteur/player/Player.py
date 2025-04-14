@@ -1,5 +1,5 @@
 from typing import List
-from backend.python.menteur.player.APlayer import APlayer
+from backend.python.shared_games_cards.shared_players.APlayer import APlayer
 from backend.python.EnterValue import EnterValue
 
 
