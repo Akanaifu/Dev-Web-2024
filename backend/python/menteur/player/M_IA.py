@@ -1,6 +1,6 @@
-from backend.python.menteur.player.APlayer import APlayer
+from backend.python.shared_games_cards.shared_players.APlayer import APlayer
 
-class IA(APlayer):
+class M_IA(APlayer):
     def __init__(self, name: str, color: str, jeux: str):
         super().__init__(name, color, jeux)
         self.__name = name

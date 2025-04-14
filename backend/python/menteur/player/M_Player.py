@@ -3,7 +3,7 @@ from backend.python.shared_games_cards.shared_players.APlayer import APlayer
 from backend.python.EnterValue import EnterValue
 
 
-class Player(APlayer):
+class M_Player(APlayer):
     def play_card(self):
         cards_Chosen = []
         if self.__launch==False:

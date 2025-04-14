@@ -1,13 +1,13 @@
-from backend.python.menteur.cards.CardsSet import CardsSet
-from backend.python.menteur.rules.Board import Board
+from backend.python.menteur.cards.M_CardsSet import M_CardsSet
+from backend.python.menteur.rules.M_Board import M_Board
 
 class Draft:
     
-    def __init__(self, cards: CardsSet, board: Board):
+    def __init__(self, cards: M_CardsSet, board: M_Board):
         self.__cards = cards
         self.__board = board
 
-    def draft_cards(self, board: Board, number_of_cards: int) -> CardsSet:
+    def draft_cards(self, board: M_Board, number_of_cards: int) -> M_CardsSet:
         """
         Draft a number of cards for a player.
         :param player: The player who is drafting the cards.

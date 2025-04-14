@@ -1,6 +1,6 @@
 
 
-from backend.python.menteur.cards.CardsSet import CardsSet
+from backend.python.menteur.cards.M_CardsSet import M_CardsSet
 
 
 class Rules:
@@ -12,7 +12,7 @@ class Rules:
         self.__max_Cards_per_game = 20
         self.__max_Cards_played = 3
         self.__master_cards = str
-        self.cards_for_the_game = CardsSet
+        self.cards_for_the_game = M_CardsSet
 
     def create_cards(self):
         
