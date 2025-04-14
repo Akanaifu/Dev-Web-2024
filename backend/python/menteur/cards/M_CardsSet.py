@@ -24,3 +24,7 @@ class M_CardsSet([ACard]):
         
     def pop_card(self,position:int) -> None:
         return self.__cards.pop(position)
+    
+    def clear_cards(self)->None:
+        self.__cards.clear()
+    

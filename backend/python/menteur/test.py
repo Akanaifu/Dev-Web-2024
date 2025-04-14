@@ -1,14 +1,16 @@
+import random
 from numpy import size
 
-
-liste=[]
-liste_2=[]
-liste_caca=[]
-for k in range(4):
-    liste.append(k)
-    liste_2.append(k*k)
-
-liste_caca.append(liste)
-liste_caca.append(liste_2)
-
-print(liste_caca)
+def test(__life:int) -> bool:
+    random_1=random.randint(1,__life)
+    random_2=random.randint(1,__life)
+    if random_1==random_2:
+        __life=0
+        print(f"a perdu ")
+        return True
+    else:
+        __life-=1
+        print(f" vous restez {__life} vies")
+        return False
+Test=test(2)
+print(Test)
