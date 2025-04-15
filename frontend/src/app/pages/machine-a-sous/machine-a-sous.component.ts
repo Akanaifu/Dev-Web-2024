@@ -29,4 +29,27 @@ export class MachineASousComponent implements OnInit, AfterViewInit {
   ngOnDestroy(): void {
     clearInterval(this.logic.intervalId);
   }
+
+  // Getter pour accéder aux propriétés de MachineASousLogic
+  get combinations() {
+    return this.logic.combinations;
+  }
+
+  get highlightCombination() {
+    return this.logic.highlightCombination;
+  }
+
+  get showTable() {
+    return this.logic.showTable;
+  }
+
+  // Méthodes pour accéder aux fonctionnalités de MachineASousLogic
+  toggleTable(): void {
+    this.logic.showTable = !this.logic.showTable;
+  }
+
+  getCurrentChiffre(afficheurId: string): number {
+    const afficheur = this.logic.afficheurs.find((a) => a.id === afficheurId);
+    return afficheur ? afficheur.currentChiffre : 0;
+  }
 }
