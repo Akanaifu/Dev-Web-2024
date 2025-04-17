@@ -1,5 +1,5 @@
 <div id="container">
-	<form (submit)="login()" [formGroup]="loginFormGroup">
+	<form>
 		<h3>Créate an acount</h3>
 		<mat-form-field>
 			<mat-label>Username</mat-label>
@@ -17,9 +17,6 @@
 			<mat-label>Username</mat-label>
 			<input matInput formControlName="username">
 		</mat-form-field>
-		<button mat-flat-button [disabled]="loginFormGroup.invalid">Login</button>
-		@if (invalidCredentials) {
-			<mat-error>Invalid credentials</mat-error>
-		}
+		<button mat-flat-button >Login</button>
 	</form>
 </div>
