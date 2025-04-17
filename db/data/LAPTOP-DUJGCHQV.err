@@ -111,3 +111,97 @@ Version: '11.7.2-MariaDB'  socket: ''  port: 3306  mariadb.org binary distributi
 2025-04-10  9:35:41 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe: ready for connections.
 Version: '11.7.2-MariaDB'  socket: ''  port: 3306  mariadb.org binary distribution
 2025-04-10 10:13:06 3 [Warning] Aborted connection 3 to db: 'casino_db' user: 'root' host: 'localhost' (Got an error reading communication packets)
+2025-04-16 21:37:08 0 [Note] Starting MariaDB 11.7.2-MariaDB source revision 80067a69feaeb5df30abb1bfaf7d4e713ccbf027 server_uid fe3MHy95kGr72QFnhqyMDqoXbes= as process 23744
+2025-04-16 21:37:08 0 [Note] InnoDB: Compressed tables use zlib 1.3.1
+2025-04-16 21:37:08 0 [Note] InnoDB: Number of transaction pools: 1
+2025-04-16 21:37:08 0 [Note] InnoDB: Using crc32 + pclmulqdq instructions
+2025-04-16 21:37:08 0 [Note] InnoDB: Initializing buffer pool, total size = 1.234GiB, chunk size = 19.750MiB
+2025-04-16 21:37:08 0 [Note] InnoDB: Completed initialization of buffer pool
+2025-04-16 21:37:08 0 [Note] InnoDB: File system buffers for log disabled (block size=4096 bytes)
+2025-04-16 21:37:08 0 [Note] InnoDB: End of log at LSN=75805
+2025-04-16 21:37:08 0 [Note] InnoDB: Opened 3 undo tablespaces
+2025-04-16 21:37:08 0 [Note] InnoDB: 128 rollback segments in 3 undo tablespaces are active.
+2025-04-16 21:37:08 0 [Note] InnoDB: Setting file './ibtmp1' size to 12.000MiB. Physically writing the file full; Please wait ...
+2025-04-16 21:37:08 0 [Note] InnoDB: File './ibtmp1' size is now 12.000MiB.
+2025-04-16 21:37:08 0 [Note] InnoDB: log sequence number 75805; transaction id 49
+2025-04-16 21:37:08 0 [Note] InnoDB: Loading buffer pool(s) from C:\Users\alexi\OneDrive - EPHEC asbl\BAC2\Dev-Web-2024\db\data\ib_buffer_pool
+2025-04-16 21:37:08 0 [Note] Plugin 'FEEDBACK' is disabled.
+2025-04-16 21:37:08 0 [Note] mysqld.exe: SSPI: using principal name 'localhost', mech 'Negotiate'
+2025-04-16 21:37:08 0 [Note] InnoDB: Buffer pool(s) load completed at 250416 21:37:08
+2025-04-16 21:37:10 0 [Note] Server socket created on IP: '::'.
+2025-04-16 21:37:10 0 [Note] Server socket created on IP: '0.0.0.0'.
+2025-04-16 21:37:10 0 [Note] mysqld.exe: Event Scheduler: Loaded 0 events
+2025-04-16 21:37:10 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe: ready for connections.
+Version: '11.7.2-MariaDB'  socket: ''  port: 3306  mariadb.org binary distribution
+2025-04-17  9:18:50 0 [Note] Windows service "MariaDB":  received SERVICE_CONTROL_STOP
+2025-04-17  9:18:50 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe (initiated by: unknown): Normal shutdown
+2025-04-17  9:18:50 0 [Note] InnoDB: FTS optimize thread exiting.
+2025-04-17  9:18:50 0 [Note] InnoDB: Starting shutdown...
+2025-04-17  9:18:50 0 [Note] InnoDB: Dumping buffer pool(s) to C:\Users\alexi\OneDrive - EPHEC asbl\BAC2\Dev-Web-2024\db\data\ib_buffer_pool
+2025-04-17  9:18:50 0 [Note] InnoDB: Buffer pool(s) dump completed at 250417  9:18:50
+2025-04-17  9:18:50 0 [Note] InnoDB: Removed temporary tablespace data file: "./ibtmp1"
+2025-04-17  9:18:50 0 [Note] InnoDB: Shutdown completed; log sequence number 119576; transaction id 103
+2025-04-17  9:18:50 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe: Shutdown complete
+2025-04-17  9:19:00 0 [Note] Starting MariaDB 11.7.2-MariaDB source revision 80067a69feaeb5df30abb1bfaf7d4e713ccbf027 server_uid fe3MHy95kGr72QFnhqyMDqoXbes= as process 21304
+2025-04-17  9:19:00 0 [Note] InnoDB: Compressed tables use zlib 1.3.1
+2025-04-17  9:19:00 0 [Note] InnoDB: Number of transaction pools: 1
+2025-04-17  9:19:00 0 [Note] InnoDB: Using crc32 + pclmulqdq instructions
+2025-04-17  9:19:00 0 [Note] InnoDB: Initializing buffer pool, total size = 1.234GiB, chunk size = 19.750MiB
+2025-04-17  9:19:00 0 [Note] InnoDB: Completed initialization of buffer pool
+2025-04-17  9:19:00 0 [Note] InnoDB: File system buffers for log disabled (block size=4096 bytes)
+2025-04-17  9:19:00 0 [Note] InnoDB: End of log at LSN=119576
+2025-04-17  9:19:00 0 [Note] InnoDB: Opened 3 undo tablespaces
+2025-04-17  9:19:00 0 [Note] InnoDB: 128 rollback segments in 3 undo tablespaces are active.
+2025-04-17  9:19:00 0 [Note] InnoDB: Setting file './ibtmp1' size to 12.000MiB. Physically writing the file full; Please wait ...
+2025-04-17  9:19:00 0 [Note] InnoDB: File './ibtmp1' size is now 12.000MiB.
+2025-04-17  9:19:00 0 [Note] InnoDB: log sequence number 119576; transaction id 103
+2025-04-17  9:19:00 0 [Note] InnoDB: Loading buffer pool(s) from C:\Users\alexi\OneDrive - EPHEC asbl\BAC2\Dev-Web-2024\db\data\ib_buffer_pool
+2025-04-17  9:19:00 0 [Note] Plugin 'FEEDBACK' is disabled.
+2025-04-17  9:19:00 0 [ERROR] InnoDB: Operating system error number 2 in a file operation.
+2025-04-17  9:19:00 0 [Note] InnoDB: Some operating system error numbers are described at https://mariadb.com/kb/en/library/operating-system-error-codes/
+2025-04-17  9:19:00 0 [Note] mysqld.exe: SSPI: using principal name 'localhost', mech 'Negotiate'
+2025-04-17  9:19:00 0 [ERROR] InnoDB: Cannot open datafile for read-only: './casino_db/transactions.ibd' OS error: 71
+2025-04-17  9:19:00 0 [ERROR] InnoDB: Could not find a valid tablespace file for casino_db/transactions. Please refer to https://mariadb.com/kb/en/innodb-data-dictionary-troubleshooting/ for how to resolve the issue.
+2025-04-17  9:19:00 0 [Warning] InnoDB: Ignoring tablespace for casino_db/transactions because it could not be opened.
+2025-04-17  9:19:00 0 [Note] InnoDB: Buffer pool(s) load completed at 250417  9:19:00
+2025-04-17  9:19:01 0 [Note] Server socket created on IP: '::'.
+2025-04-17  9:19:01 0 [Note] Server socket created on IP: '0.0.0.0'.
+2025-04-17  9:19:01 0 [Note] mysqld.exe: Event Scheduler: Loaded 0 events
+2025-04-17  9:19:01 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe: ready for connections.
+Version: '11.7.2-MariaDB'  socket: ''  port: 3306  mariadb.org binary distribution
+2025-04-17  9:23:11 0 [Note] Windows service "MariaDB":  received SERVICE_CONTROL_SHUTDOWN
+2025-04-17  9:23:11 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe (initiated by: unknown): Normal shutdown
+2025-04-17  9:23:11 0 [Note] InnoDB: FTS optimize thread exiting.
+2025-04-17  9:23:11 0 [Note] InnoDB: Starting shutdown...
+2025-04-17  9:23:11 0 [Note] InnoDB: Dumping buffer pool(s) to C:\Users\alexi\OneDrive - EPHEC asbl\BAC2\Dev-Web-2024\db\data\ib_buffer_pool
+2025-04-17  9:23:11 0 [Note] InnoDB: Buffer pool(s) dump completed at 250417  9:23:11
+2025-04-17  9:23:12 0 [Note] InnoDB: Removed temporary tablespace data file: "./ibtmp1"
+2025-04-17  9:23:12 0 [Note] InnoDB: Shutdown completed; log sequence number 119576; transaction id 104
+2025-04-17  9:23:12 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe: Shutdown complete
+2025-04-17  9:23:39 0 [Note] Starting MariaDB 11.7.2-MariaDB source revision 80067a69feaeb5df30abb1bfaf7d4e713ccbf027 server_uid fe3MHy95kGr72QFnhqyMDqoXbes= as process 4172
+2025-04-17  9:23:39 0 [Note] InnoDB: Compressed tables use zlib 1.3.1
+2025-04-17  9:23:39 0 [Note] InnoDB: Number of transaction pools: 1
+2025-04-17  9:23:39 0 [Note] InnoDB: Using crc32 + pclmulqdq instructions
+2025-04-17  9:23:39 0 [Note] InnoDB: Initializing buffer pool, total size = 1.234GiB, chunk size = 19.750MiB
+2025-04-17  9:23:39 0 [Note] InnoDB: Completed initialization of buffer pool
+2025-04-17  9:23:39 0 [Note] InnoDB: File system buffers for log disabled (block size=4096 bytes)
+2025-04-17  9:23:39 0 [Note] InnoDB: End of log at LSN=119576
+2025-04-17  9:23:39 0 [Note] InnoDB: Opened 3 undo tablespaces
+2025-04-17  9:23:39 0 [Note] InnoDB: 128 rollback segments in 3 undo tablespaces are active.
+2025-04-17  9:23:39 0 [Note] InnoDB: Setting file './ibtmp1' size to 12.000MiB. Physically writing the file full; Please wait ...
+2025-04-17  9:23:39 0 [Note] InnoDB: File './ibtmp1' size is now 12.000MiB.
+2025-04-17  9:23:39 0 [Note] InnoDB: log sequence number 119576; transaction id 103
+2025-04-17  9:23:39 0 [Note] Plugin 'FEEDBACK' is disabled.
+2025-04-17  9:23:39 0 [Note] mysqld.exe: SSPI: using principal name 'localhost', mech 'Negotiate'
+2025-04-17  9:23:39 0 [Note] InnoDB: Loading buffer pool(s) from C:\Users\alexi\OneDrive - EPHEC asbl\BAC2\Dev-Web-2024\db\data\ib_buffer_pool
+2025-04-17  9:23:40 0 [Note] InnoDB: Buffer pool(s) load completed at 250417  9:23:40
+2025-04-17  9:23:40 0 [Note] Server socket created on IP: '::'.
+2025-04-17  9:23:40 0 [Note] Server socket created on IP: '0.0.0.0'.
+2025-04-17  9:23:40 0 [Note] mysqld.exe: Event Scheduler: Loaded 0 events
+2025-04-17  9:23:40 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe: ready for connections.
+Version: '11.7.2-MariaDB'  socket: ''  port: 3306  mariadb.org binary distribution
+2025-04-17 10:21:07 5 [ERROR] InnoDB: Operating system error number 2 in a file operation.
+2025-04-17 10:21:07 5 [Note] InnoDB: Some operating system error numbers are described at https://mariadb.com/kb/en/library/operating-system-error-codes/
+2025-04-17 10:21:07 5 [ERROR] InnoDB: Cannot open datafile for read-only: './casino_db/transactions.ibd' OS error: 71
+2025-04-17 10:21:07 5 [ERROR] InnoDB: Could not find a valid tablespace file for casino_db/transactions. Please refer to https://mariadb.com/kb/en/innodb-data-dictionary-troubleshooting/ for how to resolve the issue.
+2025-04-17 10:21:07 5 [ERROR] InnoDB: Failed to load tablespace 12 for table casino_db/transactions
