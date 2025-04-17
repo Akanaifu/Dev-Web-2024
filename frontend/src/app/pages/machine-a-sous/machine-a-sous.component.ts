@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
+import { FirebaseSendService } from './export_firebase.logic';
 
 @Component({
   selector: 'app-machine-a-sous',
@@ -11,11 +12,12 @@ import { MachineASousLogic } from './machine-a-sous.logic';
   styleUrls: ['./machine-a-sous.component.css'],
 })
 export class MachineASousComponent implements OnInit, AfterViewInit {
-  private logic: MachineASousLogic;
-
+  private firebaseSendService: FirebaseSendService;
+  logic: MachineASousLogic;
   constructor() {
     const db = inject(Database);
     this.logic = new MachineASousLogic(db);
+    this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }
 
   ngOnInit(): void {
@@ -51,5 +53,19 @@ export class MachineASousComponent implements OnInit, AfterViewInit {
   getCurrentChiffre(afficheurId: string): number {
     const afficheur = this.logic.afficheurs.find((a) => a.id === afficheurId);
     return afficheur ? afficheur.currentChiffre : 0;
+  }
+  // Méthode pour envoyer les données à Firebase
+  sendPartieToFirebase(): void {
+    const playerId = 'player1';
+    const solde = 1000; // Valeur hardcodée
+
+    this.firebaseSendService
+      .sendPartie(playerId, solde)
+      .then(() => {
+        console.log('Données envoyées avec succès à Firebase.');
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi des données à Firebase :", error);
+      });
   }
 }

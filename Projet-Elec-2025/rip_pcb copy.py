@@ -6,8 +6,11 @@ import time, sys
 ########## Configuration matérielle ##########
 # Activation des composants
 Pin(28, Pin.OUT).value(1)  # Allumer décodeur
+Pin(27, Pin.OUT).value(1)  # Allumer LT
+Pin(26, Pin.OUT).value(1)  # Allumer BL
+Pin(22, Pin.OUT).value(1)  # Allumer STR
 Pin(8, Pin.OUT).value(1)  # Allumer écran LCD
-Pin(9, Pin.OUT).value(1)  # Allumer joystick
+Pin(9, Pin.OUT).value(1)  # Allumer joystick et ADS1115
 
 # Configuration de l'écran LCD
 ADRESSE_I2C = (

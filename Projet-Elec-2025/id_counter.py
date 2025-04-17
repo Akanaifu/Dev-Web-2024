@@ -1,5 +1,3 @@
-import os
-
 COUNTER_FILE = "id_counter.txt"
 
 
@@ -7,9 +5,9 @@ def load_counter():
     """
     Load the counter value from a file. If the file does not exist, initialize it to 0.
     """
-    if os.path.exists(COUNTER_FILE):
-        with open(COUNTER_FILE, "r") as file:
-            return int(file.read().strip())
+
+    with open(COUNTER_FILE, "r") as file:
+        return int(file.read().strip())
     return 0
 
 

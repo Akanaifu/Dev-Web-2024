@@ -1,12 +1,27 @@
 import { Database, ref, get, child } from '@angular/fire/database';
 
+interface Combination {
+  id: string;
+  title: string;
+  combination: string;
+  multiplier: number;
+  example: string;
+  class: string;
+}
+
+interface Afficheur {
+  id: string;
+  currentChiffre: number;
+}
+
 export class MachineASousLogic {
-  private db: Database;
   title = 'Machine à sous';
   showTable = false;
   highlightCombination: string | null = null;
+  intervalId: any;
+  generationCount = 0;
 
-  combinations = [
+  combinations: Combination[] = [
     {
       id: 'combo-1',
       title: 'Méga-jackpot',
@@ -49,114 +64,93 @@ export class MachineASousLogic {
     },
   ];
 
-  afficheurs = [
+  afficheurs: Afficheur[] = [
     { id: 'afficheur1', currentChiffre: 0 },
     { id: 'afficheur2', currentChiffre: 0 },
     { id: 'afficheur3', currentChiffre: 0 },
   ];
 
-  intervalId: any;
-  generationCount = 0;
-
-  constructor(db: Database) {
-    this.db = db;
-  }
+  constructor(private db: Database) {}
 
   fetchFirebaseData(): void {
-    const dbRef = ref(this.db);
-    get(child(dbRef, '/'))
+    get(child(ref(this.db), '/'))
       .then((snapshot) => {
-        if (snapshot.exists()) {
-          console.log('Firebase Data:', snapshot.val());
-          const data = snapshot.val();
+        if (!snapshot.exists()) return console.log('No data available');
 
-          const lastPartKey = Object.keys(data).pop();
-          const lastPart = lastPartKey ? data[lastPartKey] : null;
-
-          if (
-            lastPart &&
-            lastPart.combinaison &&
-            lastPart.combinaison.length > 0
-          ) {
-            const allCombinations = lastPart.combinaison;
-            console.log('All Combinations from Last Part:', allCombinations);
-
-            let index = 0;
-            this.intervalId = setInterval(() => {
-              if (index < allCombinations.length) {
-                const combination = allCombinations[index];
-                console.log(
-                  `Displaying Combination ${index + 1}:`,
-                  combination
-                );
-
-                this.afficheurs.forEach((afficheur, i) => {
-                  afficheur.currentChiffre = combination[i] || 0;
-                });
-
-                this.checkCombination();
-                index++;
-              } else {
-                clearInterval(this.intervalId);
-
-                const gainElement = document.getElementById('gain');
-                if (gainElement) {
-                  gainElement.textContent = `Gain: ${lastPart.gain}`;
-                }
-              }
-            }, 1000);
-          } else {
-            console.error(
-              'Invalid data structure: Missing combinaison in the last part'
-            );
+        const data = snapshot.val();
+        let playedParts = [];
+        for (const key in data) {
+          if (data[key].partieJouee) {
+            playedParts.push({ key, ...data[key] });
           }
-        } else {
-          console.log('No data available');
         }
+
+        if (playedParts.length === 0)
+          return console.log('No played parts found');
+
+        const lastPlayedPart = playedParts[playedParts.length - 1];
+        const allCombinations: string[] = lastPlayedPart.combinaison || [];
+
+        if (!allCombinations.length) {
+          return console.error(
+            'Invalid data structure: Missing combinaison in the last played part'
+          );
+        }
+
+        let index = 0;
+        this.intervalId = setInterval(() => {
+          if (index < allCombinations.length) {
+            const combination = allCombinations[index];
+            this.updateAfficheurs(combination);
+            this.checkCombination();
+            index++;
+          } else {
+            clearInterval(this.intervalId);
+            this.updateGainDisplay(lastPlayedPart.gain);
+          }
+        }, 1000);
       })
-      .catch((error) => {
-        console.error('Error fetching Firebase data:', error);
-      });
+      .catch((error) => console.error('Error fetching Firebase data:', error));
+  }
+
+  private updateAfficheurs(combination: string): void {
+    this.afficheurs.forEach((afficheur, i) => {
+      afficheur.currentChiffre = +combination[i] || 0;
+    });
+  }
+
+  private updateGainDisplay(gain: number): void {
+    const gainElement = document.getElementById('gain');
+    if (gainElement) {
+      gainElement.textContent = `Gain: ${gain}`;
+    }
   }
 
   checkCombination(): void {
-    const combination = this.afficheurs
-      .map((afficheur) => afficheur.currentChiffre)
-      .join('');
+    const digits = this.afficheurs.map((a) => a.currentChiffre);
+    const [a, b, c] = digits;
+    const combination = digits.join('');
 
-    const matchedCombinations: string[] = [];
+    const matched: string[] = [];
 
     if (combination === '777') {
-      matchedCombinations.push('combo-1');
-    } else if (
-      combination[0] === combination[1] &&
-      combination[1] === combination[2]
-    ) {
-      matchedCombinations.push('combo-2');
-    } else if (
-      (+combination[0] === +combination[1] + 1 &&
-        +combination[1] === +combination[2] + 1) ||
-      (+combination[0] === +combination[1] - 1 &&
-        +combination[1] === +combination[2] - 1)
-    ) {
-      matchedCombinations.push('combo-3');
-    } else if (combination[0] === combination[2]) {
-      matchedCombinations.push('combo-4');
+      matched.push('combo-1');
+    } else if (a === b && b === c) {
+      matched.push('combo-2');
+    } else if ((a === b + 1 && b === c + 1) || (a === b - 1 && b === c - 1)) {
+      matched.push('combo-3');
+    } else if (a === c) {
+      matched.push('combo-4');
     }
 
-    if (
-      ((+combination[0] % 2 === 0 &&
-        +combination[1] % 2 === 0 &&
-        +combination[2] % 2 === 0) ||
-        (+combination[0] % 2 !== 0 &&
-          +combination[1] % 2 !== 0 &&
-          +combination[2] % 2 !== 0)) &&
-      !(combination[0] === combination[1] && combination[1] === combination[2])
-    ) {
-      matchedCombinations.push('combo-5');
+    const isAllEven = digits.every((d) => d % 2 === 0);
+    const isAllOdd = digits.every((d) => d % 2 !== 0);
+    const isNotTriple = !(a === b && b === c);
+
+    if ((isAllEven || isAllOdd) && isNotTriple) {
+      matched.push('combo-5');
     }
 
-    this.highlightCombination =
-      matchedCombinations.length > 0 ? matchedCombinations.join(', ') : null;
+    this.highlightCombination = matched.length ? matched.join(', ') : null;
   }
 }
