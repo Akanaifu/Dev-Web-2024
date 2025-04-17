@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injecter des données</title>
+</head>
+<body>
+    <h1>Injecter des données dans la base de données</h1>
+    <form id="dataForm">
+        <label for="tableName">Nom de la table:</label>
+        <input type="text" id="tableName" name="tableName" required>
+        <br><br>
+        <label for="columns">Colonnes (séparées par des virgules):</label>
+        <input type="text" id="columns" name="columns" required>
+        <br><br>
+        <label for="values">Valeurs (séparées par des virgules):</label>
+        <input type="text" id="values" name="values" required>
+        <br><br>
+        <button type="submit">Envoyer</button>
+    </form>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tableName = document.getElementById('tableName').value;
+            const columns = document.getElementById('columns').value;
+            const values = document.getElementById('values').value;
+
+            const response = await fetch('/data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tableName, columns, values })
+            });
+
+            const result = await response.json();
+            alert(result.message || 'Données injectées avec succès');
+        });
+    </script>
+</body>
+</html>
