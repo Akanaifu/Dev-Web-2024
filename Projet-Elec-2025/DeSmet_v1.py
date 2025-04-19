@@ -1,4 +1,3 @@
-# code de Mr. De Smet
 from machine import Pin, Timer
 import random
 import time, sys

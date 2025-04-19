@@ -74,8 +74,34 @@ tbody tr:hover {
   transition: background-color 0.3s ease; /* Transition douce pour le changement de couleur */
 }
 
-/* Mise en évidence de la ligne correspondante */
+/* Mise en évidence de plusieurs lignes correspondantes */
 .highlight {
   background-color: red;
   color: white;
+  font-weight: bold;
+}
+
+/* Style pour le gain */
+.gain-display {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: bold;
+  color: green;
+  text-align: center;
+  border: 2px solid green;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f0fff0; /* Vert clair */
+}
+
+/* Conteneur pour le bouton */
+.button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Conteneur pour le gain */
+.gain-container {
+  text-align: center;
+  margin-top: 10px;
 }
