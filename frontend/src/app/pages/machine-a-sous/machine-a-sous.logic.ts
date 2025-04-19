@@ -72,6 +72,23 @@ export class MachineASousLogic {
 
   constructor(private db: Database) {}
 
+  computeQuadraticFunction(long_arr: number): (x: number) => number {
+    const mid = long_arr / 2;
+
+    const origine = 1000; // f(0) = 1000
+    const ymin = 200; // f(mid) = 200
+
+    // Résolution du système avec f(x) = ax^2 + bx + c
+    // Conditions : f(0) = c = 1000, f(mid) = a*mid^2 + b*mid + c = 200
+    // b = -2a*mid (pour que le min soit en x = mid)
+
+    const a = (origine - ymin) / (mid * mid); // a = (1000 - 200) / mid²
+    const b = -2 * a * mid;
+
+    // Retourne la fonction f(x)
+    return (x: number) => a * x * x + b * x + origine;
+  }
+
   fetchFirebaseData(): void {
     get(child(ref(this.db), '/'))
       .then((snapshot) => {
@@ -90,7 +107,7 @@ export class MachineASousLogic {
 
         const lastPlayedPart = playedParts[playedParts.length - 1];
         const allCombinations: string[] = lastPlayedPart.combinaison || [];
-
+        const f = this.computeQuadraticFunction(allCombinations.length);
         if (!allCombinations.length) {
           return console.error(
             'Invalid data structure: Missing combinaison in the last played part'
@@ -98,17 +115,24 @@ export class MachineASousLogic {
         }
 
         let index = 0;
-        this.intervalId = setInterval(() => {
+
+        const iterate = () => {
           if (index < allCombinations.length) {
             const combination = allCombinations[index];
             this.updateAfficheurs(combination);
             this.checkCombination();
             index++;
+            setTimeout(iterate, f(index)); // Recalculer f(index) pour chaque itération
+            console.log(
+              '🚀 ~ MachineASousLogic ~ iterate ~ f(index):',
+              f(index)
+            );
           } else {
-            clearInterval(this.intervalId);
             this.updateGainDisplay(lastPlayedPart.gain);
           }
-        }, 1000);
+        };
+
+        iterate();
       })
       .catch((error) => console.error('Error fetching Firebase data:', error));
   }
