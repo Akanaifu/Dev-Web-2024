@@ -1,2 +1,11 @@
 <navigation-bar></navigation-bar>
 <router-outlet></router-outlet>
+<div class="app-container">
+  <!-- Votre contenu principal ici -->
+  
+  <button class="chat-button" (click)="toggleChat()">
+    <i class="fas fa-comments"></i> Chat
+  </button>
+  
+  <app-chat-multy #chatComponent></app-chat-multy>
+</div>
