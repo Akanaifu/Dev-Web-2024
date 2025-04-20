@@ -76,7 +76,7 @@ export class MachineASousLogic {
     const mid = long_arr / 2;
 
     const origine = 1000; // f(0) = 1000
-    const ymin = 200; // f(mid) = 200
+    const ymin = 100; // f(mid) = 200
 
     // Résolution du système avec f(x) = ax^2 + bx + c
     // Conditions : f(0) = c = 1000, f(mid) = a*mid^2 + b*mid + c = 200
@@ -108,6 +108,8 @@ export class MachineASousLogic {
         const lastPlayedPart = playedParts[playedParts.length - 1];
         const allCombinations: string[] = lastPlayedPart.combinaison || [];
         const f = this.computeQuadraticFunction(allCombinations.length);
+        console.log('🚀 ~ MachineASousLogic ~ .then ~ f:', f);
+
         if (!allCombinations.length) {
           return console.error(
             'Invalid data structure: Missing combinaison in the last played part'
@@ -123,10 +125,6 @@ export class MachineASousLogic {
             this.checkCombination();
             index++;
             setTimeout(iterate, f(index)); // Recalculer f(index) pour chaque itération
-            console.log(
-              '🚀 ~ MachineASousLogic ~ iterate ~ f(index):',
-              f(index)
-            );
           } else {
             this.updateGainDisplay(lastPlayedPart.gain);
           }
