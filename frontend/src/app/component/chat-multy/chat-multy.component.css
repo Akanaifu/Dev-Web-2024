@@ -7,33 +7,39 @@
     scroll-behavior: smooth;
 }
 
-.corp {
+.chat-container {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1001;
+    display: none;
     font-family: 'Open Sans', sans-serif;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.33);
-
 }
 
-.title {
-    margin: 20px 0;
+.chat-container.visible {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .main {
     border: 8px solid #dddddd;
     border-radius: 24px;
     overflow: hidden;
+    background-color: #ebebeb;
 }
 
 .name {
     display: flex;
     font-size: 32px;
     font-weight: 700;
-    padding: 8px;               /*ici peut-etre un bug*/
+    padding: 8px;
     color: #7e7e7e;
-    background-color: #ebebeb;;
+    background-color: #ebebeb;
 }
 
 .name > span {
@@ -48,67 +54,68 @@
     border: none;
     margin: 0px 12px;
     outline: none;
-    background-color:#ebebeb;
+    background-color: #ebebeb;
 }
 
 .message-container {
     display: flex;
     flex-direction: column;
     background-color: #f6f6f6;
-    width: 400px;
-    height: 600px;
+    width: 350px;
+    height: 400px;
     overflow-y: scroll;
     overflow-x: hidden;
 }
 
 .message-left, 
-.message-right{
-    list-style:none; 
+.message-right {
+    list-style: none; 
     padding: 8px 12px;
     margin: 12px;
     max-width: 250px;
-    font-size:18px;
+    font-size: 18px;
     word-break: break-word;
 }
 
-.message-left{
+.message-left {
     border-radius: 20px 20px 20px 0px;
     align-self: flex-start;
     background-color: #fff;
     box-shadow: -2px 2px 4px #dcdcdc;
 }
 
-.message-right{
+.message-right {
     border-radius: 20px 20px 0px 20px;
     align-self: flex-end;
     background-color: #2d2d2d;
     box-shadow: -2px 2px 4px #dcdcdc;
-    color: #f6f6f6
+    color: #f6f6f6;
 }
 
 .message-left > p > span, 
-.message-right > p > span{
+.message-right > p > span {
     display: block;
     font-style: italic;
     font-size: 12px;
     margin-top: 4px;
 }
 
-.feedback{
+.feedback {
     font-style: italic;
     font-size: 14px;
     padding: 0px 16px 16px 16px;
     color: #2d2d2d;
     text-align: center;
+    list-style: none;
 }
 
-.message-form{
+.message-form {
     display: flex;
     justify-content: space-between;
-    width: 400px;
+    width: 100%;
 }
 
-.message-input{
+.message-input {
     flex-grow: 1;
     height: 48px;
     font-size: 16px;
@@ -118,7 +125,7 @@
     background-color: #fff;
 }
 
-.send-button{
+.send-button {
     height: 48px;
     font-size: 16px;
     border: none;
@@ -128,13 +135,38 @@
     cursor: pointer;
 }
 
-.v-divider{
+.v-divider {
     height: 48px;
     width: 2px;
     background-color: #f6f6f6;
 }
 
-.clients-total{
-    margin: 20px 0;
+.clients-total {
+    margin: 10px 0;
     color: black;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Bouton de fermeture */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff5555;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+}
+
+.close-button:hover {
+    background-color: #ff0000;
 }

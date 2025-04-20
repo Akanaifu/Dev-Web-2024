@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, PLATFORM_ID, Inject, HostListener } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SocketService } from '../../services/socket/socket.service';
@@ -39,6 +39,23 @@ export class ChatComponent implements OnInit, OnDestroy {
         console.error('Audio network state:', error.networkState);
         console.error('Audio ready state:', error.readyState);
       });
+    }
+  }
+
+  // Fermer le chat en cliquant ailleurs sur la page
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: Event): void {
+    const clickedElement = event.target as HTMLElement;
+    const chatContainer = document.querySelector('.chat-container');
+    const chatButton = document.querySelector('.chat-button');
+    
+    // Si on clique en dehors du chat et du bouton chat et que le chat est visible
+    if (this.isVisible && 
+        chatContainer && 
+        chatButton && 
+        !chatContainer.contains(clickedElement) && 
+        !chatButton.contains(clickedElement)) {
+      this.isVisible = false;
     }
   }
 
@@ -86,11 +103,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.audioElement.play().catch((err: Error) => console.error('Audio error:', err));
     }
   }
-
-  // Autres méthodes...
   
   sendMessage(event: Event): void {
     event.preventDefault();
+    event.stopPropagation(); // Empêcher la propagation pour éviter la fermeture du chat
     if (this.messageText === '' || !this.isBrowser) return;
 
     const data = {
@@ -143,5 +159,15 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   toggle(): void {
     this.isVisible = !this.isVisible;
+    
+    // Scroll vers le bas des messages quand on ouvre le chat
+    if (this.isVisible && this.isBrowser) {
+      setTimeout(() => {
+        const container = document.querySelector('.message-container');
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
+      }, 100);
+    }
   }
 }
