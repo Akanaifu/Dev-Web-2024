@@ -1,5 +1,7 @@
 import random
 from backend.python.menteur.cards.M_CardsSet import M_CardsSet
+from backend.python.menteur.player import M_APlayer
+from backend.python.menteur.rules.M_Board import M_Board
 from backend.python.shared_games_cards.shared_cards.ACard import ACard
 
 
@@ -13,12 +15,22 @@ class M_Rules:
         self.__master_cards : str
         self.__min_players =2
         self.__nb_players : int
-        self.__cards_for_the_game = M_CardsSet
         self.__game_cards =["As","King","Queen","Jack","10","9","8","7","6","5","4","3","2","Joker"]
         self.__game_name= game_name
+        self.__card_joker = "Joker"
+        self.__board=M_Board 
     
     def card_asked(self):
         self.__master_cards = self.__game_cards[random.randint(0,2)]
+    
+    def check_master_cards(self,card_player:ACard) -> bool:
+        if self.__master_cards == card_player.get_rank() or self.__card_joker == card_player.get_rank():
+            return True
+        else:
+            return False
+        
+    def get_max_Cards_played(self):
+        return self.__max_Cards_played
     
     def get_master_cards(self):
         return self.__master_cards

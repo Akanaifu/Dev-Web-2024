@@ -4,11 +4,10 @@ from backend.python.menteur.rules import M_Rules
 from backend.python.menteur.rules.M_Board import M_Board
 from backend.python.shared_games_cards.shared_cards.ACard import ACard
 
-class M_Draft:
+class M_Manager_Cards:
     
     def __init__(self, board: M_Board,rules: M_Rules):
         self.__created_cards = M_CardsSet
-        self.__board = board
         self.__rules = M_Rules  
         self.__list_cards_per_player = [M_CardsSet]
        
@@ -19,18 +18,15 @@ class M_Draft:
             for k in range(5):
                 self.__created_cards.add_card(self.cards,ACard(self.__created_cards,f"{k}",self.__rules.get_game_cards()[i],self.__rules.get_game_name()))
 
-    def draft_cards(self, board: M_Board) -> list[M_CardsSet]: 
+    def draft_cards(self) -> list[M_CardsSet]: 
         ## 1. Créer une liste de cartes pour chaque joueur
         # 2. Créer une liste de cartes pour le jeu
         
         list_cards=M_CardsSet
         copy_list_cards=M_CardsSet
-        
+         
         #copie de la liste de carte pour ne pas la modifier
-        copy_list_cards = self.__created_cards.get_cardsSet().copy() 
-        
-        #création des cartes
-        self.create_cards()
+        copy_list_cards = self.__created_cards.get_cardsSet().copy()  
         
         ##création de la liste de carte pour chaque joueur
         for i in range (self.__rules.get__nb_players()):
@@ -41,3 +37,10 @@ class M_Draft:
             self.__list_cards_per_player.append(list_cards)
             list_cards.clear_cards()
         return self.__list_cards_per_player
+    
+    def regame(self)->None:
+         
+        #Supprimer les cartes de la liste de carte pour chaque joueur
+        self.__list_cards_per_player.clear()        
+        self.draft_cards()
+    
