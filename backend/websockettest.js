@@ -23,4 +23,13 @@ function onConnected(socket){
         socketConnected.delete(socket.id)
         io.emit('clients-total', socketConnected.size)
     })
+
+    socket.on('message',(data) =>{
+        console.log(data)
+        socket.broadcast.emit('chat-message',data)
+    })
+
+    socket.on("feedback", (data) => {
+        socket.broadcast.emit('feedback',data)
+    })
 }
