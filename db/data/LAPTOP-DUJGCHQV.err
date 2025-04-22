@@ -205,3 +205,30 @@ Version: '11.7.2-MariaDB'  socket: ''  port: 3306  mariadb.org binary distributi
 2025-04-17 10:21:07 5 [ERROR] InnoDB: Cannot open datafile for read-only: './casino_db/transactions.ibd' OS error: 71
 2025-04-17 10:21:07 5 [ERROR] InnoDB: Could not find a valid tablespace file for casino_db/transactions. Please refer to https://mariadb.com/kb/en/innodb-data-dictionary-troubleshooting/ for how to resolve the issue.
 2025-04-17 10:21:07 5 [ERROR] InnoDB: Failed to load tablespace 12 for table casino_db/transactions
+2025-04-18 11:39:27 0 [Note] Starting MariaDB 11.7.2-MariaDB source revision 80067a69feaeb5df30abb1bfaf7d4e713ccbf027 server_uid fe3MHy95kGr72QFnhqyMDqoXbes= as process 5256
+2025-04-18 11:39:27 0 [Note] InnoDB: Compressed tables use zlib 1.3.1
+2025-04-18 11:39:27 0 [Note] InnoDB: Number of transaction pools: 1
+2025-04-18 11:39:27 0 [Note] InnoDB: Using crc32 + pclmulqdq instructions
+2025-04-18 11:39:27 0 [Note] InnoDB: Initializing buffer pool, total size = 1.234GiB, chunk size = 19.750MiB
+2025-04-18 11:39:27 0 [Note] InnoDB: Completed initialization of buffer pool
+2025-04-18 11:39:27 0 [Note] InnoDB: File system buffers for log disabled (block size=4096 bytes)
+2025-04-18 11:39:27 0 [Note] InnoDB: Starting crash recovery from checkpoint LSN=119560
+2025-04-18 11:39:27 0 [Note] InnoDB: End of log at LSN=132503
+2025-04-18 11:39:27 0 [Note] InnoDB: To recover: 34 pages
+2025-04-18 11:39:27 0 [Note] InnoDB: Opened 3 undo tablespaces
+2025-04-18 11:39:27 0 [Note] InnoDB: 128 rollback segments in 3 undo tablespaces are active.
+2025-04-18 11:39:27 0 [Note] InnoDB: Setting file './ibtmp1' size to 12.000MiB. Physically writing the file full; Please wait ...
+2025-04-18 11:39:27 0 [Note] InnoDB: File './ibtmp1' size is now 12.000MiB.
+2025-04-18 11:39:27 0 [Note] InnoDB: log sequence number 132503; transaction id 118
+2025-04-18 11:39:27 0 [Note] Plugin 'FEEDBACK' is disabled.
+2025-04-18 11:39:27 0 [Note] InnoDB: Loading buffer pool(s) from C:\Users\alexi\OneDrive - EPHEC asbl\BAC2\Dev-Web-2024\db\data\ib_buffer_pool
+2025-04-18 11:39:27 0 [Note] mysqld.exe: SSPI: using principal name 'localhost', mech 'Negotiate'
+2025-04-18 11:39:28 0 [ERROR] InnoDB: Page [page id: space=28, page number=0] log sequence number 134766 is in the future! Current system log sequence number 132587.
+2025-04-18 11:39:28 0 [ERROR] InnoDB: Your database may be corrupt or you may have copied the InnoDB tablespace but not the ib_logfile0. Please refer to https://mariadb.com/kb/en/library/innodb-recovery-modes/ for information about forcing recovery.
+2025-04-18 11:39:28 0 [ERROR] InnoDB: The first page of file ./casino_db/bets.ibd is corrupted
+2025-04-18 11:39:28 0 [Note] InnoDB: Buffer pool(s) load completed at 250418 11:39:28
+2025-04-18 11:39:30 0 [Note] Server socket created on IP: '::'.
+2025-04-18 11:39:30 0 [Note] Server socket created on IP: '0.0.0.0'.
+2025-04-18 11:39:30 0 [Note] mysqld.exe: Event Scheduler: Loaded 0 events
+2025-04-18 11:39:30 0 [Note] C:\Program Files\MariaDB 11.7\bin\mysqld.exe: ready for connections.
+Version: '11.7.2-MariaDB'  socket: ''  port: 3306  mariadb.org binary distribution
