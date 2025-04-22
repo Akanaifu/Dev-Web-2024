@@ -15,23 +15,33 @@ class M_APlayer(APlayer,ABC):
         self.__life=6
         self.__score = 0       
         self.__cards_Chosen = M_CardsSet  
-        
-       
-    def my_turn_to_play(self,player:'M_APlayer') -> None:
-        if len(self.__cards_Chosen()) > 0:
-            enter=EnterValue
-            chose=enter.EnterValue("Dénoncez vous le joueur précédement? (1: Oui, 2: Non) : ", 1, 2)
-            if chose==1: 
-            #problème de l'instance de la classe M_CardsSet soit je mets dans le constructeur ou je fais une méthode pour l'initialiser ou je trouve un autre moyen
-            #print les cartes et vérifier si la carte était celle demandé
-                self.play_snitch(self,player)  
-        else:
-            # Jouer play_card() si le joueur ne dénonce pas
-            self.play_card(self)  
-     
+    
+    # def my_turn_to_play(self, player:'M_APlayer') -> None:
+    #         if len(self.__cards_Chosen()) > 0:
+    #             enter=EnterValue
+    #             chose=enter.EnterValue("Dénoncez vous le joueur précédement? (1: Oui, 2: Non) : ", 1, 2)
+    #             if chose==1: 
+    #             #problème de l'instance de la classe M_CardsSet soit je mets dans le constructeur ou je fais une méthode pour l'initialiser ou je trouve un autre moyen
+    #             #print les cartes et vérifier si la carte était celle demandé
+    #                 self.play_snitch(self,player)  
+    #         else:
+    #             # Jouer play_card() si le joueur ne dénonce pas
+    #             self.play_card(self) 
+                
     @abstractmethod
-    def play_snitch(self,APlayer) -> None:
-        pass
+    def play_snitch(self,player:'M_APlayer')->None:
+        # Je suis dans le jeu console
+        print(f"Le joueur {player.get_name(player)} avez choisi de dénoncer ")
+        k=0
+        while k < len(player.get_cards_chosen(player)):
+            if self.__rules.check_master_cards(player.get_cards_chosen(player)[k])==False:
+                print(f"Le joueur {player.get_name(player)} avez choisi la carte {player.get_cards_chosen(player)[k].get_rank()}")
+                player.set_life(player)
+                break
+            k+=1
+        else :
+            self.set_life(self)
+            #print les cartes et vérifier si la carte était celle demandé
     
     # à finir par rapport à la regle du jeu et du nombre de cartes pour jouer
     def play_card(self, cardSet) ->[ACard]:

@@ -19,9 +19,21 @@ class M_Rules:
         self.__game_name= game_name
         self.__card_joker = "Joker"
         self.__board=M_Board 
+        self.__color=["black","red"]
     
     def card_asked(self):
         self.__master_cards = self.__game_cards[random.randint(0,2)]
+        
+    def check_life_players(self) -> bool:
+        """       
+        lauchn faire une boucle 
+        tant que 2 joueur son vivant ça joue
+        """
+        for k in range(len(self.__board.get_players())):
+            if self.__board.get_players[k].get_life() == 0:
+                self.__board.get_players.pop(k)
+                return False
+        return True    
     
     def check_master_cards(self,card_player:ACard) -> bool:
         if self.__master_cards == card_player.get_rank() or self.__card_joker == card_player.get_rank():
@@ -52,6 +64,9 @@ class M_Rules:
 
     def get_game_name(self):
         return self.__game_name
+    
+    def get_color(self):
+        return self.__color
 
     #  def create_cards(self):
     #     self.__cards_for_the_game.add_card(self.__cards_for_the_game,ACard(self.__cards_for_the_game,f"{0}",self.__game_cards[len(self.__game_cards)-1],self.__rules))

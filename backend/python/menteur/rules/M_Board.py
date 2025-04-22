@@ -15,16 +15,16 @@ class M_Board():
         self.__players = [M_APlayer]  # Placeholder for players on the board
         self.__cardsStack = [M_CardsStack]
         
-    def check_life_players(self) -> bool:
-        """       
-        lauchn faire une boucle 
-        tant que 2 joueur son vivant ça joue
-        """
-        for k in range(len(self.__players)):
-            if self.__players[k].get_live() == 0:
-                self.__players.pop(k)
-                return False
-        return True
+    # def check_life_players(self) -> bool:
+    #     """       
+    #     lauchn faire une boucle 
+    #     tant que 2 joueur son vivant ça joue
+    #     """
+    #     for k in range(len(self.__players)):
+    #         if self.__players[k].get_life() == 0:
+    #             self.__players.pop(k)
+    #             return False
+    #     return True
     
     def check_cards_players(self)->bool:
         """

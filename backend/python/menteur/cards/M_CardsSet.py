@@ -27,4 +27,7 @@ class M_CardsSet([ACard]):
     
     def clear_cards(self)->None:
         self.__cards.clear()
+        
+    def copy_cardsSet(self)->None:
+        return self.__cards.copy()
     
