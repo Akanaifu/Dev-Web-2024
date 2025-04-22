@@ -4,8 +4,9 @@ body {
   /* width: 100vw; */
   font-family: Roboto, sans-serif;
   background: linear-gradient(545deg, rgb(192, 172, 172), rgb(103, 115, 224));
-}
-body {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
