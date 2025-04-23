@@ -1,0 +1,44 @@
+<div class="chat-container" [ngClass]="{'visible': isVisible}">
+    <button class="close-button" (click)="toggle()">×</button>
+    <div class="main">
+        <div class="name">
+            <span><i class="far fa-user"></i></span>
+            <input 
+                type="text" 
+                [(ngModel)]="username" 
+                class="name-input" 
+                value="anonymous" 
+                maxlength="20"
+            />
+        </div>
+        <ul class="message-container">
+            
+            <li *ngFor="let msg of messages" 
+                [ngClass]="{'message-right': msg.isMine, 'message-left': !msg.isMine}">
+                <p class="message">
+                    {{ msg.message }}
+                    <span>{{ msg.name }} ● {{ formatTime(msg.dateTime) }}</span>
+                </p>
+            </li>
+            <li class="message-feedback" *ngIf="feedback">
+                <p class="feedback">{{ feedback }}</p>
+            </li>
+        </ul>
+        <form (submit)="sendMessage($event)" class="message-form">
+            <input 
+                type="text" 
+                [(ngModel)]="messageText"
+                name="message"
+                class="message-input"
+                (focus)="onTyping()"
+                (keypress)="onTyping()"
+                (blur)="onBlur()"
+            />
+            <div class="v-divider"></div>
+            <button type="submit" class="send-button">
+                send <span><i class="fas fa-paper-plane"></i></span>
+            </button>
+        </form>
+    </div>
+    <h3 class="clients-total">Total clients: {{ clientsTotal }}</h3>
+</div>

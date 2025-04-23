@@ -2,9 +2,38 @@ html{
   height: 100vh;
   width: 100vw;
 }
+
 main{
   justify-content: center;
   align-items: center;
   height: 100%;
   width: 100%;
+}
+
+.discution{
+  background-color: #7e7e7e;
+}
+
+.chat-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #2d2d2d;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 15px 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.chat-button:hover {
+  background-color: #444;
+  transform: translateY(-2px);
 }
