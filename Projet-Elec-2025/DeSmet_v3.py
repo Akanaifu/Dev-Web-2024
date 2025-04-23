@@ -1,4 +1,4 @@
-# version avec decodeur, joystick et lcd et firebase
+# version avec decodeur, joystick, lcd et firebase
 from machine import Pin, Timer, I2C, ADC
 import random
 import time, sys
@@ -26,6 +26,9 @@ SCORE = 0  # Variable pour stocker le SCORE
 BET_AMOUNT = 10  # Somme initiale pariée
 FREQ_AFFICHEUR = NUMBER_OF_DIGITS * 100
 RUN_CODE = False
+URL_FIREBASE = (
+    "https://machine-a-sous-default-rtdb.europe-west1.firebasedatabase.app/parties.json"
+)
 
 # Pins for binary output to the decoder (3, 4, 5, 6)
 binary_pins = [3, 4, 5, 6]
@@ -211,7 +214,7 @@ def button_callback(pin):
 
 
 def send_to_firebase(combinaisons, score, generation_id):
-    firebase_url = "https://machine-a-sous-default-rtdb.firebaseio.com/parties.json"
+    firebase_url = URL_FIREBASE
     data = {
         "id": generation_id,
         "timestamp": time.time(),
@@ -222,8 +225,39 @@ def send_to_firebase(combinaisons, score, generation_id):
         response = urequests.post(firebase_url, json=data)
         print("Envoyé à Firebase:", response.text)
         response.close()
-    except Exception as e:
-        print("Erreur Firebase:", e)
+    except OSError as e:
+        print("Erreur réseau ou problème de connexion :", e)
+    except ValueError as e:
+        print("Erreur lors de la conversion JSON :", e)
+    finally:
+        try:
+            response.close()
+        except AttributeError:
+            pass
+
+
+def fetch_from_firebase():
+    """
+    Récupère les données de la base de données Firebase.
+    """
+    firebase_url = URL_FIREBASE
+    try:
+        response = urequests.get(firebase_url)
+        response.raise_for_status()  # Lève une exception pour les codes d'erreur HTTP
+        data = response.json()  # Convertit la réponse JSON en dictionnaire Python
+        print("Données récupérées depuis Firebase :", data)
+        response.close()
+        return data
+    except OSError as e:
+        print("Erreur réseau ou problème de connexion :", e)
+    except ValueError as e:
+        print("Erreur lors de la conversion JSON :", e)
+    finally:
+        try:
+            response.close()
+        except AttributeError:
+            pass
+    return None
 
 
 # Attache l'interruption au bouton

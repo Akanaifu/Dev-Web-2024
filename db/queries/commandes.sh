@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo Pour linux
+echo ----------------------------------------
 
 # Configuration
 DB_NAME=casino
