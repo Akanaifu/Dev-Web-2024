@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node websockettest.js",
-    "dev": "nodemon websockettest.js"
+    "start": "node websocket.js",
+    "dev": "nodemon websocket.js"
   },
   "keywords": [],
   "author": "",
