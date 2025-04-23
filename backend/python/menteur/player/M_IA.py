@@ -1,9 +1,9 @@
 
 
 from random import randint
-from backend.python.menteur.cards.M_CardsSet import M_CardsSet
-from backend.python.menteur.player.M_APlayer import M_APlayer
-from backend.python.menteur.rules.M_Rules import M_Rules
+from python.menteur.cards.M_CardsSet import M_CardsSet
+from python.menteur.player.M_APlayer import M_APlayer
+from python.menteur.rules.M_Rules import M_Rules
 
 
 class M_IA(M_APlayer):

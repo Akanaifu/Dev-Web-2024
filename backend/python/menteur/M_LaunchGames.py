@@ -83,12 +83,11 @@ class M_LaunchGames:
         for k in range (len(self.__board.get_players(self.__board))):
             self.__board.get_player(k).set_cardsSet(self.__manager_cards.get_list_cards_per_player(self.__manager_cards)[k])
         self.play(self)
+# def run()->None:
+#     game = M_LaunchGames()
+#     game.prepare(game)
+#     game.loby(game)
+#     game.play(game)
+# # if __name__ == "__main__":
+# #     run()
 
-def run()->None:
-    game = M_LaunchGames()
-    game.prepare(game)
-    game.loby(game)
-    game.play(game)
-if __name__ == "__main__":
-    run()
-#     run()

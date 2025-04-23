@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 import random
-from backend.python.EnterValue import EnterValue
-from backend.python.menteur.cards.M_CardsSet import M_CardsSet
-from backend.python.menteur.rules.M_Rules import M_Rules
-from backend.python.shared_games_cards.shared_cards.ACard import ACard
-from backend.python.shared_games_cards.shared_players.APlayer import APlayer
+from python.EnterValue import EnterValue
+from python.menteur.cards.M_CardsSet import M_CardsSet
+from python.menteur.rules.M_Rules import M_Rules
+from python.shared_games_cards.shared_cards.ACard import ACard
+from python.shared_games_cards.shared_players.APlayer import APlayer
 
 class M_APlayer(APlayer,ABC):
     def __init__(self,id:int, pseudo: str, color: str, bet:int,solde:int,cardsSet: M_CardsSet):
@@ -60,4 +60,8 @@ class M_APlayer(APlayer,ABC):
     
     def get_cards_chosen(self) -> M_CardsSet:
         return self.__cards_Chosen
+    
+    
+    def get_id(self) -> str:  
+        return self.__id
     

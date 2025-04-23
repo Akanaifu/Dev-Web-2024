@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import random
-from backend.python.shared_games_cards.shared_cards.CardsSet import CardsSet
+from python.shared_games_cards.shared_cards.CardsSet import CardsSet
 
 class APlayer(ABC):
 #    """Classe abstraite représentant un joueur dans le jeu de cartes."""

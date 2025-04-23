@@ -1,11 +1,12 @@
-import subprocess
+from python.menteur.M_LaunchGames import M_LaunchGames
 print("Quel jeu veux-tu lancer ?")
-print("1. Menteur")
-print("2. Pendu")
+# print("1. Menteur")
+# print("2. Pendu")
 
-# choice = input("Ton choix : ")
-
-# if choice == "1":
-subprocess.run(["python", "backend/python/menteur/M_LaunchGames.py"])
-# else:
-#     print("Choix invalide.")
+def run()->None:
+    game = M_LaunchGames()
+    game.prepare(game)
+    game.loby(game)
+    game.play(game)
+# if __name__ == "__main__":
+#     run()

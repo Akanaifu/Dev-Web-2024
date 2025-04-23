@@ -1,9 +1,9 @@
 
-from backend.python.menteur.cards.M_CardsStack import M_CardsStack
-from backend.python.menteur.cards.M_CardsSet import M_CardsSet
+from python.menteur.cards.M_CardsStack import M_CardsStack
+from python.menteur.cards.M_CardsSet import M_CardsSet
 
-from backend.python.menteur.player.M_APlayer import M_APlayer
-from backend.python.menteur.rules.M_Manager_Cards import M_Manager_Cards
+from python.menteur.player.M_APlayer import M_APlayer
+from python.menteur.rules.M_Manager_Cards import M_Manager_Cards
 
 
 class M_Board():
