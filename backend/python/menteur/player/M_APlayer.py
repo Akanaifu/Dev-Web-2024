@@ -2,40 +2,36 @@ from abc import ABC, abstractmethod
 import random
 from backend.python.EnterValue import EnterValue
 from backend.python.menteur.cards.M_CardsSet import M_CardsSet
+from backend.python.menteur.rules.M_Rules import M_Rules
 from backend.python.shared_games_cards.shared_cards.ACard import ACard
 from backend.python.shared_games_cards.shared_players.APlayer import APlayer
 
 class M_APlayer(APlayer,ABC):
-    def __init__(self, name: str, color: str,bet:int,solde:int,cardsSet:M_CardsSet):
-        super().__init__(name, color, bet,solde,cardsSet)
-        self.__name = name
+    def __init__(self,id:int, pseudo: str, color: str, bet:int,solde:int,cardsSet: M_CardsSet):
+        self.__id = id
+        self.__pseudo = pseudo
         self.__color = color
         self.__bet = bet
+        self.__solde = solde
         self.__cardsSet = cardsSet
         self.__life=6
-        self.__score = 0       
+        self.__score_game = 0  
+        self.__score_round = 0     
         self.__cards_Chosen = M_CardsSet  
-    
-    # def my_turn_to_play(self, player:'M_APlayer') -> None:
-    #         if len(self.__cards_Chosen()) > 0:
-    #             enter=EnterValue
-    #             chose=enter.EnterValue("Dénoncez vous le joueur précédement? (1: Oui, 2: Non) : ", 1, 2)
-    #             if chose==1: 
-    #             #problème de l'instance de la classe M_CardsSet soit je mets dans le constructeur ou je fais une méthode pour l'initialiser ou je trouve un autre moyen
-    #             #print les cartes et vérifier si la carte était celle demandé
-    #                 self.play_snitch(self,player)  
-    #         else:
-    #             # Jouer play_card() si le joueur ne dénonce pas
-    #             self.play_card(self) 
-                
+        self.__rules=M_Rules
+        super().__init__(id,pseudo,color,bet,solde,cardsSet)
+        
     @abstractmethod
+    def my_turn_to_play(self, player:'M_APlayer') -> None:
+        pass
+    
     def play_snitch(self,player:'M_APlayer')->None:
         # Je suis dans le jeu console
-        print(f"Le joueur {player.get_name(player)} avez choisi de dénoncer ")
+        print(f"Le joueur {player.get_pseudo(player)} a été de dénoncer par le joueur {self.__pseudo}")
         k=0
         while k < len(player.get_cards_chosen(player)):
             if self.__rules.check_master_cards(player.get_cards_chosen(player)[k])==False:
-                print(f"Le joueur {player.get_name(player)} avez choisi la carte {player.get_cards_chosen(player)[k].get_rank()}")
+                print(f"Le joueur {player.get_pseudo(player)} avez choisi la carte {player.get_cards_chosen()}")
                 player.set_life(player)
                 break
             k+=1
@@ -52,10 +48,10 @@ class M_APlayer(APlayer,ABC):
         random_2=random.randint(1,self.__life)
         if random_1==random_2:
             self.__life=0
-            print(f"{self.__name} a perdu ")
+            print(f"{self.__pseudo} a perdu ")
             return True
         else:
-            print(f"{self.__name} vous restez {self.__life} vies")
+            print(f"{self.__pseudo} vous restez {self.__life} vies")
             self.__life-=1
             return False
         
@@ -64,3 +60,4 @@ class M_APlayer(APlayer,ABC):
     
     def get_cards_chosen(self) -> M_CardsSet:
         return self.__cards_Chosen
+    

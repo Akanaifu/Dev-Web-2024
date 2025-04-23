@@ -7,7 +7,7 @@ class ACard(ABC):
         self.__value = int(self.__rank)
         
     def __str__(self) -> str:
-        return f"Card(color={self.color}, rank={self.rank})"
+        return f"Card(rank={self.__rank}, color={self.__color})"
     
     def get_color(self) -> str:
         return self.__color
