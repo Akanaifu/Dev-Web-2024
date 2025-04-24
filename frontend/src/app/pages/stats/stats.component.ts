@@ -23,16 +23,18 @@ export class StatsComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     const labels = this.stats.map(stat => stat.timestamp);
     const data = this.stats.map(stat => stat.gain);
-    const backgroundColors = this.stats.map(stat => stat.gain >= 0 ? '#4caf50' : '#f44336');
 
     this.gainChart = new Chart(this.gainChartCanvas.nativeElement, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: labels,
         datasets: [{
           label: 'Gains / Pertes (€)',
           data: data,
-          backgroundColor: backgroundColors
+          borderColor: '#2196f3',
+          backgroundColor: 'rgba(33, 150, 243, 0.3)',
+          pointRadius: 4,
+          pointBackgroundColor: '#2196f3'
         }]
       },
       options: {
