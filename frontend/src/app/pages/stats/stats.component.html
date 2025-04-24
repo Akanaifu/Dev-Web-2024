@@ -14,6 +14,14 @@
 
       <h2>Graphe gain d'argent et perte</h2>
 
+      <!-- New select element for filtering -->
+      <select [(ngModel)]="selectedPeriod" (change)="updateChart()">
+        <option value="jour">Jour</option>
+        <option value="semaine">Semaine</option>
+        <option value="mois">Mois</option>
+        <option value="année">Année</option>
+      </select>
+
       <canvas #gainChartCanvas></canvas>
 
       <div class="gain-summary">

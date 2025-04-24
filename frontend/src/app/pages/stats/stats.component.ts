@@ -1,10 +1,11 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css'
 })
@@ -18,7 +19,13 @@ export class StatsComponent implements AfterViewInit {
     { stat_id: 3, user_id: 3, num_games: 3, num_wins: 1, timestamp: "2025-04-03", gain: 20 },
     { stat_id: 4, user_id: 3, num_games: 6, num_wins: 3, timestamp: "2025-04-04", gain: -15 },
     { stat_id: 5, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-05", gain: 5 },
+    { stat_id: 5, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-24", gain: 12 },
+    { stat_id: 5, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-24", gain: 5 },
+    { stat_id: 5, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-02-05", gain: 15 },
+    { stat_id: 5, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-01-05", gain: -30 }
   ];
+
+  selectedPeriod: string = 'jour';
 
   get totalGain(): number {
     return this.stats.reduce((total, stat) => total + stat.gain, 0);
@@ -36,16 +43,13 @@ export class StatsComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const labels = this.stats.map(stat => stat.timestamp);
-    const data = this.stats.map(stat => stat.gain);
-
     this.gainChart = new Chart(this.gainChartCanvas.nativeElement, {
       type: 'line',
       data: {
-        labels: labels,
+        labels: [],
         datasets: [{
           label: 'Gains / Pertes (€)',
-          data: data,
+          data: [],
           borderColor: '#2196f3',
           backgroundColor: 'rgba(33, 150, 243, 0.3)',
           pointRadius: 4,
@@ -61,5 +65,63 @@ export class StatsComponent implements AfterViewInit {
         }
       }
     });
+    this.updateChart();
+  }
+
+  getFilteredStats(): { label: string; gain: number }[] {
+    const today = new Date();
+    if(this.selectedPeriod === 'jour') {
+      // Filter only records from today without aggregation
+      return this.stats
+        .filter(s => {
+          const d = new Date(s.timestamp);
+          return d.getFullYear() === today.getFullYear() &&
+                 d.getMonth() === today.getMonth() &&
+                 d.getDate() === today.getDate();
+        })
+        .map(s => ({ label: s.timestamp, gain: s.gain }));
+    } else if(this.selectedPeriod === 'semaine') {
+      // Calculate current week number and filter records in the same week without aggregation
+      const oneJan = new Date(today.getFullYear(), 0, 1);
+      const daysSince = Math.floor((today.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
+      const currentWeek = Math.ceil((daysSince + today.getDay() + 1) / 7);
+      return this.stats
+        .filter(s => {
+          const d = new Date(s.timestamp);
+          const days = Math.floor((d.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
+          const week = Math.ceil((days + d.getDay() + 1) / 7);
+          return d.getFullYear() === today.getFullYear() && week === currentWeek;
+        })
+        .map(s => ({ label: s.timestamp, gain: s.gain }));
+    } else if(this.selectedPeriod === 'mois') {
+      // Filter stats for the current month without aggregation
+      return this.stats
+        .filter(s => {
+          const d = new Date(s.timestamp);
+          return d.getFullYear() === today.getFullYear() &&
+                 d.getMonth() === today.getMonth();
+        })
+        .map(s => ({ label: s.timestamp, gain: s.gain }));
+    } else if(this.selectedPeriod === 'année') {
+      // Filter for stats in the current year without aggregation
+      return this.stats
+        .filter(s => {
+          const d = new Date(s.timestamp);
+          return d.getFullYear() === today.getFullYear();
+        })
+        .map(s => ({ label: s.timestamp, gain: s.gain }));
+    }
+    return this.stats.map(s => ({ label: s.timestamp, gain: s.gain }));
+  }
+  
+  updateChart(): void {
+    const filtered = this.getFilteredStats();
+    this.gainChart.data.labels = filtered.map(item => item.label);
+    this.gainChart.data.datasets[0].data = filtered.map(item => item.gain);
+    this.gainChart.update();
+  }
+
+  onPeriodChange(): void {
+    this.updateChart();
   }
 }
