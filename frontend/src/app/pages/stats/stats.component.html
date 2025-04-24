@@ -11,8 +11,17 @@
     </div>
 
     <div class="stats-card">
+
       <h2>Graphe gain d'argent et perte</h2>
+
       <canvas #gainChartCanvas></canvas>
+
+      <div class="gain-summary">
+        <p>{{ gainSummary }}</p>
+      </div>
+      
+      <p>Total misé : {{ totalMise.toFixed(2) }}€</p>
+      
     </div>
     
 

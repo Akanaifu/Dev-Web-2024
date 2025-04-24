@@ -20,6 +20,21 @@ export class StatsComponent implements AfterViewInit {
     { stat_id: 5, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-05", gain: 5 },
   ];
 
+  get totalGain(): number {
+    return this.stats.reduce((total, stat) => total + stat.gain, 0);
+  }
+  
+  get gainSummary(): string {
+    const total = this.totalGain;
+    if (total > 0) return `🟢 Gain total : +${total.toFixed(2)}€`;
+    if (total < 0) return `🔴 Perte totale : ${total.toFixed(2)}€`;
+    return `⚪ Équilibre : 0€`;
+  }
+  
+  get totalMise(): number {
+    return this.stats.reduce((total, stat) => total + Math.abs(stat.gain), 0);
+  }
+
   ngAfterViewInit(): void {
     const labels = this.stats.map(stat => stat.timestamp);
     const data = this.stats.map(stat => stat.gain);
