@@ -24,9 +24,9 @@ const secretKey = 'ton_secret'; // Cette clé devrait être une variable d'envir
 // Configuration de la connexion à la base de données
 const db = mysql.createConnection({
     host: 'localhost', // Remplacez par l'hôte de votre base de données
-    user: 'root',      // Remplacez par votre utilisateur MariaDB
-    password: 'M@ria',      // Remplacez par votre mot de passe MariaDB
-    database: 'casino_db' // Nom de la base de données
+    user: 'ben',      // Remplacez par votre utilisateur MariaDB
+    password: 'ben',      // Remplacez par votre mot de passe MariaDB
+    database: 'casino' // Nom de la base de données
 });
 
 // Vérification de la connexion
@@ -41,7 +41,6 @@ db.connect(err => {
 // Route pour le login
 app.post('/sessions/login', (req, res) => {
     const { username, password } = req.body;
-    
     console.log('Tentative de connexion:', { username, password });
     
     // Vérifier les informations utilisateur (exemple simplifié)
