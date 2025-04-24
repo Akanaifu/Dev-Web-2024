@@ -3,8 +3,8 @@ from machine import Pin, Timer, I2C, ADC
 import random
 import time, sys
 from pico_i2c_lcd import I2cLcd  # Assurez-vous d'avoir installé cette bibliothèque
-import urequests  # Pour envoyer des requêtes HTTP à Firebase
-from id_counter import increment_counter  # Import the counter function
+import urequests  # Pour envoyer des requêtes HTTP à Firebase # Import the counter function
+from connexion_wifi import connect_to_wifi
 
 # Configuration de l'écran LCD
 I2C_ADDR = (
@@ -26,9 +26,7 @@ SCORE = 0  # Variable pour stocker le SCORE
 BET_AMOUNT = 10  # Somme initiale pariée
 FREQ_AFFICHEUR = NUMBER_OF_DIGITS * 100
 RUN_CODE = False
-URL_FIREBASE = (
-    "https://machine-a-sous-default-rtdb.europe-west1.firebasedatabase.app/parties.json"
-)
+URL_FIREBASE = "https://machine-a-sous-default-rtdb.europe-west1.firebasedatabase.app"
 
 # Pins for binary output to the decoder (3, 4, 5, 6)
 binary_pins = [3, 4, 5, 6]
@@ -45,13 +43,11 @@ BUTTON_PRESSED = False
 x_axis = ADC(Pin(28))
 y_axis = ADC(Pin(27))
 
-
 ###################### Firebase  ######################
 PARTIE_COUNT = 0  # Compteur d’identifiants personnalisés
 COMBINAISONS = []  # Liste de toutes les combinaisons générées
 
-
-########### Fonctions ##########
+###################### fonctions ######################
 
 
 def digits_to_binary(value):
@@ -91,7 +87,8 @@ def select_display(value):
 
 def write_displays(timer):
     """
-    Update the displays by sending the current digit to the decoder and activating the corresponding display.
+    Update the displays by sending the current digit to the decoder
+    and activating the corresponding display.
     """
     global CURRENT_DIGIT, CURRENT_DIGIT, digits, NUMBER_OF_DIGITS
 
@@ -134,10 +131,14 @@ def generate_random(timer):
     else:
         RANDOM_TIMER.deinit()
         SCORE = calculer_gain(digits, BET_AMOUNT)
-        generation_id = (
-            f"partie{increment_counter()}"  # Use increment_counter for unique ID
-        )
-        send_to_firebase(COMBINAISONS, SCORE, generation_id)
+        updated_data = {
+            "gain": SCORE,
+            "combinaison": COMBINAISONS,
+            "partieJouee": True,
+            "timestamp": time.time(),
+            "mise": BET_AMOUNT,
+        }
+        update_first_unplayed_game(updated_data)
         GENERATED_COUNT = 0
         COMBINAISONS.clear()  # Réinitialiser pour la prochaine partie
         RUN_CODE = False
@@ -174,6 +175,9 @@ def calculer_gain(rouleaux: list[int], mise: int) -> int:
 
 
 def update_bet_amount():
+    """
+    Met à jour la somme pariée en fonction de la position du joystick.
+    """
     global BET_AMOUNT, lcd
 
     x = x_axis.read_u16()  # Lire la valeur analogique de l'axe X (416 - 65535)
@@ -213,51 +217,47 @@ def button_callback(pin):
     BUTTON_PRESSED = True
 
 
-def send_to_firebase(combinaisons, score, generation_id):
-    firebase_url = URL_FIREBASE
-    data = {
-        "id": generation_id,
-        "timestamp": time.time(),
-        "combinaisons": combinaisons,
-        "score": score,
-    }
-    try:
-        response = urequests.post(firebase_url, json=data)
-        print("Envoyé à Firebase:", response.text)
-        response.close()
-    except OSError as e:
-        print("Erreur réseau ou problème de connexion :", e)
-    except ValueError as e:
-        print("Erreur lors de la conversion JSON :", e)
-    finally:
-        try:
-            response.close()
-        except AttributeError:
-            pass
-
-
-def fetch_from_firebase():
+def update_first_unplayed_game(updated_data):
     """
-    Récupère les données de la base de données Firebase.
+    Met à jour le premier élément de la base de données Firebase où 'partieJouee' est False.
     """
-    firebase_url = URL_FIREBASE
+    response = None
     try:
-        response = urequests.get(firebase_url)
-        response.raise_for_status()  # Lève une exception pour les codes d'erreur HTTP
+        # Récupérer toutes les données de Firebase
+        response = urequests.get(URL_FIREBASE, timeout=10)  # Timeout de 10 secondes
+        if response.status_code != 200:
+            raise RuntimeError(f"Erreur HTTP : {response.status_code}")
         data = response.json()  # Convertit la réponse JSON en dictionnaire Python
-        print("Données récupérées depuis Firebase :", data)
         response.close()
-        return data
+
+        # Trouver la première partie où 'partieJouee' est False
+        for key, value in data.items():
+            if not value.get(
+                "partieJouee", True
+            ):  # Par défaut, considère True si la clé est absente
+                # Construire l'URL pour mettre à jour cet élément spécifique
+                firebase_url = f"{URL_FIREBASE}/{key}.json"
+                # Envoyer les données mises à jour
+                response = urequests.patch(firebase_url, json=updated_data)
+                if response.status_code != 200:
+                    raise RuntimeError(f"Erreur HTTP : {response.status_code}")
+                print(f"Données mises à jour pour la partie {key} :", response.text)
+                response.close()
+                return  # Arrêter après avoir mis à jour le premier élément
+
+        print("Aucune partie non jouée trouvée.")
     except OSError as e:
         print("Erreur réseau ou problème de connexion :", e)
     except ValueError as e:
         print("Erreur lors de la conversion JSON :", e)
+    except RuntimeError as e:
+        print("Erreur HTTP :", e)
     finally:
-        try:
-            response.close()
-        except AttributeError:
-            pass
-    return None
+        if response:
+            try:
+                response.close()
+            except AttributeError:
+                pass
 
 
 # Attache l'interruption au bouton
