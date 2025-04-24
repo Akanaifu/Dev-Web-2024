@@ -24,8 +24,8 @@ const secretKey = 'ton_secret'; // Cette clé devrait être une variable d'envir
 // Configuration de la connexion à la base de données
 const db = mysql.createConnection({
     host: 'localhost', // Remplacez par l'hôte de votre base de données
-    user: 'ben',      // Remplacez par votre utilisateur MariaDB
-    password: 'ben',      // Remplacez par votre mot de passe MariaDB
+    user: 'dev',      // Remplacez par votre utilisateur MariaDB
+    password: 'kzno',      // Remplacez par votre mot de passe MariaDB
     database: 'casino' // Nom de la base de données
 });
 

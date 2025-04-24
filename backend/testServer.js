@@ -22,8 +22,8 @@ const secretKey = process.env.JWT_SECRET || 'ton_secret'; // Utiliser de préfé
 // Configuration de la connexion MySQL
 const db = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'ben',
-  password: process.env.DB_PASSWORD || 'ben',
+  user: process.env.DB_USER || 'dev',
+  password: process.env.DB_PASSWORD || 'kzno',
   database: process.env.DB_NAME || 'casino',
   waitForConnections: true,
   connectionLimit: 10,
@@ -60,7 +60,10 @@ app.post('/sessions/login', async (req, res) => {
     if (passwordMatch) {
       // Créer le token JWT
       const token = jwt.sign(
-        { username: user.username, userId: user.id }, 
+        { 
+          username: user.username, 
+          userId: user.id 
+        }, 
         secretKey, 
         { expiresIn: '1h' }
       );

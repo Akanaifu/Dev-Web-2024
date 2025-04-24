@@ -30,7 +30,7 @@ main{
   align-items: center;
   gap: 8px;
   font-size: 16px;
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
 }
 
 .chat-button:hover {

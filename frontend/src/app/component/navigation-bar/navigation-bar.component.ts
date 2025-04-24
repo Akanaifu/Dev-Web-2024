@@ -1,7 +1,8 @@
-import {Component} from '@angular/core';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatButtonModule} from '@angular/material/button';
+import { Component } from '@angular/core';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
+import { NgIf } from '@angular/common';
 
 /**
  * @title Menu positioning
@@ -14,3 +15,4 @@ import { RouterLink } from '@angular/router';
   imports: [MatButtonModule, MatMenuModule, RouterLink],
 })
 export class NavigationBarComponent {}
+
