@@ -1,6 +1,4 @@
 import random
-from python.menteur.cards.M_CardsSet import M_CardsSet
-from python.menteur.player.M_APlayer import M_APlayer
 from python.menteur.rules.M_Board import M_Board
 from python.shared_games_cards.shared_cards.ACard import ACard
 

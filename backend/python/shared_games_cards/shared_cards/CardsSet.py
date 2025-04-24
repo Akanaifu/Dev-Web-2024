@@ -1,12 +1,11 @@
-from backend.python.shared_games_cards.shared_cards.ACard import ACard
-from typing import List, Dict, Any
+from python.shared_games_cards.shared_cards.ACard import ACard
+from typing import List
 
 #cette classe est une liste de carte
 # elle est utilisée pour les cartes qui sont dans la main du joueur
 # elle est utilisée pour les cartes qui sont dans le jeu
-class CardsSet([ACard]):
-    def __init__(self, color: str, game: str,cards: List[ACard]):
-        super().__init__(color, game)
+class CardsSet():
+    def __init__(self,cards: List[ACard]):
         self.__cards = cards
 
     def add_card(self, card: ACard) -> None:

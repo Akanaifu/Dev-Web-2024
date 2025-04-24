@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import random
-from python.EnterValue import EnterValue
 from python.menteur.cards.M_CardsSet import M_CardsSet
 from python.menteur.rules.M_Rules import M_Rules
 from python.shared_games_cards.shared_cards.ACard import ACard

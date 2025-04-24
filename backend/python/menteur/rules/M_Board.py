@@ -1,9 +1,8 @@
-
 from python.menteur.cards.M_CardsStack import M_CardsStack
 from python.menteur.cards.M_CardsSet import M_CardsSet
-
 from python.menteur.player.M_APlayer import M_APlayer
-from python.menteur.rules.M_Manager_Cards import M_Manager_Cards
+
+# from python.menteur.rules.M_Manager_Cards import M_Manager_Cards
 
 
 class M_Board():
@@ -12,7 +11,7 @@ class M_Board():
     """
     def __init__(self):
         self.__cardsSet = [M_CardsSet]  # Placeholder for cards on the board
-        self.__players = [M_APlayer]  # type: ignore # Placeholder for players on the board
+        self.__players = [M_APlayer]  # Placeholder for players in the game
         self.__cardsStack = [M_CardsStack]
         self.__cardsStack_played = [M_CardsStack]  # teste pour voir si ca foncitonne apartir d'un autre classe
         
@@ -72,7 +71,7 @@ class M_Board():
     def set_cardsStack_played(self, cardsStack:M_CardsStack)-> None:
         self.__cardsStack_played.append(cardsStack)
     
-    def get_players(self)-> list[M_APlayer]: # type: ignore
+    def get_players(self)-> list[M_APlayer]:
         return self.__players
     
     def get_player(self,k)-> M_APlayer:

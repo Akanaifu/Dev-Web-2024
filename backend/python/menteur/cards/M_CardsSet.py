@@ -4,10 +4,10 @@ from typing import List, Dict, Any
 #cette classe est une liste de carte
 # elle est utilisée pour les cartes qui sont dans la main du joueur
 # elle est utilisée pour les cartes qui sont dans le jeu
-class M_CardsSet([ACard]):
-    def __init__(self, color: str, game: str,cards: List[ACard]):
-        super().__init__(color, game)
+class M_CardsSet():
+    def __init__(self,cards: List[ACard]) -> None:
         self.__cards = cards
+        
 
     def add_card(self, card: ACard) -> None:
         self.__cards.append(card)

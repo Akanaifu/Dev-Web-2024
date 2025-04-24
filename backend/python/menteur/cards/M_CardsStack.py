@@ -1,21 +1,20 @@
 from typing import List, Dict, Any
-from backend.python.shared_games_cards.shared_cards.ACard import ACard
+from python.shared_games_cards.shared_cards.ACard import ACard
 
 #cette classe est une pile de carte, elle contient une liste de carte
 # elle est utilisée pour les cartes qui sont posées sur la table
-class M_CardsStack([ACard]):
-    def __init__(self, color: str, game: str):
-        super().__init__(color, game)
-        self.__cards: List[ACard] = []
+class M_CardsStack():
+    def __init__(self, listCardsStack=List[ACard]) -> None:
+        self.__listCardsStack = listCardsStack
 
     def add_card(self, card: ACard) -> None:
-        self.__cards.append(card)
+        self.__listCardsStack.append(card)
 
     # def remove_card(self, card: ACard):
-    #     self.__cards.remove(card)
+    #     self.__listCardsStack.remove(card)
         #je dois garder les deniers cards dans la pile
 
     def get_cardsSet(self) -> List[ACard]:
-        return self.__cards
+        return self.__listCardsStack
 
     

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import random
 from python.shared_games_cards.shared_cards.CardsSet import CardsSet
 
 class APlayer(ABC):
