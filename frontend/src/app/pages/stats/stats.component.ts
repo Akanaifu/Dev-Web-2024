@@ -1,11 +1,12 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css'
 })
@@ -30,6 +31,7 @@ export class StatsComponent implements AfterViewInit {
   ];
 
   selectedPeriod: string = 'jour';
+  selectedMonth: number = new Date().getMonth(); // new property
 
   get totalGain(): number {
     return this.stats.reduce((total, stat) => total + stat.gain, 0);
@@ -95,21 +97,50 @@ export class StatsComponent implements AfterViewInit {
           return d >= startDate && d <= today;
         })
         .map(s => ({ label: s.timestamp, gain: s.gain }));
-    } else if(this.selectedPeriod === 'mois') { // revoir logique mois 30/31 jours
-      // Nouvelle logique : afficher jour par jour du mois en cours du 1ᵉʳ jour jusqu'au jour actuel inclus
-      const daysCount = today.getDate(); // jour du mois actuel
+    } else if(this.selectedPeriod === 'mois') { 
+      // Modified logic using a dictionary for the total number of days in the month
+      const year = today.getFullYear();
+      const month = this.selectedMonth;
+      const currentMonth = today.getMonth();
+      
+      const isLeapYear = (yr: number): boolean => {
+        return (yr % 4 === 0 && (yr % 100 !== 0 || yr % 400 === 0));
+      };
+      
+      const daysInMonthDict: { [key: number]: number } = {
+        0: 31,
+        1: isLeapYear(year) ? 29 : 28,
+        2: 31,
+        3: 30,
+        4: 31,
+        5: 30,
+        6: 31,
+        7: 31,
+        8: 30,
+        9: 31,
+        10: 30,
+        11: 31
+      };
+      
+      const daysCount = (month === currentMonth)
+                          ? today.getDate()
+                          : daysInMonthDict[month];
       const daysArray: { label: string; gain: number }[] = [];
       for (let day = 1; day <= daysCount; day++) {
-        const currentDate = new Date(today.getFullYear(), today.getMonth(), day);
+        // Create the date in UTC to avoid timezone issues
+        const currentDate = new Date(Date.UTC(year, month, day));
         const dayGain = this.stats
           .filter(s => {
             const d = new Date(s.timestamp);
-            return d.getFullYear() === currentDate.getFullYear() &&
-                   d.getMonth() === currentDate.getMonth() &&
-                   d.getDate() === currentDate.getDate();
+            // Reset hours for UTC comparison
+            d.setHours(0,0,0,0);
+            return d.getUTCFullYear() === currentDate.getUTCFullYear() &&
+                   d.getUTCMonth() === currentDate.getUTCMonth() &&
+                   d.getUTCDate() === currentDate.getUTCDate();
           })
           .reduce((sum, s) => sum + s.gain, 0);
-        daysArray.push({ label: currentDate.toLocaleDateString('fr-CA'), gain: dayGain });
+        const label = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+        daysArray.push({ label: label, gain: dayGain });
       }
       return daysArray;
     } else if(this.selectedPeriod === 'année') {

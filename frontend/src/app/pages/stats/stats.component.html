@@ -14,12 +14,21 @@
 
       <h2>Graphe gain d'argent et perte</h2>
 
-      <!-- New select element for filtering -->
+      <!-- First select for period filtering -->
       <select [(ngModel)]="selectedPeriod" (change)="updateChart()">
         <option value="jour">Jour</option>
         <option value="semaine">Semaine</option>
         <option value="mois">Mois</option>
         <option value="année">Année</option>
+      </select>
+
+      <!-- New select for choosing the month when "mois" is selected -->
+      <select [(ngModel)]="selectedMonth" (change)="updateChart()" *ngIf="selectedPeriod==='mois'">
+        <option *ngFor="let m of [0,1,2,3,4,5,6,7,8,9,10,11]" [value]="m">
+          {{ ('0' + (m+1)).slice(-2) }} - {{
+            ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'][m]
+          }}
+        </option>
       </select>
 
       <canvas #gainChartCanvas></canvas>
