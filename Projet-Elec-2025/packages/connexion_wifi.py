@@ -1,42 +1,51 @@
 import network
 import time
 
+# Dictionnaire pour stocker les SSID et leurs mots de passe
+SSID_PASSWORDS = {
+    "iPhone de naifu": "akanaifu",
+    "Moulin": "kotdessalopes",
+    # Ajoutez d'autres SSID et mots de passe ici
+}
+
 
 def connect_to_wifi():
     """
-    0 : Interface Wi-Fi désactivée.
-    1 : Interface Wi-Fi activée, mais non connectée.
-    2 : Connexion en cours.
-    3 : Connecté avec succès.
-    -1 ou -2 : Erreur (par exemple, mot de passe incorrect ou réseau introuvable).
+    Connecte à un réseau Wi-Fi en vérifiant si le SSID est déjà connu.
     """
-    # Informations du réseau Wi-Fi
-    ssid = "iPhone de naifu"  # Remplacez par le nom de votre réseau Wi-Fi
-    password = "akanaifu"  # Remplacez par le mot de passe de votre réseau Wi-Fi
-    # Activer le WiFi
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
 
-    wlan.connect(ssid, password)
+    # Scanner les réseaux disponibles
+    available_networks = wlan.scan()
+    print("Réseaux disponibles :")
+    for net in available_networks:
+        ssid = net[0].decode("utf-8")
+        print(f"- {ssid}")
 
-    max_wait = 10
-    while max_wait > 0:
-        status = wlan.status()
-        if status < 0 or status >= 3:
-            break
-        max_wait -= 1
-        print(f"En attente de connexion... (statut : {status})")
-        time.sleep(1)
+        # Vérifier si le SSID est dans le dictionnaire
+        if ssid in SSID_PASSWORDS:
+            print(f"SSID connu : {ssid}")
+            password = SSID_PASSWORDS[ssid]
+        else:
+            print(f"SSID inconnu : {ssid}")
+            password = input(f"Entrez le mot de passe pour {ssid} : ")
+            SSID_PASSWORDS[ssid] = password  # Ajouter au dictionnaire
 
-    # Vérifier le statut final
-    if wlan.status() != 3:
-        raise RuntimeError(
-            f"Échec de la connexion au réseau (statut final : {wlan.status()})"
-        )
+        # Tenter de se connecter
+        print(f"Connexion à {ssid}...")
+        wlan.connect(ssid, password)
 
-    print("Connecté !")
-    status = wlan.ifconfig()
-    print("Adresse IP:", status[0])
+        # Attendre la connexion
+        for _ in range(10):
+            if wlan.isconnected():
+                print(f"Connecté à {ssid} avec succès !")
+                print("Adresse IP :", wlan.ifconfig()[0])
+                return
+            time.sleep(1)
+
+        print(f"Impossible de se connecter à {ssid}.")
+    print("Aucun réseau disponible ou connexion échouée.")
 
 
 def scan_networks():
