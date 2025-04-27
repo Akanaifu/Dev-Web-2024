@@ -61,8 +61,8 @@ app.post('/sessions/login', async (req, res) => {
       // Créer le token JWT
       const token = jwt.sign(
         { 
-          username: user.username, 
-          userId: user.id 
+          username: user.email, 
+          userId: user.user_id 
         }, 
         secretKey, 
         { expiresIn: '1h' }
@@ -72,8 +72,8 @@ app.post('/sessions/login', async (req, res) => {
       res.json({
         token,
         user: {
-          username: user.username,
-          id: user.id,
+          username: user.email, 
+          userId: user.user_id 
           // autres informations utilisateur si nécessaire
         }
       });
@@ -101,8 +101,8 @@ app.get('/sessions/me', verifyToken, async (req, res) => {
     
     const user = rows[0];
     res.json({
-      username: user.username,
-      id: user.id,
+      username: user.email,
+      id: user.user_id,
       // autres informations utilisateur si nécessaire
     });
   } catch (err) {
