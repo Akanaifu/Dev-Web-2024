@@ -10,6 +10,12 @@
       "sourceRoot": "src",
       "prefix": "app",
       "architect": {
+        "prerender": {
+          "builder": "@angular-devkit/build-angular:prerender",
+          "options": {
+            "routes": ["/"]
+          }
+        },
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
@@ -42,21 +48,31 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "15kB",
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all"
             },
             "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
+              "builder": "@angular-devkit/build-angular:application",
+              "options": {
+                "optimization": true,
+                "allowedCommonJsDependencies": [
+                  "debug",
+                  "xmlhttprequest-ssl",
+                  "faye-websocket"
+                ],
+                "prerender": {
+                  "discoverRoutes": true,
+                  "renderTimeout": 60000,
+                  "skipRoutes": ["/jeux", "/stats", "/machine", "/login", "/register", "/contact"]                }
+              }
             }
           },
           "defaultConfiguration": "production"

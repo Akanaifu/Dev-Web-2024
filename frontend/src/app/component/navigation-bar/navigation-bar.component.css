@@ -42,7 +42,7 @@
     align-items: center;
     gap: 8px;
     font-size: 16px;
-    transition: all 0.1s ease;
+    transition: all 0.05s ease;
     
   }
   button:hover {

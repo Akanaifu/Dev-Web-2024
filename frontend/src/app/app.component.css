@@ -35,5 +35,5 @@ main{
 
 .chat-button:hover {
   background-color: #444;
-  transform: translateY(-2px);
+  transform: translateY(-5px);
 }
