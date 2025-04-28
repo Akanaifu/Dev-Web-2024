@@ -1,4 +1,4 @@
-import { Database, ref, get, child } from '@angular/fire/database';
+import { Database, ref, get, child, set } from '@angular/fire/database';
 
 interface Combination {
   id: string;
@@ -95,44 +95,75 @@ export class MachineASousLogic {
         if (!snapshot.exists()) return console.log('No data available');
 
         const data = snapshot.val();
-        let playedParts = [];
-        for (const key in data) {
-          if (data[key].partieJouee) {
-            playedParts.push({ key, ...data[key] });
-          }
-        }
 
-        if (playedParts.length === 0)
-          return console.log('No played parts found');
+        // Trier les parties par ordre croissant des clés "partieX"
+        const sortedParts = Object.keys(data)
+          .filter((key) => key.startsWith('partie'))
+          .sort(
+            (a, b) =>
+              parseInt(a.replace('partie', ''), 10) -
+              parseInt(b.replace('partie', ''), 10)
+          )
+          .map((key) => ({ key, ...data[key] }));
 
-        const lastPlayedPart = playedParts[playedParts.length - 1];
-        const allCombinations: string[] = lastPlayedPart.combinaison || [];
-        const f = this.computeQuadraticFunction(allCombinations.length);
-        console.log('🚀 ~ MachineASousLogic ~ .then ~ f:', f);
+        // Filtrer les parties où partieAffichee est à False
+        const unshownParts = sortedParts.filter((part) => !part.partieAffichee);
 
-        if (!allCombinations.length) {
-          return console.error(
-            'Invalid data structure: Missing combinaison in the last played part'
-          );
+        if (unshownParts.length === 0) {
+          return console.log('No unshown parts found');
         }
 
         let index = 0;
 
         const iterate = () => {
-          if (index < allCombinations.length) {
-            const combination = allCombinations[index];
-            this.updateAfficheurs(combination);
-            this.checkCombination();
-            index++;
-            setTimeout(iterate, f(index)); // Recalculer f(index) pour chaque itération
+          if (index < unshownParts.length) {
+            const part = unshownParts[index];
+            console.log(`Displaying part: ${part.key}`, part);
+
+            // Afficher les combinaisons et gérer l'affichage
+            const allCombinations: string[] = part.combinaison || [];
+            const f = this.computeQuadraticFunction(allCombinations.length);
+
+            if (!allCombinations.length) {
+              console.error(
+                'Invalid data structure: Missing combinaison in the part'
+              );
+              index++;
+              setTimeout(iterate, 5000); // Passer à la partie suivante après 5 secondes
+              return;
+            }
+
+            let combinationIndex = 0;
+
+            const displayCombinations = () => {
+              if (combinationIndex < allCombinations.length) {
+                const combination = allCombinations[combinationIndex];
+                this.updateAfficheurs(combination);
+                this.checkCombination();
+                combinationIndex++;
+                setTimeout(displayCombinations, f(combinationIndex)); // Recalculer f(index) pour chaque itération
+              } else {
+                this.updateGainDisplay(part.gain);
+
+                // Mettre à jour partieAffichee à True dans la base de données
+                part.partieAffichee = true;
+
+                index++;
+                setTimeout(iterate, 5000); // Passer à la partie suivante après 5 secondes
+              }
+            };
+
+            displayCombinations();
           } else {
-            this.updateGainDisplay(lastPlayedPart.gain);
+            console.log('All unshown parts have been displayed');
           }
         };
 
         iterate();
       })
-      .catch((error) => console.error('Error fetching Firebase data:', error));
+      .catch((error: any) =>
+        console.error('Error fetching Firebase data:', error)
+      ); // Ajout du type explicite pour 'error'
   }
 
   private updateAfficheurs(combination: string): void {
