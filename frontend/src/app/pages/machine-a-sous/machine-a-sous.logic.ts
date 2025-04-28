@@ -110,7 +110,13 @@ export class MachineASousLogic {
         const unshownParts = sortedParts.filter((part) => !part.partieAffichee);
 
         if (unshownParts.length === 0) {
-          return console.log('No unshown parts found');
+          // Si aucune partie n'est trouvée, afficher dernière partie
+          const lastPart = sortedParts[sortedParts.length - 1];
+          if (lastPart) {
+            this.updateAfficheurs(lastPart.combinaison);
+            this.updateGainDisplay(lastPart.gain);
+          }
+          return console.log('No unshown parts available => display last part');
         }
 
         let index = 0;
@@ -118,7 +124,6 @@ export class MachineASousLogic {
         const iterate = () => {
           if (index < unshownParts.length) {
             const part = unshownParts[index];
-            console.log(`Displaying part: ${part.key}`, part);
 
             // Afficher les combinaisons et gérer l'affichage
             const allCombinations: string[] = part.combinaison || [];
@@ -139,10 +144,10 @@ export class MachineASousLogic {
               if (combinationIndex < allCombinations.length) {
                 const combination = allCombinations[combinationIndex];
                 this.updateAfficheurs(combination);
-                this.checkCombination();
                 combinationIndex++;
                 setTimeout(displayCombinations, f(combinationIndex)); // Recalculer f(index) pour chaque itération
               } else {
+                this.checkCombination();
                 this.updateGainDisplay(part.gain);
 
                 // Mettre à jour partieAffichee à True dans la base de données
