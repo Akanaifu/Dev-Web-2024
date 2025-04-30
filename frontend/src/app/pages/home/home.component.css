@@ -1,3 +1,17 @@
 h1 {
   text-align: center;
+  padding-left: 10px;
+    font-weight: bold;
+    font-family: 'Arial Rounded MT Bold', 'Arial Black', sans-serif;
+    color: #ffd700; /* Base dorée */
+    text-shadow: 
+        0 0 3px rgba(255, 215, 0, 0.6),
+        1px 1px 0 #ff9933; /* Ombre orangée légère */
+    letter-spacing: -0.5px;
+    background: linear-gradient(to bottom, #fff4b8 0%, #ffd700 40%, #ff9000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.5));
+    position: relative;
 }

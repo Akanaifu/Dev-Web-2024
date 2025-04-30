@@ -6,7 +6,7 @@
     /></a>
   </div>
   @if (loginService.user()) {
-    <p class="gambler">Bonjour  {{ loginService.user()?.username }}</p>
+    <p class="gambler-login">Bonjour  {{ loginService.user()?.username }}</p>
   } @else {
     <div class="gambler">
       <button mat-button routerLink="/login">
@@ -27,9 +27,6 @@
       <button mat-menu-item routerLink="/">Accueil</button>
       <button mat-menu-item routerLink="/jeux">Jeux</button>
       <button mat-menu-item routerLink="/stats">Statistique</button>
-      <button mat-menu-item routerLink="/register">S'enregister</button>
-      <!-- Si vous souhaitez ajouter d'autres pages à l'avenir -->
-      <!-- <button mat-menu-item routerLink="/compte">Compte</button> -->
     </mat-menu>
   </div>
 </nav>
