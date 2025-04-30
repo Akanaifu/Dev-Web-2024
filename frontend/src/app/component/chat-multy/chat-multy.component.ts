@@ -27,7 +27,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     @Inject(PLATFORM_ID) platformId: Object
   ) {
-    this.isBrowser = isPlatformBrowser(platformId);
+    this.isBrowser = isPlatformBrowser(platformId); //ici bizarre que isBrowser est false
     
     // Créer l'objet Audio uniquement dans un environnement navigateur
     if (this.isBrowser) {
