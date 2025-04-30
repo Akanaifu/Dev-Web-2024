@@ -76,7 +76,7 @@ export class MachineASousLogic {
     const mid = long_arr / 2;
 
     const origine = 1000; // f(0) = 1000
-    const ymin = 100; // f(mid) = 200
+    const ymin = 50; // f(mid) = 50
 
     // Résolution du système avec f(x) = ax^2 + bx + c
     // Conditions : f(0) = c = 1000, f(mid) = a*mid^2 + b*mid + c = 200
@@ -108,7 +108,6 @@ export class MachineASousLogic {
         const lastPlayedPart = playedParts[playedParts.length - 1];
         const allCombinations: string[] = lastPlayedPart.combinaison || [];
         const f = this.computeQuadraticFunction(allCombinations.length);
-        console.log('🚀 ~ MachineASousLogic ~ .then ~ f:', f);
 
         if (!allCombinations.length) {
           return console.error(
@@ -142,9 +141,13 @@ export class MachineASousLogic {
   }
 
   private updateGainDisplay(gain: number): void {
-    const gainElement = document.getElementById('gain');
-    if (gainElement) {
-      gainElement.textContent = `Gain: ${gain}`;
+    if (typeof document !== 'undefined') {
+      const gainElement = document.getElementById('gain');
+      if (gainElement) {
+        gainElement.textContent = `Gain: ${gain}`;
+      }
+    } else {
+      console.warn('updateGainDisplay called in a non-browser environment');
     }
   }
 

@@ -2,6 +2,7 @@ import urequests
 import time
 from id_counter import increment_counter
 import random
+from connexion_wifi import connect_to_wifi
 
 NUMBER_TO_GENERATE = 15  # nombres à générer
 DIGITS = [1, 2, 3]
@@ -9,23 +10,52 @@ PARTIE_COUNT = 0  # Compteur d’identifiants personnalisés
 COMBINAISONS = {}  # Liste de toutes les combinaisons générées
 NUMBER_OF_DIGITS = 3
 BET_AMOUNT = 10
+URL_FIREBASE = "https://machine-a-sous-default-rtdb.europe-west1.firebasedatabase.app"
 
 
-def send_to_firebase(combinaisons, score, generation_id):
-    firebase_url = "https://console.firebase.google.com/project/machine-a-sous/database/machine-a-sous-default-rtdb/data/~2F?hl=fr"
-    data = {
-        "id": generation_id,
-        "timestamp": time.time(),
-        "combinaisons": combinaisons,
-        "score": score,
-    }
+def update_first_unplayed_game(updated_data):
+    """
+    Met à jour le premier élément de la base de données Firebase où 'partieJouee' est False.
+    """
+    response = None
     try:
-        response = urequests.post(firebase_url, json=data)
-        print("Envoyé à Firebase:", response.text)
-        response.close()
-    except Exception as e:
-        print("Erreur Firebase:", e)
-        raise
+        # Récupérer toutes les données de Firebase
+        data = fetch_from_firebase()
+        if data is None:
+            print("Aucune donnée récupérée depuis Firebase.")
+            return
+
+        # Trouver la première partie où 'partieJouee' est False
+        for key, value in data.items():
+            if not value.get(
+                "partieJouee", True
+            ):  # Par défaut, considère True si la clé est absente
+                # Construire l'URL pour mettre à jour cet élément spécifique
+                firebase_url = f"{URL_FIREBASE}/{key}.json"
+                # Envoyer les données mises à jour
+                response = urequests.patch(firebase_url, json=updated_data)
+
+                # Vérifier manuellement le code de statut HTTP
+                if response.status_code != 200:
+                    raise RuntimeError(f"Erreur HTTP : {response.status_code}")
+
+                print(f"Données mises à jour pour la partie {key}")
+                response.close()
+                return  # Arrêter après avoir mis à jour le premier élément
+
+        print("Aucune partie non jouée trouvée.")
+    except OSError as e:
+        print("Erreur réseau ou problème de connexion :", e)
+    except ValueError as e:
+        print("Erreur lors de la conversion JSON :", e)
+    except RuntimeError as e:
+        print("Erreur HTTP :", e)
+    finally:
+        if response:
+            try:
+                response.close()
+            except AttributeError:
+                pass
 
 
 def calculer_gain(rouleaux: list[int], mise: int) -> int:
@@ -63,9 +93,9 @@ def number_to_DIGITS(number):
     Convert a number to an array of its DIGITS.
     """
     # Convert number to string, extract DIGITS and convert back to integers
-    DIGITS = [int(digit) for digit in str(number)]
+    list_digits = [int(digit) for digit in str(number)]
     # Return the array of DIGITS (as integers)
-    return DIGITS
+    return list_digits
 
 
 def generate_random():
@@ -85,14 +115,51 @@ def generate_random():
         GENERATED_COUNT += 1
 
     SCORE = calculer_gain(DIGITS, BET_AMOUNT)
-    generation_id = (
-        f"partie{increment_counter()}"  # Use increment_counter for unique ID
-    )
-    send_to_firebase(COMBINAISONS, SCORE, generation_id)
+
+    updated_data = {
+        "gain": SCORE,
+        "combinaison": COMBINAISONS,
+        "partieJouee": True,
+        "timestamp": time.time(),
+        "mise": BET_AMOUNT,
+    }
+    update_first_unplayed_game(updated_data)
     GENERATED_COUNT = 0
     COMBINAISONS.clear()  # Réinitialiser pour la prochaine partie
     RUN_CODE = False
     return 0  # Indiquer que la fonction s'est terminée avec succès
 
 
-generate_random()
+def fetch_from_firebase():
+    """
+    Récupère les données de la base de données Firebase.
+    """
+    response = None
+    try:
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
+        response = urequests.get(f"{URL_FIREBASE}/.json", headers=headers, timeout=5)
+        if response.status_code != 200:
+            raise RuntimeError(f"Erreur HTTP : {response.status_code}")
+        data = response.json()
+        print("Données récupérées depuis Firebase")
+        return data
+    except OSError as e:
+        print("Erreur réseau ou problème de connexion :", e)
+    except ValueError as e:
+        print("Erreur lors de la conversion JSON :", e)
+    except RuntimeError as e:
+        print("Erreur HTTP :", e)
+    finally:
+        if response:
+            try:
+                response.close()
+            except AttributeError:
+                pass
+    return None
+
+
+if __name__ == "__main__":
+    # Exemple d'utilisation
+    connect_to_wifi()
+    generate_random()
+    # fetch_from_firebase()  # Uncomment to fetch data from Firebase
