@@ -105,18 +105,18 @@ export class MachineASousLogic {
               parseInt(b.replace('partie', ''), 10)
           )
           .map((key) => ({ key, ...data[key] }));
-
+        console.log('Sorted parts:', sortedParts);
         // Filtrer les parties où partieAffichee est à False
         const unshownParts = sortedParts.filter((part) => !part.partieAffichee);
 
         if (unshownParts.length === 0) {
           // Si aucune partie n'est trouvée, afficher dernière partie
           const lastPart = sortedParts[sortedParts.length - 1];
-          if (lastPart) {
-            this.updateAfficheurs(lastPart.combinaison);
-            this.updateGainDisplay(lastPart.gain);
-          }
-          return console.log('No unshown parts available => display last part');
+          unshownParts.push(lastPart);
+          console.log(
+            'No unshown parts found, displaying last part:',
+            lastPart
+          );
         }
 
         let index = 0;
