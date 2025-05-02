@@ -3,13 +3,8 @@
     <div class="main">
         <div class="name">
             <span><i class="far fa-user"></i></span>
-            <input 
-                type="text" 
-                [(ngModel)]="username" 
-                class="name-input" 
-                value="anonymous" 
-                maxlength="20"
-            />
+            <!-- Remplacer l'input par un span -->
+            <span class="user-email">{{ loginService.user()?.username || 'anonymous' }}</span>
         </div>
         <ul class="message-container">
             

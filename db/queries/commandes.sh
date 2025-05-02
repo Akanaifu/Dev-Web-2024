@@ -5,10 +5,10 @@ echo ----------------------------------------
 
 # Configuration
 DB_NAME=casino
-MYSQL_USER=root
-MYSQL_PASSWORD=ben
+MYSQL_USER=dev
+MYSQL_PASSWORD=casino
 SQL_STRUCTURE=casino.sql
-SQL_DATA=dataCasino.sql
+SQL_DATA=data-casino.sql
 
 # Supprimer la base de données
 echo Supprimer la base de données $DB_NAME...

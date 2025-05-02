@@ -2,7 +2,8 @@
 INSERT INTO `User` (`name`, `firstname`, `birthdate`, `solde`, `email`, `password`) VALUES
 ('Doe', 'John', '1990-01-01', 100.50, 'john.doe@example.com', 'password123'),
 ('Smith', 'Jane', '1985-05-15', 200.00, 'jane.smith@example.com', 'securepass'),
-('Brown', 'Charlie', '2000-12-25', 50.75, 'charlie.brown@example.com', 'mypassword');
+('Brown', 'Charlie', '2000-12-25', 50.75, 'charlie.brown@example.com', 'mypassword'),
+('arens','ben','1999-02-04',100000000,'ben','ben');
 
 -- Insérer des sessions de jeu dans la table Games_session
 INSERT INTO `Games_session` (`name`, `bet_min`, `bet_max`) VALUES

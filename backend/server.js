@@ -23,7 +23,7 @@ const secretKey = process.env.JWT_SECRET || 'ton_secret'; // Utiliser de préfé
 const db = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'dev',
-  password: process.env.DB_PASSWORD || 'kzno',
+  password: process.env.DB_PASSWORD || 'casino',
   database: process.env.DB_NAME || 'casino',
   waitForConnections: true,
   connectionLimit: 10,

@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SocketService {
   private socket: any = null;
@@ -19,23 +19,24 @@ export class SocketService {
     if (this.isBrowser) {
       if (!this.socket) {
         // Import socket.io-client dynamiquement seulement côté navigateur
-        import('socket.io-client').then(io => {
+        import('socket.io-client').then((io) => {
           console.log('Connecting to socket server at:', this.socketUrl);
-          this.socket = io.io(this.socketUrl, {
+          const { default: ioClient } = io;
+          this.socket = ioClient(this.socketUrl, {
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
-            transports: ['websocket']
+            transports: ['websocket'],
           });
-          
+
           // Logs de débogage pour connexion socket
           this.socket.on('connect', () => {
             console.log('Socket connected with ID:', this.socket.id);
           });
-          
+
           this.socket.on('connect_error', (error: any) => {
             console.error('Socket connection error:', error);
           });
-          
+
           this.socket.on('reconnect_attempt', (attempt: number) => {
             console.log('Socket reconnection attempt:', attempt);
           });
@@ -65,11 +66,14 @@ export class SocketService {
 
   on<T>(eventName: string): Observable<T> {
     if (!this.isBrowser) {
-      console.log('Not in browser, returning empty observable for event:', eventName);
+      console.log(
+        'Not in browser, returning empty observable for event:',
+        eventName
+      );
       return of() as Observable<T>; // Retourne un Observable vide si on n'est pas dans un navigateur
     }
 
-    return new Observable<T>(observer => {
+    return new Observable<T>((observer) => {
       if (!this.socket) {
         console.log('Socket not initialized, connecting now');
         this.connect();

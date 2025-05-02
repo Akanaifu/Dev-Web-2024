@@ -3,11 +3,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SocketService } from '../../services/socket/socket.service';
 import { Subscription } from 'rxjs';
+import { LoginService } from '../../services/login/login.service';
 
 @Component({
   selector: 'app-chat-multy',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule], // LoginService ne doit pas être ici
   templateUrl: './chat-multy.component.html',
   styleUrl: './chat-multy.component.css'
 })
@@ -25,6 +26,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private socketService: SocketService,
+    public loginService: LoginService, // Ajouté correctement ici
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId); //ici bizarre que isBrowser est false
@@ -63,6 +65,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     // Connect to socket server only in browser environment
     if (this.isBrowser) {
       this.socketService.connect();
+      
+      // Définir le nom d'utilisateur depuis le service de login s'il est connecté
+      if (this.loginService.user()) {
+        this.username = this.loginService.user()?.username || 'anonymous';
+      }
       
       // Listen for total clients
       this.subscriptions.push(
@@ -110,7 +117,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (this.messageText === '' || !this.isBrowser) return;
 
     const data = {
-      name: this.username,
+      name: this.loginService.user()?.username || 'anonymous', // Utiliser le nom d'utilisateur du service de login
       message: this.messageText,
       dateTime: new Date()
     };
@@ -138,8 +145,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   onTyping(): void {
     if (this.isBrowser) {
+      const username = this.loginService.user()?.username || this.username;
       this.socketService.emit('feedback', {
-        feedback: `✍️${this.username} is typing a message`
+        feedback: `✍️${username} is typing a message`
       });
     }
   }

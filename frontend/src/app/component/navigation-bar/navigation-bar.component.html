@@ -6,18 +6,14 @@
     /></a>
   </div>
   @if (loginService.user()) {
-    <p class="gambler-login">Bonjour  {{ loginService.user()?.username }}</p>
+  <p class="gambler-login">Bonjour {{ loginService.user()?.username }}</p>
   } @else {
-    <div class="gambler">
-      <button mat-button routerLink="/login">
-        <i></i>Login
-      </button>
-    </div>
-    <div class="gambler">
-      <button mat-button routerLink="/register">
-        <i></i>Sign Up
-      </button>
-    </div>
+  <div class="gambler">
+    <button mat-button routerLink="/login"><i></i>Login</button>
+  </div>
+  <div class="gambler">
+    <button mat-button routerLink="/register"><i></i>Sign Up</button>
+  </div>
   }
   <div class="menu-container">
     <button mat-button [matMenuTriggerFor]="menu">
@@ -25,7 +21,6 @@
     </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item routerLink="/">Accueil</button>
-      <button mat-menu-item routerLink="/jeux">Jeux</button>
       <button mat-menu-item routerLink="/stats">Statistique</button>
     </mat-menu>
   </div>
