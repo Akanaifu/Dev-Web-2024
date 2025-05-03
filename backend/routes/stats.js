@@ -1,23 +1,28 @@
-const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const express = require("express");
+const db = require("../db/config/dbConfig"); // Utilisation de MariaDB
 const router = express.Router();
 
-// Connexion à la base de données SQLite
-const db = new sqlite3.Database('db/casino.db', (err) => {
-    if (err) {
-        console.error("Erreur lors de la connexion à la base de données:", err.message);
-    } else {
-        console.log("Connecté à la base de données SQLite.");
-    }
+router.get("/", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM stats");
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lors de la récupération des jeux." });
+  }
+});
+// Endpoint pour récupérer les statistiques d'un utilisateur
+router.get("/:id", async (req, res) => {
+  const userId = parseInt(req.params.id);
+  try {
+    const [rows] = await db.query("SELECT * FROM stats WHERE user_id = ?", [
+      userId,
+    ]);
+    res.json(rows);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération des statistiques." });
+  }
 });
 
-// Endpoint pour récupérer la liste parties jouées
-router.get('/:id', (req, res) => {
-    const query = "SELECT * FROM transactions";
-    db.all(query, [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ error: "Erreur lors de la récupération des transactions." });
-        }
-        res.json(rows);
-    });
-});
+module.exports = router;

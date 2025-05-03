@@ -1,13 +1,13 @@
-const mysql = require('mysql2');
+const mysql = require("mysql2");
 
 const pool = mysql.createPool({
-    host: 'localhost', // Remplacez par l'hôte de votre base de données
-    user: 'root',      // Remplacez par votre utilisateur MariaDB
-    password: 'M@ria', // Remplacez par votre mot de passe MariaDB
-    database: 'casino_db', // Remplacez par le nom de votre base de données
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+  host: "localhost", // Assurez-vous que c'est l'hôte correct
+  user: "root", // Assurez-vous que c'est l'utilisateur correct
+  password: "casino", // Assurez-vous que c'est le mot de passe correct
+  database: "dev3", // Assurez-vous que c'est le nom de la base de données correct
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
 module.exports = pool.promise();
