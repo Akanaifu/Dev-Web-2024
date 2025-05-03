@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
+import { NewGameService } from './new-game.service';
 
 @Component({
   selector: 'app-machine-a-sous',
@@ -11,20 +12,17 @@ import { FirebaseSendService } from './export_firebase.logic';
   templateUrl: './machine-a-sous.component.html',
   styleUrls: ['./machine-a-sous.component.css'],
 })
-export class MachineASousComponent implements OnInit, AfterViewInit {
+export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
   logic: MachineASousLogic;
-  constructor() {
+
+  constructor(private newGameService: NewGameService) {
     const db = inject(Database);
-    this.logic = new MachineASousLogic(db);
+    this.logic = new MachineASousLogic(db, newGameService);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }
 
   ngOnInit(): void {
-    this.logic.fetchFirebaseData();
-  }
-
-  ngAfterViewInit(): void {
     this.logic.fetchFirebaseData();
   }
 

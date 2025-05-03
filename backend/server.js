@@ -8,6 +8,7 @@ const transactionRoutes = require("./routes/transactions");
 const statsRoutes = require("./routes/stats");
 const gameRoutes = require("./routes/games");
 const betRoutes = require("./routes/bets");
+const newGameRoutes = require("./routes/new_game");
 const { verifyToken } = require("./middlewares/auth");
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/transactions", transactionRoutes);
 app.use("/stats", statsRoutes);
 app.use("/games", gameRoutes);
 app.use("/bets", betRoutes);
+app.use("/new-game", newGameRoutes);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {
