@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-jeux',
-  templateUrl: './jeux.component.html',
-  styleUrls: ['./jeux.component.css'],
+  selector: 'app-home',
+  imports: [],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.css',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class JeuxComponent {
+export class HomeComponent {
   constructor(private router: Router) {}
 
   selectGame(gameName: string): void {

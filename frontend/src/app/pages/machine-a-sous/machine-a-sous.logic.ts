@@ -1,4 +1,5 @@
 import { Database, ref, get, child, set } from '@angular/fire/database';
+import { NewGameService } from './new-game.service';
 
 interface Combination {
   id: string;
@@ -15,12 +16,18 @@ interface Afficheur {
 }
 
 export class MachineASousLogic {
-  title = 'Machine à sous';
-  showTable = false;
-  highlightCombination: string | null = null;
-  intervalId: any;
-  generationCount = 0;
+  private db: Database;
+  private newGameService: NewGameService;
 
+  public highlightCombination: any = null;
+  public showTable: boolean = false;
+  public intervalId: any;
+
+  constructor(db: Database, newGameService: NewGameService) {
+    this.db = db;
+    this.newGameService = newGameService;
+  }
+  title = 'Machine à sous';
   combinations: Combination[] = [
     {
       id: 'combo-1',
@@ -70,8 +77,6 @@ export class MachineASousLogic {
     { id: 'afficheur3', currentChiffre: 0 },
   ];
 
-  constructor(private db: Database) {}
-
   computeQuadraticFunction(long_arr: number): (x: number) => number {
     const mid = long_arr / 2;
 
@@ -112,11 +117,12 @@ export class MachineASousLogic {
         if (unshownParts.length === 0) {
           // Si aucune partie n'est trouvée, afficher dernière partie
           const lastPart = sortedParts[sortedParts.length - 1];
-          unshownParts.push(lastPart);
-          console.log(
-            'No unshown parts found, displaying last part:',
-            lastPart
-          );
+          if (lastPart) {
+            unshownParts.push(lastPart);
+            console.log(
+              'Aucune partie non affichée trouvée. Affichage de la dernière partie.'
+            );
+          }
         }
 
         let index = 0;
@@ -152,7 +158,14 @@ export class MachineASousLogic {
 
                 // Mettre à jour partieAffichee à True dans la base de données
                 part.partieAffichee = true;
-
+                console.log(part);
+                this.addNewGameToBackend(
+                  part.joueurId[part.joueurId.length - 1] || 0, // Vérifiez que playerId est défini
+                  part.mise || 0, // Vérifiez que solde est un nombre
+                  part.combinaison[part.combinaison.length - 1] || [], // Vérifiez que combinaison est un tableau
+                  part.gain || 0, // Vérifiez que gain est un nombre
+                  part.timestamp || new Date().toISOString() // Fournissez un timestamp par défaut
+                );
                 index++;
                 setTimeout(iterate, 5000); // Passer à la partie suivante après 5 secondes
               }
@@ -214,5 +227,34 @@ export class MachineASousLogic {
     }
 
     this.highlightCombination = matched.length ? matched.join(', ') : null;
+  }
+  addNewGameToBackend(
+    playerId: string,
+    solde: number,
+    combinaison: number[],
+    gain: number,
+    timestamp: string
+  ): void {
+    const gameData = {
+      partieId: 1,
+      partieJouee: gain > 0,
+      solde: solde,
+      combinaison: combinaison,
+      gain: gain,
+      joueurId: playerId,
+      timestamp: timestamp,
+      partieAffichee: true,
+    };
+
+    console.log('Données envoyées au backend :', gameData);
+
+    this.newGameService.addNewGame(gameData).subscribe({
+      next: (response) => {
+        console.log('Partie ajoutée avec succès :', response);
+      },
+      error: (error) => {
+        console.error("Erreur lors de l'ajout de la partie :", error);
+      },
+    });
   }
 }
