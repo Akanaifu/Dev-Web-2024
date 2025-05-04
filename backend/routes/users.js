@@ -1,5 +1,5 @@
 const express = require("express");
-const db = require("../db/config/dbConfig"); // Chemin corrigé
+const db = require("../config/dbConfig"); // Chemin corrigé
 const router = express.Router();
 
 // Endpoint pour récupérer la liste des utilisateurs

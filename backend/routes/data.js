@@ -1,5 +1,5 @@
 const express = require("express");
-const db = require("../db/config/dbConfig");
+const db = require("../config/dbConfig");
 const router = express.Router();
 
 // Route pour récupérer des données
