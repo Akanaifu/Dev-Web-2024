@@ -11,6 +11,7 @@ const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
 const { verifyToken } = require("./middlewares/auth");
 const app = express();
+const cookieParser = require('cookie-parser');
 
 // Middleware pour CORS
 app.use((req, res, next) => {
@@ -27,7 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-
+app.use(cookieParser());
 // Routes
 app.use("/sessions", sessionRoutes); // Cannot GET /sessions
 app.use("/data", dataRoutes);

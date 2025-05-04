@@ -4,8 +4,9 @@ const { verifyToken } = require("../middlewares/auth");
 const router = express.Router();
 const db = require("../config/dbConfig");
 const secretKey = "ton_secret"; // Cette clé devrait être une variable d'environnement en production
+const blacklistedTokens = new Set(); // En production, utilisez Redis ou une base de données
 
-
+//⚠️ POST/LOGIN ⚠️
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   console.log('Tentative de connexion:', { username });
@@ -33,25 +34,28 @@ router.post('/login', async (req, res) => {
     const passwordMatch = (password === user.password);
     
     if (passwordMatch) {
-      // Créer le token JWT
-      const token = jwt.sign(
-        { 
-          username: user.email, 
-          userId: user.user_id 
-        }, 
-        secretKey, 
-        { expiresIn: '1h' }
-      );
-      // Envoyer le token et les infos utilisateur
+      const token = jwt.sign({
+        username: user.email,
+        userId: user.user_id
+      }, 
+      secretKey, 
+      { expiresIn: '1h' }
+    );
+    
+      // Définir un cookie HTTP-Only
+      res.cookie('auth_token', token, {
+        httpOnly: true,       // Inaccessible via JavaScript
+        secure: process.env.NODE_ENV === 'production', // HTTPS en production
+        maxAge: 3600000,      // Durée en millisecondes (1h)
+        sameSite: 'strict'    // Protection CSRF
+      });
+      
       res.json({
-        token,
         user: {
-          username: user.email, 
-          userId: user.user_id 
-          // autres informations utilisateur si nécessaire
+          username: user.email,
+          userId: user.user_id
         }
       });
-      console.log(`Connexion autorisée pour l'utilisateur ${user.email} (ID: ${user.user_id})`)
     } else {
       res.status(401).json({ message: 'Identifiants incorrects' });
     }
@@ -61,6 +65,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// ⚠️ GET/ME ⚠️
 // Route protégée pour récupérer les infos de l'utilisateur connecté
 router.get('/me', verifyToken, async (req, res) => {
   try {
@@ -85,9 +90,11 @@ router.get('/me', verifyToken, async (req, res) => {
   }
 });
 
-router.get('/logout', (req, res) => {
-  // En réalité, avec JWT, la déconnexion se fait côté client
-  // en supprimant le token, mais on peut ajouter le token à une liste noire
+// ⚠️ GET/LOGOUT ⚠️
+router.get('/logout', verifyToken, (req, res) => {
+  const token = req.headers['authorization'].split(' ')[1];
+  // Ajouter le token à la liste noire
+  blacklistedTokens.add(token);
   console.log('Déconnexion utilisateur');
   res.json({ success: true });
 });
