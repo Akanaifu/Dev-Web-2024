@@ -1,4 +1,4 @@
-from python.shared_games_cards.shared_cards.ACard import ACard
+from shared_games_cards.shared_cards.ACard import ACard
 from typing import List, Dict, Any
 
 #cette classe est une liste de carte

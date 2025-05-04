@@ -1,9 +1,9 @@
 
-# from python.menteur.cards.M_CardsSet import M_CardsSet
-# from python.menteur.player.M_APlayer import M_APlayer
-# from python.EnterValue import EnterValue
-# from python.menteur.rules.M_Board import M_Board
-# from python.menteur.rules.M_Rules import M_Rules
+from menteur.cards.M_CardsSet import M_CardsSet
+from menteur.player.M_APlayer import M_APlayer
+from EnterValue import EnterValue
+from menteur.rules.M_Board import M_Board
+from menteur.rules.M_Rules import M_Rules
 
 
 class M_Player(M_APlayer):

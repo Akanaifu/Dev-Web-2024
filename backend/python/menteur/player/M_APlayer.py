@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 import random
-from python.menteur.cards.M_CardsSet import M_CardsSet
-from python.menteur.rules.M_Rules import M_Rules
-from python.shared_games_cards.shared_cards.ACard import ACard
-from python.shared_games_cards.shared_players.APlayer import APlayer
+
+from menteur.cards.M_CardsSet import M_CardsSet
+from shared_games_cards.shared_cards.ACard import ACard
+from shared_games_cards.shared_players.APlayer import APlayer
+
 
 class M_APlayer(APlayer,ABC):
     def __init__(self,id:int, pseudo: str, color: str, bet:int,solde:int,cardsSet: M_CardsSet):
@@ -16,7 +17,7 @@ class M_APlayer(APlayer,ABC):
         self.__life=6
         self.__score_game = 0  
         self.__score_round = 0     
-        self.__cards_Chosen = M_CardsSet  
+        self.__cards_Chosen : M_CardsSet  
         self.__rules=M_Rules
         super().__init__(id,pseudo,color,bet,solde,cardsSet)
         

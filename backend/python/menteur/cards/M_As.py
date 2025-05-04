@@ -1,4 +1,4 @@
-# from python.shared_games_cards.shared_cards.As import As
+# from shared_games_cards.shared_cards.As import As
 
 class M_As(As):
     def __init__(self, color: str, ):

@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from python.shared_games_cards.shared_cards.ACard import ACard
+from shared_games_cards.shared_cards.ACard import ACard
 
 #cette classe est une pile de carte, elle contient une liste de carte
 # elle est utilisée pour les cartes qui sont posées sur la table

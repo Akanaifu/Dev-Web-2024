@@ -1,5 +1,5 @@
-from python.shared_games_cards.shared_cards.ACard import ACard
-from typing import List
+# from shared_games_cards.shared_cards.ACard import ACard
+# from typing import List
 
 #cette classe est une liste de carte
 # elle est utilisée pour les cartes qui sont dans la main du joueur

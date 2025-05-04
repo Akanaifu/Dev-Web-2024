@@ -1,6 +1,6 @@
 import random
-from python.menteur.rules.M_Board import M_Board
-from python.shared_games_cards.shared_cards.ACard import ACard
+from menteur.rules.M_Board import M_Board
+from shared_games_cards.shared_cards.ACard import ACard
 
 
 class M_Rules:

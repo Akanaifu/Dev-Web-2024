@@ -1,9 +1,9 @@
 # import random
-# from python.menteur.cards import M_As, M_Joker, M_King, M_Queen
-# from python.menteur.cards.M_CardsSet import M_CardsSet
-# from python.menteur.rules.M_Rules import M_Rules
-# from python.menteur.rules.M_Board import M_Board
-# from python.shared_games_cards.shared_cards.ACard import ACard
+# from menteur.cards import M_As, M_Joker, M_King, M_Queen
+# from menteur.cards.M_CardsSet import M_CardsSet
+# from menteur.rules.M_Rules import M_Rules
+# from menteur.rules.M_Board import M_Board
+# from shared_games_cards.shared_cards.ACard import ACard
 
 class M_Manager_Cards:
     

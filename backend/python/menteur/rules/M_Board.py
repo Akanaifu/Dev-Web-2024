@@ -1,8 +1,10 @@
-from python.menteur.cards.M_CardsStack import M_CardsStack
-from python.menteur.cards.M_CardsSet import M_CardsSet
-from python.menteur.player.M_APlayer import M_APlayer
 
-# from python.menteur.rules.M_Manager_Cards import M_Manager_Cards
+from menteur.cards.M_CardsStack import M_CardsStack
+from menteur.cards.M_CardsSet import M_CardsSet
+
+# from common_imports import M_APlayer
+
+# from menteur.rules.M_Manager_Cards import M_Manager_Cards
 
 
 class M_Board():
@@ -10,6 +12,7 @@ class M_Board():
     Class representing the game board.
     """
     def __init__(self):
+        from menteur.player.M_APlayer import M_APlayer
         self.__cardsSet = [M_CardsSet]  # Placeholder for cards on the board
         self.__players = [M_APlayer]  # Placeholder for players in the game
         self.__cardsStack = [M_CardsStack]
