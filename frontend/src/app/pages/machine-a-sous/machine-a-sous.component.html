@@ -55,10 +55,13 @@
         [class]="combo.class"
         [class.highlight]="highlightCombination?.includes(combo.id)"
       >
-        <td>{{ combo.title }}</td>
-        <td>{{ combo.combination }}</td>
-        <td>{{ combo.multiplier }}</td>
-        <td>{{ combo.example }}</td>
+        <td *ngIf="combo.id === 'combo-4.5'" colspan="4">{{ combo.title }}</td>
+        <ng-container *ngIf="combo.id !== 'combo-4.5'">
+          <td>{{ combo.title }}</td>
+          <td>{{ combo.combination }}</td>
+          <td>{{ combo.multiplier }}</td>
+          <td>{{ combo.example }}</td>
+        </ng-container>
       </tr>
     </tbody>
   </table>

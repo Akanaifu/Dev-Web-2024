@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 100vh;
+  height: 500px;
 }
 
 .slot-machine {
@@ -80,7 +80,13 @@ tbody tr:hover {
   color: white;
   font-weight: bold;
 }
-
+.loss-row {
+  text-align: center;
+  font-weight: bold;
+  color: red;
+  background-color: #ffe6e6; /* Rouge clair */
+  columns: 1;
+}
 /* Style pour le gain */
 .gain-display {
   display: inline-block;
