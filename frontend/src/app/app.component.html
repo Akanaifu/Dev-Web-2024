@@ -3,13 +3,11 @@
 <div class="app-container">
   <!-- Votre contenu principal ici -->
   
-  <button class="chat-button" (click)="toggleChat()">
-    <i class="fas fa-comments"></i> Chat
-  </button>
-  <!-- il faut ajouter sa pour ne pas affichier le chat quand ont est pas connecter
+  <!-- Conditionnellement afficher le bouton de chat seulement si un utilisateur est connecté -->
   @if (loginService.user()) {
-  <app-chat-multy #chatComponent></app-chat-multy>
-  } @else {}
--->
-<app-chat-multy #chatComponent></app-chat-multy>
+    <button class="chat-button" (click)="toggleChat()">
+      <i class="fas fa-comments"></i> Chat
+    </button>
+    <app-chat-multy #chatComponent></app-chat-multy>
+  }
 </div>

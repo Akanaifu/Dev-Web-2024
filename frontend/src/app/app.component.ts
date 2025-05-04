@@ -4,7 +4,7 @@ import { NavigationBarComponent } from './component/navigation-bar/navigation-ba
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { ChatComponent } from './component/chat-multy/chat-multy.component';
-
+import { LoginService } from './services/login/login.service';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +22,8 @@ import { ChatComponent } from './component/chat-multy/chat-multy.component';
 
 export class AppComponent {
   @ViewChild('chatComponent') chatComponent!: ChatComponent;
+
+  constructor(public loginService: LoginService) {}
 
   toggleChat(): void {
     this.chatComponent.toggle();

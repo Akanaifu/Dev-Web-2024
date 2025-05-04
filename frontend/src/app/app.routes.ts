@@ -18,12 +18,12 @@ export const routes: Routes = [
   {
     path: 'machine',
     component: MachineASousComponent,
-    //canActivate: [isLoggedInGuard],
+    canActivate: [isLoggedInGuard],
   }, // page de la machine à sous
   {
     path: 'stats',
     component: StatsComponent,
-    // canActivate: [isLoggedInGuard],
+    canActivate: [isLoggedInGuard],
   }, // page de stats
   { path: '**', component: NotFoundComponent },
   // page d'erreur route inexistante. A mettre à la fin !!!!!!!!
