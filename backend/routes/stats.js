@@ -1,5 +1,5 @@
 const express = require("express");
-const db = require("../db/config/dbConfig"); // Utilisation de MariaDB
+const db = require("../config/dbConfig"); // Utilisation de MariaDB
 const router = express.Router();
 
 router.get("/", async (req, res) => {

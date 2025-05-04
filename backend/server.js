@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const db = require("./db/config/dbConfig");
+const db = require("./config/dbConfig");
 const sessionRoutes = require("./routes/sessions");
 const dataRoutes = require("./routes/data");
 const userRoutes = require("./routes/users"); // Import des routes utilisateurs

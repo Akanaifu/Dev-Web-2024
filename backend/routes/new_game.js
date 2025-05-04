@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../db/config/dbConfig");
+const db = require("../config/dbConfig");
 
 // Endpoint pour ajouter une nouvelle partie
 router.post("/add", async (req, res) => {
