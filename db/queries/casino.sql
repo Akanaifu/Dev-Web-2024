@@ -1,11 +1,12 @@
 CREATE TABLE `User` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(50) NULL,
   `name` VARCHAR(50) NULL DEFAULT 'no_name',
   `firstname` VARCHAR(50) NULL DEFAULT 'no_first_name',
   `birthdate` DATETIME NULL,
   `solde` FLOAT NOT NULL DEFAULT '0',
   `email` VARCHAR(50) NOT NULL,
-  `password` VARCHAR(50) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`user_id`)
 ) COLLATE='utf8mb4_uca1400_ai_ci';
 

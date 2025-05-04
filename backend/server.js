@@ -9,6 +9,7 @@ const statsRoutes = require("./routes/stats");
 const gameRoutes = require("./routes/games");
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
+const registerRoutes = require("./routes/register"); 
 const { verifyToken } = require("./middlewares/auth");
 const app = express();
 const cookieParser = require('cookie-parser');
@@ -31,7 +32,8 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 // Routes
-app.use("/sessions", sessionRoutes); // Cannot GET /sessions
+app.use("/sessions", sessionRoutes); 
+app.use("/register", registerRoutes);
 app.use("/data", dataRoutes);
 app.use("/users", userRoutes); // Enregistrement des routes utilisateurs
 app.use("/transactions", transactionRoutes);
