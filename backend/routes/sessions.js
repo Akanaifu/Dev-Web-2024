@@ -92,9 +92,13 @@ router.get('/me', verifyToken, async (req, res) => {
 
 // ⚠️ GET/LOGOUT ⚠️
 router.get('/logout', verifyToken, (req, res) => {
-  const token = req.headers['authorization'].split(' ')[1];
+  const token = req.cookies.auth_token;
   // Ajouter le token à la liste noire
   blacklistedTokens.add(token);
+  
+  // Effacer le cookie
+  res.clearCookie('auth_token');
+  
   console.log('Déconnexion utilisateur');
   res.json({ success: true });
 });

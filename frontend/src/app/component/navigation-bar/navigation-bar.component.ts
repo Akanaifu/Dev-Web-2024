@@ -29,7 +29,17 @@ export class NavigationBarComponent implements OnInit {
     }
   }
 
+  // Dans navigation-bar.component.ts
   logout() {
-    this.loginService.logout().subscribe();
+    this.loginService.logout().subscribe({
+      next: () => {
+        console.log('Déconnexion réussie');
+        // Rediriger vers la page d'accueil ou de connexion
+        window.location.href = '/login';
+      },
+      error: (err) => {
+        console.error('Erreur lors de la déconnexion', err);
+      }
+    });
   }
 }

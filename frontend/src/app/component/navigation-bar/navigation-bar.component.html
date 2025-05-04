@@ -5,16 +5,19 @@
       ><img src="favicon.ico" alt="Logo" class="logo-image"
     /></a>
   </div>
-  @if (loginService.user()) {
+@if (loginService.user()) {
   <p class="gambler-login">Bonjour {{ loginService.user()?.username }}</p>
-  } @else {
+  <div class="gambler">
+    <button mat-button (click)="logout()"><i class="fa-solid fa-sign-out-alt"></i> Déconnexion</button>
+  </div>
+} @else {
   <div class="gambler">
     <button mat-button routerLink="/login"><i></i>Login</button>
   </div>
   <div class="gambler">
     <button mat-button routerLink="/register"><i></i>Sign Up</button>
   </div>
-  }
+}
   <div class="menu-container">
     <button mat-button [matMenuTriggerFor]="menu">
       <i class="fa-solid fa-bars"></i> Menu
