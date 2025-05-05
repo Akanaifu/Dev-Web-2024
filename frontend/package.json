@@ -26,9 +26,11 @@
     "@angular/ssr": "^19.2.3",
     "express": "^4.18.2",
     "firebase": "^11.6.0",
+    "http": "^0.0.1-security",
     "moment": "^2.30.1",
     "ngx-socket-io": "^4.8.5",
     "rxjs": "~7.8.0",
+    "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

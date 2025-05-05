@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable, of } from 'rxjs';
+import { default as io } from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root',
@@ -18,32 +19,20 @@ export class SocketService {
   connect(): void {
     if (this.isBrowser) {
       if (!this.socket) {
-        // Import socket.io-client dynamiquement seulement côté navigateur
-        import('socket.io-client').then((io) => {
-          console.log('Connecting to socket server at:', this.socketUrl);
-          const { default: ioClient } = io;
-          this.socket = ioClient(this.socketUrl, {
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000,
-            transports: ['websocket'],
-          });
-
-          // Logs de débogage pour connexion socket
-          this.socket.on('connect', () => {
-            console.log('Socket connected with ID:', this.socket.id);
-          });
-
-          this.socket.on('connect_error', (error: any) => {
-            console.error('Socket connection error:', error);
-          });
-
-          this.socket.on('reconnect_attempt', (attempt: number) => {
-            console.log('Socket reconnection attempt:', attempt);
-          });
+        console.log('Connexion au serveur socket à:', this.socketUrl);
+        this.socket = io(this.socketUrl, {
+          reconnectionAttempts: 5,
+          reconnectionDelay: 1000,
+          transports: ['websocket'],
         });
-      } else if (this.socket.disconnected) {
-        console.log('Reconnecting existing socket');
-        this.socket.connect();
+
+        this.socket.on('connect', () => {
+          console.log('Socket connecté avec ID:', this.socket.id);
+        });
+
+        this.socket.on('connect_error', (error: any) => {
+          console.error('Erreur de connexion socket:', error);
+        });
       }
     }
   }

@@ -29,18 +29,20 @@ export class ChatComponent implements OnInit, OnDestroy {
     public loginService: LoginService, // Ajouté correctement ici
     @Inject(PLATFORM_ID) platformId: Object
   ) {
-    this.isBrowser = isPlatformBrowser(platformId); //ici bizarre que isBrowser est false
+    this.isBrowser = isPlatformBrowser(platformId);
     
     // Créer l'objet Audio uniquement dans un environnement navigateur
     if (this.isBrowser) {
-      this.audioElement = new Audio('/audio/message-tone.mp3');
-
-      this.audioElement.addEventListener('error', (e: Event) => {
-        const error = e.target as HTMLMediaElement;
-        console.error('Audio error code:', error.error);
-        console.error('Audio network state:', error.networkState);
-        console.error('Audio ready state:', error.readyState);
-      });
+      try {
+        this.audioElement = new Audio('./assets/audio/message-tone.mp3');
+        
+        // Ajouter un gestionnaire pour les erreurs
+        this.audioElement.addEventListener('error', (e: any) => {
+          console.error('Erreur audio:', e);
+        });
+      } catch (error) {
+        console.error('Erreur lors de la création de l\'élément audio:', error);
+      }
     }
   }
 
