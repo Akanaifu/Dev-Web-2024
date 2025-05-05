@@ -1,9 +1,14 @@
-// Service pour gérer les connexions WebSocket
 class SocketService {
     constructor(io) {
       this.io = io;
       this.socketConnected = new Map();
       this.ipAddresses = new Map();
+      this.roomCounts = {
+        'general': 0,
+        'machine-a-sous': 0,
+        'roulette': 0,
+        'poker': 0
+      };
       
       // Configurer le nettoyage périodique
       this.setupPeriodicCleanup();
@@ -35,8 +40,13 @@ class SocketService {
         socket: socket,
         ip: clientIp,
         connected: true,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        currentRoom: 'general' // Par défaut, rejoindre le salon général
       });
+      
+      // Rejoindre le salon par défaut
+      socket.join('general');
+      this.roomCounts['general']++;
       
       // Envoyer le nombre de clients uniques
       this.broadcastClientCount();
@@ -50,6 +60,10 @@ class SocketService {
       // Gérer la déconnexion
       socket.on('disconnect', () => {
         console.log(`Socket déconnecté: ${clientId} depuis ${clientIp}`);
+        
+        // Récupérer le salon actuel avant de supprimer
+        const currentRoom = this.socketConnected.get(clientId)?.currentRoom || 'general';
+        this.roomCounts[currentRoom]--;
         
         // Mettre à jour les connexions pour cette IP
         if (this.ipAddresses.has(clientIp)) {
@@ -68,15 +82,67 @@ class SocketService {
         this.broadcastClientCount();
       });
       
+      // Gérer les changements de salon
+      socket.on('join-room', (roomName) => {
+        // Vérifier si le salon est valide
+        if (!['general', 'machine-a-sous', 'roulette', 'poker'].includes(roomName)) {
+          socket.emit('error', { message: 'Salon non valide' });
+          return;
+        }
+        
+        // Récupérer le salon actuel
+        const clientData = this.socketConnected.get(clientId);
+        if (!clientData) return;
+        
+        const oldRoom = clientData.currentRoom;
+        
+        // Quitter l'ancien salon
+        socket.leave(oldRoom);
+        this.roomCounts[oldRoom]--;
+        
+        // Rejoindre le nouveau salon
+        socket.join(roomName);
+        this.roomCounts[roomName]++;
+        
+        // Mettre à jour les données du client
+        clientData.currentRoom = roomName;
+        this.socketConnected.set(clientId, clientData);
+        
+        // Informer le client qu'il a changé de salon
+        socket.emit('room-changed', { 
+          room: roomName,
+          usersInRoom: this.roomCounts[roomName] 
+        });
+        
+        // Diffuser les mises à jour des nombres de clients
+        this.broadcastClientCount();
+        
+        console.log(`${clientId} a changé de salon: ${oldRoom} -> ${roomName}`);
+      });
+      
       // Gérer les messages
       socket.on('message', (data) => {
-        console.log(`Message reçu de ${clientId}:`, data);
-        socket.broadcast.emit('chat-message', data);
+        console.log(`Message reçu de ${clientId} dans le salon ${data.room || 'inconnu'}:`, data.message);
+        
+        const clientData = this.socketConnected.get(clientId);
+        if (!clientData) return;
+        
+        const room = data.room || clientData.currentRoom;
+        
+        // Diffuser uniquement dans le salon concerné
+        socket.to(room).emit('chat-message', {
+          ...data,
+          room: room
+        });
       });
       
       // Gérer le feedback de frappe
       socket.on("feedback", (data) => {
-        socket.broadcast.emit('feedback', data);
+        const clientData = this.socketConnected.get(clientId);
+        if (!clientData) return;
+        
+        // Diffuser uniquement dans le salon actuel
+        socket.to(clientData.currentRoom).emit('feedback', data);
       });
     }
     
@@ -84,7 +150,12 @@ class SocketService {
     broadcastClientCount() {
       const uniqueClients = new Set([...this.ipAddresses.keys()]).size;
       console.log(`Nombre total de clients uniques: ${uniqueClients}`);
+      
+      // Diffuser le nombre total
       this.io.emit('clients-total', uniqueClients);
+      
+      // Diffuser le nombre par salon
+      this.io.emit('room-stats', this.roomCounts);
     }
     
     // Configurer le nettoyage périodique des sockets inactifs
@@ -97,6 +168,11 @@ class SocketService {
           // Si le socket est inactif depuis plus de 30 minutes
           if (now - clientData.timestamp > 30 * 60 * 1000) {
             console.log(`Nettoyage du socket inactif: ${id}`);
+            
+            // Mettre à jour le compteur de salon
+            const room = clientData.currentRoom;
+            this.roomCounts[room]--;
+            
             this.socketConnected.delete(id);
             cleaned++;
             
@@ -114,12 +190,10 @@ class SocketService {
         }
         
         if (cleaned > 0) {
-          const uniqueClients = new Set([...this.ipAddresses.keys()]).size;
-          console.log(`Sessions inactives nettoyées: ${cleaned}, Clients uniques restants: ${uniqueClients}`);
-          this.io.emit('clients-total', uniqueClients);
+          this.broadcastClientCount();
         }
       }, 5 * 60 * 1000); // Vérifier toutes les 5 minutes
     }
-  }
+}
   
-  module.exports = SocketService;
+module.exports = SocketService;

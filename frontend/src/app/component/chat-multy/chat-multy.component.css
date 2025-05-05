@@ -434,3 +434,230 @@
         font-size: 15px;
     }
 }
+
+.room-selector {
+    display: flex;
+    margin-left: auto;
+    position: relative;
+  }
+  
+  .room-tabs {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2px;
+    margin-left: auto;
+  }
+  
+  .room-tabs button {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 5px 10px;
+    margin: 0 2px;
+    border-radius: 15px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .room-tabs button.active {
+    background-color: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  }
+  
+  .room-tabs button:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  .room-tabs button .mat-badge-content {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 10px;
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
+    background-color: #ffd700;
+    color: #3a0cbb;
+  }
+  
+  /* Statistiques des salons */
+  .chat-stats {
+    background-color: rgba(58, 12, 187, 0.05);
+    padding: 5px 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  
+  .room-stats {
+    display: flex;
+    justify-content: space-around;
+    font-size: 12px;
+    color: rgba(58, 12, 187, 0.7);
+    margin-bottom: 10px;
+  }
+  
+  .room-stats span {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .room-stats span:hover {
+    background-color: rgba(255, 215, 0, 0.2);
+    transform: translateY(-2px);
+    cursor: pointer;
+  }
+  
+  /* Style pour les messages système */
+  .message-system {
+    list-style: none;
+    padding: 8px 15px;
+    margin: 5px auto;
+    max-width: 80%;
+    text-align: center;
+    font-size: 12px;
+    background-color: rgba(58, 12, 187, 0.05);
+    border-radius: 15px;
+    color: rgba(58, 12, 187, 0.7);
+    font-style: italic;
+  }
+  
+  /* Animation pour les changements de salon */
+  @keyframes roomChange {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  
+  .message-container {
+    animation: roomChange 0.3s ease-out;
+  }
+  
+  /* Style pour indiquer le salon actuel */
+  .current-room-indicator {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(58, 12, 187, 0.7);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 10px;
+    opacity: 0.7;
+  }
+
+  /* Style pour l'en-tête du chat */
+.name {
+    display: flex;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 12px;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(58, 12, 187, 0.7), rgba(58, 12, 187, 0.9));
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 24px 24px 0 0;
+  }
+  
+  .name > span {
+    color: #ffd700;
+    margin-right: 10px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Styles pour le sélecteur de salon */
+  .room-selector {
+    display: flex;
+    width: 100%;
+    background-color: rgba(58, 12, 187, 0.1);
+    padding: 8px 10px;
+    position: relative;
+    border-bottom: 1px solid rgba(58, 12, 187, 0.2);
+  }
+  
+  .room-tabs {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    padding: 4px;
+  }
+  
+  .room-tabs button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(58, 12, 187, 0.7);
+    padding: 8px 10px;
+    margin: 0 2px;
+    border-radius: 15px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .room-tabs button.active {
+    background-color: rgba(58, 12, 187, 0.15);
+    color: rgba(58, 12, 187, 0.9);
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .room-tabs button:hover {
+    background-color: rgba(58, 12, 187, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  .room-tabs button .mat-badge-content {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 10px;
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
+    background-color: #ffd700;
+    color: #3a0cbb;
+  }
+  
+  /* Indicateur de salon actuel */
+  .current-room-indicator {
+    text-align: center;
+    padding: 5px;
+    background-color: rgba(58, 12, 187, 0.05);
+    color: rgba(58, 12, 187, 0.7);
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(58, 12, 187, 0.1);
+  }
+  
+  /* Ajustement de la zone de messages pour qu'elle s'adapte à la nouvelle disposition */
+  .message-container {
+    height: 300px; /* Réduire légèrement la hauteur pour compenser l'espace des onglets */
+  }
+  
+  /* Animation pour le changement de salon */
+  @keyframes roomChange {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  
+  .message-container {
+    animation: roomChange 0.3s ease-out;
+  }
