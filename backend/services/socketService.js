@@ -41,7 +41,8 @@ class SocketService {
         ip: clientIp,
         connected: true,
         timestamp: Date.now(),
-        currentRoom: 'general' // Par défaut, rejoindre le salon général
+        currentRoom: 'general',
+        previousRoom: null
       });
       
       // Rejoindre le salon par défaut
@@ -62,16 +63,19 @@ class SocketService {
         console.log(`Socket déconnecté: ${clientId} depuis ${clientIp}`);
         
         // Récupérer le salon actuel avant de supprimer
-        const currentRoom = this.socketConnected.get(clientId)?.currentRoom || 'general';
-        this.roomCounts[currentRoom]--;
-        
-        // Mettre à jour les connexions pour cette IP
-        if (this.ipAddresses.has(clientIp)) {
-          const connections = this.ipAddresses.get(clientIp) - 1;
-          if (connections <= 0) {
-            this.ipAddresses.delete(clientIp);
-          } else {
-            this.ipAddresses.set(clientIp, connections);
+        const clientData = this.socketConnected.get(clientId);
+        if (clientData) {
+          const currentRoom = clientData.currentRoom || 'general';
+
+          this.roomCounts[currentRoom] = Math.max(0, this.roomCounts[currentRoom] - 1);
+          // Mettre à jour les connexions pour cette IP
+          if (this.ipAddresses.has(clientIp)) {
+            const connections = this.ipAddresses.get(clientIp) - 1;
+            if (connections <= 0) {
+              this.ipAddresses.delete(clientIp);
+            } else {
+              this.ipAddresses.set(clientIp, connections);
+            }
           }
         }
         
@@ -98,13 +102,14 @@ class SocketService {
         
         // Quitter l'ancien salon
         socket.leave(oldRoom);
-        this.roomCounts[oldRoom]--;
+        this.roomCounts[oldRoom] = Math.max(0, this.roomCounts[oldRoom] - 1);
         
         // Rejoindre le nouveau salon
         socket.join(roomName);
         this.roomCounts[roomName]++;
         
         // Mettre à jour les données du client
+        clientData.previousRoom = oldRoom;
         clientData.currentRoom = roomName;
         this.socketConnected.set(clientId, clientData);
         

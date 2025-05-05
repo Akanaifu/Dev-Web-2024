@@ -61,8 +61,12 @@ export class SocketService {
         
         // Écouter les confirmations de changement de salon
         this.socket.on('room-changed', (data: {room: string, usersInRoom: number}) => {
-          console.log('Salon changé pour:', data.room);
+          console.log('Salon changé pour:', data.room, 'avec', data.usersInRoom, 'utilisateurs');
           this.currentRoomSubject.next(data.room);
+
+          const updatedStats = {...this.roomStatsSubject.value};
+          updatedStats[data.room] = data.usersInRoom;
+          this.roomStatsSubject.next(updatedStats);
         });
       }
     }
