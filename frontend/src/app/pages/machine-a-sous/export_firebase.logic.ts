@@ -29,6 +29,7 @@ export class FirebaseSendService {
         solde: solde,
         joueurId: joueurId,
         partieJouee: false,
+        partieAffichee: false,
         combinaisons: [],
         gain: 0,
       };

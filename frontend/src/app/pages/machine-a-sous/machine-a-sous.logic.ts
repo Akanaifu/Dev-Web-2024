@@ -69,6 +69,30 @@ export class MachineASousLogic {
       example: '111 / 222',
       class: 'im-pair',
     },
+    {
+      id: 'combo-4.5',
+      title: 'Perte de gain',
+      combination: '',
+      multiplier: 0,
+      class: 'loss-row',
+      example: 'Perte de gain',
+    },
+    {
+      id: 'combo-6',
+      title: 'Un seul 7',
+      combination: 'x7x',
+      multiplier: 0.5,
+      example: '172',
+      class: 'un-seul-7',
+    },
+    {
+      id: 'combo-7',
+      title: 'Double 7',
+      combination: 'x77',
+      multiplier: 1,
+      example: '177 / 771',
+      class: 'double-7',
+    },
   ];
 
   afficheurs: Afficheur[] = [
@@ -112,16 +136,23 @@ export class MachineASousLogic {
           .map((key) => ({ key, ...data[key] }));
         console.log('Sorted parts:', sortedParts);
         // Filtrer les parties où partieAffichee est à False
-        const unshownParts = sortedParts.filter((part) => !part.partieAffichee);
-
+        const unshownParts = sortedParts.filter(
+          (part) => !part.partieAffichee && part.partieJouee
+        );
+        const shownParts = sortedParts.filter(
+          (part) => part.partieAffichee && part.partieJouee
+        );
         if (unshownParts.length === 0) {
-          // Si aucune partie n'est trouvée, afficher dernière partie
-          const lastPart = sortedParts[sortedParts.length - 1];
+          // Si aucune partie non affichée n'est trouvée, ajouter la dernière partie jouée
+          const lastPart = shownParts[shownParts.length - 1];
           if (lastPart) {
             unshownParts.push(lastPart);
             console.log(
-              'Aucune partie non affichée trouvée. Affichage de la dernière partie.'
+              'Aucune partie non affichée trouvée. Dernière partie ajoutée à unshownParts :',
+              lastPart
             );
+          } else {
+            console.warn('Aucune partie disponible dans les données Firebase.');
           }
         }
 
@@ -130,7 +161,6 @@ export class MachineASousLogic {
         const iterate = () => {
           if (index < unshownParts.length) {
             const part = unshownParts[index];
-
             // Afficher les combinaisons et gérer l'affichage
             const allCombinations: string[] = part.combinaison || [];
             const f = this.computeQuadraticFunction(allCombinations.length);
@@ -158,7 +188,6 @@ export class MachineASousLogic {
 
                 // Mettre à jour partieAffichee à True dans la base de données
                 part.partieAffichee = true;
-                console.log(part);
                 this.addNewGameToBackend(
                   part.joueurId[part.joueurId.length - 1] || 0, // Vérifiez que playerId est défini
                   part.mise || 0, // Vérifiez que solde est un nombre
@@ -205,7 +234,7 @@ export class MachineASousLogic {
     const digits = this.afficheurs.map((a) => a.currentChiffre);
     const [a, b, c] = digits;
     const combination = digits.join('');
-
+    let presence_event = true;
     const matched: string[] = [];
 
     if (combination === '777') {
@@ -216,6 +245,8 @@ export class MachineASousLogic {
       matched.push('combo-3');
     } else if (a === c) {
       matched.push('combo-4');
+    } else {
+      presence_event = false;
     }
 
     const isAllEven = digits.every((d) => d % 2 === 0);
@@ -224,6 +255,17 @@ export class MachineASousLogic {
 
     if ((isAllEven || isAllOdd) && isNotTriple) {
       matched.push('combo-5');
+    } else {
+      presence_event = false;
+    }
+
+    let count_sept = digits.filter((digit) => digit === 7).length;
+    if (!presence_event) {
+      if (count_sept === 1) {
+        matched.push('combo-6');
+      } else if (count_sept === 2) {
+        matched.push('combo-7');
+      }
     }
 
     this.highlightCombination = matched.length ? matched.join(', ') : null;
