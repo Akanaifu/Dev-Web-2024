@@ -13,7 +13,7 @@ export class RouletteLogic {
     private numberRed=[1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
     private numberBlack=[2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
     private numberGreen=[0];
-    private numberMatrix = [0, 26, 3, 35, 12, 28, 7, 29, 18, 22, 9, 31, 14, 20, 1, 33, 16, 24, 5, 10, 23, 8, 30, 11, 36, 13, 27, 6, 34, 17, 25, 2, 21, 4, 19, 15, 32];
+    private numberMatrix = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
 
     constructor(db: Database, newGameService: NewGameService, bet: number,solde:number) {
         this.db = db;
@@ -22,7 +22,64 @@ export class RouletteLogic {
         this.solde = solde;
     }
 
+    starGame(): void {
+
+        
+
+    }
+
+    creatWheel(): void {
+        // Créez la roulette ici
+        let wheel = document.getElementsByClassName('roulette')[0] as HTMLElement;
     
+        let outWheel = document.createElement('div');
+        outWheel.setAttribute('class', 'outWheel');
+        wheel.appendChild(outWheel);
+
+        for (let i = 0; i < this.numberMatrix.length; i++) {
+            let numbers = i + 1;
+            let checkSpan : string;
+            if (this.numberMatrix[i] < 10) {
+                checkSpan= 'single';
+            }
+            else{
+                checkSpan= 'double';
+            }
+            let numberWheel = document.createElement('div');
+            numberWheel.setAttribute('id', 'numberWheel ' + numbers);
+            numberWheel.setAttribute('class', 'numberWheel');
+            let span = document.createElement('span');
+            span.setAttribute('class', checkSpan);
+            span.innerText = this.numberMatrix[i].toString();
+            numberWheel.append(span);
+            let area = document.createElement('div');
+            area.setAttribute('class', 'area');
+            numberWheel.append(area);
+            wheel.appendChild(numberWheel);
+        }
+        // Créez le rectangle et la balle ici
+        let rectangle = document.createElement('div');
+        rectangle.setAttribute('class', 'rectangle');
+        wheel.appendChild(rectangle);
+
+        
+        // Créez la balle ici
+        let ball = document.createElement('div');
+        ball.setAttribute('class', 'ball');
+
+        // Suivi de la balle
+        let ballTracking = document.createElement('div');
+        ballTracking.setAttribute('class', 'ballTracking');
+        
+        ballTracking.append(ball);
+        wheel.appendChild(ballTracking);
+
+
+
+
+        
+
+    }
 
     getBet(): number {
         return this.bet;
