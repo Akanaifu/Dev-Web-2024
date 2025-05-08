@@ -1,0 +1,30 @@
+name: casino
+services:
+  frontend:
+    images: nginx
+    ports:
+      - "80:80
+    volumes:
+      - ./../frontend/dist/frontend/browser:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    network:
+      - dmz
+
+  db:
+    images: mariadb
+    ports:
+      - "3306:3306"
+    netowrk:
+      - secure
+    
+  backend:
+    images: node
+    ports: 
+      - "3000:3000"
+    volumes:
+      - ./b
+    env_file:
+      - db.env
+    network:
+      - dmz
+      - secure
