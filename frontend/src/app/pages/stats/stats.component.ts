@@ -32,6 +32,7 @@ export class StatsComponent implements AfterViewInit {
 
   selectedPeriod: string = 'jour';
   selectedMonth: number = new Date().getMonth(); // new property
+  selectedYear: number = 2025; // Modified default year to 2025 so that data shows up in the "année" graph.
 
   get totalGain(): number {
     return this.stats.reduce((total, stat) => total + stat.gain, 0);
@@ -144,18 +145,19 @@ export class StatsComponent implements AfterViewInit {
       }
       return daysArray;
     } else if(this.selectedPeriod === 'année') {
-      // Nouvelle logique : afficher pour chaque mois de l'année jusqu'au mois en cours
+      // Updated logic: display for each month of the selected year.
       const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth(); // 0-indexed
+      const yearToDisplay = this.selectedYear;
+      const lastMonth = (yearToDisplay === currentYear) ? today.getMonth() : 11;
       const monthsArray: { label: string; gain: number }[] = [];
-      for (let m = 0; m <= currentMonth; m++) {
+      for (let m = 0; m <= lastMonth; m++) {
         const monthGain = this.stats
           .filter(s => {
             const d = new Date(s.timestamp);
-            return d.getFullYear() === currentYear && d.getMonth() === m;
+            return d.getFullYear() === yearToDisplay && d.getMonth() === m;
           })
           .reduce((sum, s) => sum + s.gain, 0);
-        const label = `${currentYear}-${("0" + (m + 1)).slice(-2)}`;
+        const label = `${yearToDisplay}-${("0" + (m + 1)).slice(-2)}`;
         monthsArray.push({ label: label, gain: monthGain });
       }
       return monthsArray;
