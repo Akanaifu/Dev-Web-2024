@@ -5,7 +5,7 @@ echo ----------------------------------------
 
 # Configuration
 DB_NAME=casino
-MYSQL_USER=dev
+MYSQL_USER=root
 MYSQL_PASSWORD=casino
 SQL_STRUCTURE=casino.sql
 SQL_DATA=data-casino.sql
