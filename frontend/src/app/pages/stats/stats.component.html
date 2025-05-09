@@ -1,16 +1,51 @@
 <div class="stats-page">
   <h1>Statistiques</h1>
   <div class="stats-container">
+
     <div class="stats-card">
       <h2>Graphe win rates</h2>
       <p>Description du graph</p>
-      <mat-slider min="1" max="5" step="0.5">
+      <!--<mat-slider min="1" max="5" step="0.5">
         <input matSliderThumb value="1.5">
-        </mat-slider>
+      </mat-slider>-->
     </div>
+
     <div class="stats-card">
+
       <h2>Graphe gain d'argent et perte</h2>
-      <p>Description du graph</p>
+
+      <!-- First select for period filtering -->
+      <select [(ngModel)]="selectedPeriod" (change)="updateChart()">
+        <option value="jour">Jour</option>
+        <option value="semaine">Semaine</option>
+        <option value="mois">Mois</option>
+        <option value="année">Année</option>
+      </select>
+
+      <!-- New select for choosing the month when "mois" is selected -->
+      <select [(ngModel)]="selectedMonth" (change)="updateChart()" *ngIf="selectedPeriod==='mois'">
+        <option *ngFor="let m of [0,1,2,3,4,5,6,7,8,9,10,11]" [value]="m">
+          {{ ('0' + (m+1)).slice(-2) }} - {{
+            ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'][m]
+          }}
+        </option>
+      </select>
+
+      <!-- New select for choosing the year when "année" is selected -->
+      <select [(ngModel)]="selectedYear" (change)="updateChart()" *ngIf="selectedPeriod==='année'">
+        <option *ngFor="let y of [2020,2021,2022,2023,2024,2025]" [value]="y">{{ y }}</option>
+      </select>
+
+      <canvas #gainChartCanvas></canvas>
+
+      <div class="gain-summary">
+        <p>{{ gainSummary }}</p>
+      </div>
+      
+      <p>Total misé : {{ totalMise.toFixed(2) }}€</p>
+      
     </div>
+    
+
   </div>
 </div>
