@@ -47,9 +47,9 @@ networks:
         config:
           - subnet: 172.20.0.0/16
   secure:
-
-volumes:
-  db_data:
     ipam: 
       config:
         - subnet: 172.21.0.0/16
+
+volumes:
+  db_data:
