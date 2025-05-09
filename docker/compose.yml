@@ -16,15 +16,15 @@ services:
     env_file:
       - db.env
     ports:
-      - "3306:3306"
+      - "3310:3306"
     volumes:
-      - ./../db/queries/casino.sql:/docker-entrypoint-initdb.d/woodytoys.sql
-      - ./../db/queries/data-casino.sql:/docker-entrypoint-initdb.d/woodytoys.sql
+      - ./../db/queries/casino.sql:/docker-entrypoint-initdb.d/casino.sql
+      - ./../db/queries/data-casino.sql:/docker-entrypoint-initdb.d/data-casino.sql
       - ./mariadb-custom.cnf:/etc/mysql/conf.d/custom.cnf
       - db_data:/var/lib/mysql
     networks:
       - secure
-   
+
   backend:
     image: node:18
     ports:
@@ -44,10 +44,10 @@ services:
 networks:
   dmz:
     ipam:
-        config:
-          - subnet: 172.20.0.0/16
+      config:
+        - subnet: 172.20.0.0/16
   secure:
-    ipam: 
+    ipam:
       config:
         - subnet: 172.21.0.0/16
 
