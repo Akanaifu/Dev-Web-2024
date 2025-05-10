@@ -28,4 +28,5 @@ echo Importer les donnees depuis %SQL_DATA%...
 mysql -u %MYSQL_USER% -p%MYSQL_PASSWORD% %DB_NAME% < %SQL_DATA%
 
 echo Operation terminee.
+echo "⚠️  ATTENTION A NE PAS UTILISER EN PROD  ⚠️"
 pause

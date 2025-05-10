@@ -28,4 +28,5 @@ echo Importer les données depuis $SQL_DATA...
 mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $DB_NAME < $SQL_DATA
 
 echo Opération terminée.
+echo "⚠️  ATTENTION A NE PAS UTILISER EN PROD  ⚠️"
 read -p "Appuyez sur Entrée pour continuer..."
