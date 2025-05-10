@@ -1,3 +1,4 @@
+USE casino;
 -- Insérer des utilisateurs dans la table User
 INSERT INTO `User` (`username`, `name`, `firstname`, `birthdate`, `solde`, `email`, `password`) VALUES
 ('Doe1', 'Doe', 'John', '1990-01-01', 100.50, 'john.doe@example.com', '$2a$10$VwYVtW5Pk0KZxfPo4Un2QesjK.TQRr.5toP9tmabUNxBZ2URfeXxm'),
@@ -21,8 +22,7 @@ INSERT INTO `Banking_transaction` (`user_id`, `amount_banking`, `transaction_typ
 (1, 50.00, 1, 1), -- Dépôt réussi
 (2, 100.00, 1, 1), -- Dépôt réussi
 (3, 25.00, 2, 1), -- Retrait réussi
-(4, 500.00, 1, 0), -- Dépôt échoué
-(5, 1000.00, 2, 1); -- Retrait réussi
+(4, 500.00, 1, 0); -- Dépôt échoué
 
 -- Insérer des paris dans la table Bets
 INSERT INTO `Bets` (`user_id`, `game_session_id`, `amount`, `profit`, `bet_status`, `combinaison`) VALUES
@@ -30,7 +30,6 @@ INSERT INTO `Bets` (`user_id`, `game_session_id`, `amount`, `profit`, `bet_statu
 (2, 'PO01', 20.00, 0.00, 'lose', NULL),    -- Poker sans combinaison
 (3, 'RO01', 5.00, 15.00, 'win', NULL),     -- Roulette sans combinaison
 (4, 'BJ01', 100.00, 0.00, 'lose', NULL),   -- Blackjack sans combinaison
-(5, 'BA01', 200.00, 500.00, 'win', NULL),  -- Baccarat sans combinaison
 (1, 'MA02', 15.00, 75.00, 'win', '8,8,8'), -- Deuxième session de Machine à sous avec combinaison
 (2, 'PO02', 50.00, 0.00, 'lose', NULL),    -- Deuxième session de Poker sans combinaison
 (3, 'RO02', 10.00, 30.00, 'win', NULL);    -- Deuxième session de Roulette sans combinaison
@@ -40,5 +39,4 @@ INSERT INTO `Stats` (`user_id`, `num_games`, `num_wins`, `timestamp`) VALUES
 (1, 10, 5, '2025-04-20 10:00:00'),
 (2, 15, 7, '2025-04-19 15:30:00'),
 (3, 8, 3, '2025-04-18 20:45:00'),
-(4, 20, 10, '2025-04-17 12:00:00'),
-(5, 5, 2, '2025-04-16 18:00:00');
+(4, 20, 10, '2025-04-17 12:00:00');

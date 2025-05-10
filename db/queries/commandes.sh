@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "⚠️  ATTENTION A NE PAS UTILISER EN PROD  ⚠️"
 echo Pour linux
 echo ----------------------------------------
 

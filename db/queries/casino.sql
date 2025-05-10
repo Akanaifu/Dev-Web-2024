@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS casino;
+
+USE casino;
+
 CREATE TABLE `User` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(50) NULL,

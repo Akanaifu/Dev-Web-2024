@@ -1,5 +1,6 @@
 @echo off
 
+echo "⚠️  ATTENTION A NE PAS UTILISER EN PROD  ⚠️"
 echo pour windows
 echo ----------------------------------------
 
