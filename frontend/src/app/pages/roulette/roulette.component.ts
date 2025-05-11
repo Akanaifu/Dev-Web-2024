@@ -9,6 +9,8 @@ import { RouletteLogic } from './roulette.logic';
   styleUrl: './roulette.component.css'
 })
 export class RouletteComponent {
-    private firebaseSendService: FirebaseSendService;
-    logic: RouletteLogic;
+    // private firebaseSendService: FirebaseSendService;
+    // logic: RouletteLogic;
+
+
 }
