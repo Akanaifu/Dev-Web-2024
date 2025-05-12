@@ -33,7 +33,7 @@ export class MachineASousComponent implements OnInit {
     private http: HttpClient
   ) {
     const db = inject(Database);
-    this.logic = new MachineASousLogic(db, newGameService);
+    this.logic = new MachineASousLogic(db, newGameService, this.http);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }
 
