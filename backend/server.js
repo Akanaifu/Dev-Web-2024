@@ -5,13 +5,10 @@ const http = require("http");
 const socketIo = require('socket.io');
 const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 3000;
+
 // Configuration
 const db = require("./config/dbConfig");
 const socketConfig = require("./config/socketConfig");
-
-// Middlewares⚠️⚠️⚠️
-//const socketAuthMiddleware = require("./middlewares/socketAuth");⚠️⚠️⚠️
-//⚠️⚠️⚠️ probleme ici pas encore résolu ⚠️⚠️⚠️
 
 // Routes
 const sessionRoutes = require("./routes/sessions");
@@ -33,23 +30,29 @@ const server = http.createServer(app);
 const io = socketIo(server, socketConfig);
 
 // Configuration de Socket.IO
-//io.use(socketAuthMiddleware);
 const socketService = new SocketService(io);
 socketService.initialize();
 
-// Middleware pour CORS
+// ===== MIDDLEWARE CORS CORRIGÉ =====
 app.use((req, res, next) => {
   const allowedOrigins = process.env.ALLOWED_ORIGINS ? 
     process.env.ALLOWED_ORIGINS.split(',') : 
     ['http://localhost:4200'];
   
-  res.header("Access-Control-Allow-Origin", allowedOrigins);
+  const origin = req.headers.origin;
+  
+  // Vérifier si l'origine est autorisée
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
