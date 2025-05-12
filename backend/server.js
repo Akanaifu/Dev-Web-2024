@@ -1,8 +1,8 @@
 const express = require("express");
 const path = require("path");
 const http = require("http");
-const socketIo = require('socket.io');
-const cookieParser = require('cookie-parser');
+const socketIo = require("socket.io");
+const cookieParser = require("cookie-parser");
 
 // Configuration
 const db = require("./config/dbConfig");
@@ -22,7 +22,7 @@ const gameRoutes = require("./routes/games");
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
 const registerRoutes = require("./routes/register");
-
+const playerRoutes = require("./routes/get_id");
 // Services
 const SocketService = require("./services/socketService");
 
@@ -65,6 +65,7 @@ app.use("/stats", statsRoutes);
 app.use("/games", gameRoutes);
 app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
+app.use("/get_id", playerRoutes);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {

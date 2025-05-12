@@ -46,7 +46,7 @@ router.post("/add", async (req, res) => {
     const [gameSessionResult] = await db.execute(gameSessionQuery, [
       `Game for ${joueurId}`,
       gain, // Valeur par défaut pour bet_min
-      1000, // Valeur par défaut pour bet_max
+      gain, // Valeur par défaut pour bet_max
     ]);
 
     // Récupérer l'ID de la session de jeu nouvellement créée
@@ -72,7 +72,19 @@ router.post("/add", async (req, res) => {
       gain > solde ? "win" : "lose",
       combinaison.join(","),
     ]);
+    // Récupérer le solde actuel du joueur
+    const getSoldeQuery = `
+SELECT solde FROM User WHERE user_id = ?
+`;
+    const [userResult] = await db.execute(getSoldeQuery, [joueurId]);
+    const currentSolde = userResult[0]?.solde || 0;
 
+    // Mettre à jour le solde du joueur
+    const updatedSolde = currentSolde + gain;
+    const updateSoldeQuery = `
+UPDATE User SET solde = ? WHERE user_id = ?
+`;
+    await db.execute(updateSoldeQuery, [updatedSolde, joueurId]);
     res.status(201).json({ message: "Partie ajoutée avec succès." });
   } catch (error) {
     console.error("Erreur lors de l'ajout de la partie :", error);

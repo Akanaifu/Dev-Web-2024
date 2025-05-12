@@ -1,9 +1,10 @@
-import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
 import { NewGameService } from './new-game.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-machine-a-sous',
@@ -15,19 +16,52 @@ import { NewGameService } from './new-game.service';
 export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
   logic: MachineASousLogic;
+  playerInfo: {
+    user_id: number;
+    username: string;
+    email: string;
+    solde: number;
+  } = {
+    user_id: 0,
+    username: '',
+    email: '',
+    solde: 0,
+  };
 
-  constructor(private newGameService: NewGameService) {
+  constructor(
+    private newGameService: NewGameService,
+    private http: HttpClient
+  ) {
     const db = inject(Database);
     this.logic = new MachineASousLogic(db, newGameService);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }
 
   ngOnInit(): void {
-    this.logic.fetchFirebaseData();
+    this.getPlayerInfo();
   }
 
   ngOnDestroy(): void {
     clearInterval(this.logic.intervalId);
+  }
+
+  getPlayerInfo(): void {
+    this.http
+      .get<{ user_id: number; username: string; email: string; solde: number }>(
+        'http://localhost:3000/get_id/info'
+      )
+      .subscribe({
+        next: (data) => {
+          this.playerInfo = data;
+          console.log('Informations du joueur :', this.playerInfo);
+        },
+        error: (err) => {
+          console.error(
+            'Erreur lors de la récupération des informations :',
+            err
+          );
+        },
+      });
   }
 
   // Getter pour accéder aux propriétés de MachineASousLogic
@@ -54,9 +88,19 @@ export class MachineASousComponent implements OnInit {
   }
   // Méthode pour envoyer les données à Firebase
   sendPartieToFirebase(): void {
-    const playerId = Math.floor(Math.random() * 1000); // ID du joueur généré aléatoirement
-    // Remplacez cette valeur par la valeur réelle du solde du joueur
-    const solde = 1000; // Valeur hardcodée
+    if (!this.playerInfo || this.playerInfo.solde === undefined) {
+      console.error(
+        "Impossible d'envoyer les données : informations du joueur non disponibles."
+      );
+      return;
+    }
+
+    const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
+    const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
+    console.log(
+      '🚀 ~ MachineASousComponent ~ sendPartieToFirebase ~ this.playerInfo:',
+      this.playerInfo
+    );
 
     this.firebaseSendService
       .sendPartie(playerId, solde)
