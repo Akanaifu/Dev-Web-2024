@@ -1,4 +1,6 @@
+//variables d'environnement
 require('dotenv').config();
+
 const express = require("express");
 const path = require("path");
 const http = require("http");
@@ -24,7 +26,6 @@ const registerRoutes = require("./routes/register");
 // Services
 const SocketService = require("./services/socketService");
 
-// Initialisation de l'application Express
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, socketConfig);
@@ -33,7 +34,6 @@ const io = socketIo(server, socketConfig);
 const socketService = new SocketService(io);
 socketService.initialize();
 
-// ===== MIDDLEWARE CORS CORRIGÉ =====
 app.use((req, res, next) => {
   const allowedOrigins = process.env.ALLOWED_ORIGINS ? 
     process.env.ALLOWED_ORIGINS.split(',') : 
@@ -41,7 +41,6 @@ app.use((req, res, next) => {
   
   const origin = req.headers.origin;
   
-  // Vérifier si l'origine est autorisée
   if (allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
   }
