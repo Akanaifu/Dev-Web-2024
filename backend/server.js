@@ -22,7 +22,7 @@ const gameRoutes = require("./routes/games");
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
 const registerRoutes = require("./routes/register");
-const playerRoutes = require("./routes/player");
+const playerRoutes = require("./routes/get_id");
 // Services
 const SocketService = require("./services/socketService");
 

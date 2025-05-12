@@ -37,7 +37,7 @@ export class MachineASousComponent implements OnInit {
 
   getPlayerId(): void {
     this.http
-      .get<{ playerId: number }>('http://localhost:3000/player/id', {
+      .get<{ playerId: number }>('http://localhost:3000/get_id/id', {
         withCredentials: true,
       })
       .subscribe({
