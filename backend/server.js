@@ -65,7 +65,7 @@ app.use("/stats", statsRoutes);
 app.use("/games", gameRoutes);
 app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
-app.use("/player", playerRoutes);
+app.use("/get_id", playerRoutes);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {

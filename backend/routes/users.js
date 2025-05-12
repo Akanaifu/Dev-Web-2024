@@ -19,9 +19,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
-    const [rows] = await db.query("SELECT * FROM utilisateurs WHERE id = ?", [
-      userId,
-    ]);
+    const [rows] = await db.query("SELECT * FROM user WHERE id = ?", [userId]);
     if (rows.length === 0) {
       return res.status(404).json({ error: "Utilisateur non trouvé" });
     }

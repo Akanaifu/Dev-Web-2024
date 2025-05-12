@@ -16,7 +16,17 @@ import { HttpClient } from '@angular/common/http';
 export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
   logic: MachineASousLogic;
-  playerId: number = 0;
+  playerInfo: {
+    user_id: number;
+    username: string;
+    email: string;
+    solde: number;
+  } = {
+    user_id: 0,
+    username: '',
+    email: '',
+    solde: 0,
+  };
 
   constructor(
     private newGameService: NewGameService,
@@ -28,27 +38,27 @@ export class MachineASousComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.logic.fetchFirebaseData();
+    this.getPlayerInfo();
   }
 
   ngOnDestroy(): void {
     clearInterval(this.logic.intervalId);
   }
 
-  getPlayerId(): void {
+  getPlayerInfo(): void {
     this.http
-      .get<{ playerId: number }>('http://localhost:3000/get_id/id', {
-        withCredentials: true,
-      })
+      .get<{ user_id: number; username: string; email: string; solde: number }>(
+        'http://localhost:3000/get_id/info'
+      )
       .subscribe({
-        next: (response) => {
-          this.playerId = response.playerId;
-          console.log('Player ID:', this.playerId);
+        next: (data) => {
+          this.playerInfo = data;
+          console.log('Informations du joueur :', this.playerInfo);
         },
-        error: (error) => {
+        error: (err) => {
           console.error(
-            "Erreur lors de la récupération de l'ID du joueur:",
-            error
+            'Erreur lors de la récupération des informations :',
+            err
           );
         },
       });
@@ -78,11 +88,22 @@ export class MachineASousComponent implements OnInit {
   }
   // Méthode pour envoyer les données à Firebase
   sendPartieToFirebase(): void {
-    // Remplacez cette valeur par la valeur réelle du solde du joueur
-    const solde = 1000; // Valeur hardcodée
+    if (!this.playerInfo || this.playerInfo.solde === undefined) {
+      console.error(
+        "Impossible d'envoyer les données : informations du joueur non disponibles."
+      );
+      return;
+    }
+
+    const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
+    const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
+    console.log(
+      '🚀 ~ MachineASousComponent ~ sendPartieToFirebase ~ this.playerInfo:',
+      this.playerInfo
+    );
 
     this.firebaseSendService
-      .sendPartie(this.playerId, solde)
+      .sendPartie(playerId, solde)
       .then(() => {
         console.log('Données envoyées avec succès à Firebase.');
       })
