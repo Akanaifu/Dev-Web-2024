@@ -34,6 +34,7 @@ services:
     working_dir: /app
     command: "npm run start"
     env_file:
+      - .env
       - db.env
     depends_on:
       - db

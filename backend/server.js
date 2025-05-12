@@ -1,9 +1,10 @@
+require('dotenv').config();
 const express = require("express");
 const path = require("path");
 const http = require("http");
 const socketIo = require('socket.io');
 const cookieParser = require('cookie-parser');
-
+const port = process.env.PORT || 3000;
 // Configuration
 const db = require("./config/dbConfig");
 const socketConfig = require("./config/socketConfig");
@@ -38,7 +39,11 @@ socketService.initialize();
 
 // Middleware pour CORS
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:4200");
+  const allowedOrigins = process.env.ALLOWED_ORIGINS ? 
+    process.env.ALLOWED_ORIGINS.split(',') : 
+    ['http://localhost:4200'];
+  
+  res.header("Access-Control-Allow-Origin", allowedOrigins);
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(
     "Access-Control-Allow-Headers",
@@ -78,6 +83,6 @@ app.get("/inject-data", (req, res) => {
 });
 
 // Démarrer le serveur
-server.listen(3000, () => {
-  console.log("Serveur démarré sur le port 3000 (API et WebSocket)");
+server.listen(port, () => {
+  console.log(`Serveur démarré sur le port ${port} (API et WebSocket)`);
 });
