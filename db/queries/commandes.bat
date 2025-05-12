@@ -4,7 +4,7 @@ echo pour windows
 echo ----------------------------------------
 
 :: Configuration
-set DB_NAME=casino
+set DB_NAME=dev3
 set MYSQL_USER=root
 set MYSQL_PASSWORD=casino
 set SQL_STRUCTURE=casino.sql
