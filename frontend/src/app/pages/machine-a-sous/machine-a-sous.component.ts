@@ -1,9 +1,10 @@
-import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
 import { NewGameService } from './new-game.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-machine-a-sous',
@@ -15,8 +16,12 @@ import { NewGameService } from './new-game.service';
 export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
   logic: MachineASousLogic;
+  playerId: number = 0;
 
-  constructor(private newGameService: NewGameService) {
+  constructor(
+    private newGameService: NewGameService,
+    private http: HttpClient
+  ) {
     const db = inject(Database);
     this.logic = new MachineASousLogic(db, newGameService);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
@@ -28,6 +33,25 @@ export class MachineASousComponent implements OnInit {
 
   ngOnDestroy(): void {
     clearInterval(this.logic.intervalId);
+  }
+
+  getPlayerId(): void {
+    this.http
+      .get<{ playerId: number }>('http://localhost:3000/player/id', {
+        withCredentials: true,
+      })
+      .subscribe({
+        next: (response) => {
+          this.playerId = response.playerId;
+          console.log('Player ID:', this.playerId);
+        },
+        error: (error) => {
+          console.error(
+            "Erreur lors de la récupération de l'ID du joueur:",
+            error
+          );
+        },
+      });
   }
 
   // Getter pour accéder aux propriétés de MachineASousLogic
@@ -54,12 +78,11 @@ export class MachineASousComponent implements OnInit {
   }
   // Méthode pour envoyer les données à Firebase
   sendPartieToFirebase(): void {
-    const playerId = Math.floor(Math.random() * 1000); // ID du joueur généré aléatoirement
     // Remplacez cette valeur par la valeur réelle du solde du joueur
     const solde = 1000; // Valeur hardcodée
 
     this.firebaseSendService
-      .sendPartie(playerId, solde)
+      .sendPartie(this.playerId, solde)
       .then(() => {
         console.log('Données envoyées avec succès à Firebase.');
       })
