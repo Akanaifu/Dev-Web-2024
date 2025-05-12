@@ -54,7 +54,8 @@ export class MachineASousComponent implements OnInit {
   }
   // Méthode pour envoyer les données à Firebase
   sendPartieToFirebase(): void {
-    const playerId = 'player1';
+    const playerId = Math.floor(Math.random() * 1000); // ID du joueur généré aléatoirement
+    // Remplacez cette valeur par la valeur réelle du solde du joueur
     const solde = 1000; // Valeur hardcodée
 
     this.firebaseSendService

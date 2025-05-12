@@ -2,8 +2,8 @@
     display: flex;
     align-items: center;
     width: 100%;
-    height: 60px;
-    background-color: rgba(0, 0, 0, 0.3);
+    height: 66px;
+    background-color: rgba(58, 12, 187, 0.4);
   }
   
   .flex-spacer {
@@ -12,6 +12,7 @@
   
   .menu-container {
     margin-left: auto; /* Ceci pousse le menu vers la droite */
+    padding-right: 20px;
   }
   .logo {
     height: 100%;
@@ -20,6 +21,7 @@
   }
   
   .logo-image {
+    padding-left: 20px;
     height: 70%; /* Utilisez un pourcentage de la hauteur du conteneur */
     max-height: 40px; /* Définissez une hauteur maximale */
     width: auto; /* Maintient le ratio d'aspect */
@@ -27,6 +29,46 @@
   }
 
   button[mat-button] {
-    color: #000000; /* Couleur du texte du bouton */
-    background-color: #ff000056; /* Couleur de fond du bouton */
+    background: linear-gradient(135deg, rgba(58, 12, 187, 0.8), rgba(58, 12, 187, 0.6));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    transition: all 0.05s ease;
+  }
+  button:hover {
+    background: linear-gradient(135deg, rgba(58, 12, 187, 0.9), rgba(58, 12, 187, 0.7));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+  }
+  button[mat-button] i {
+    color: #ffd700;
+  }
+  .gambler{
+    padding-left: 10px;
+  }
+  .gambler-login{
+    padding-left: 10px;
+    font-size: 22px;
+    font-weight: bold;
+    font-family: 'Arial Rounded MT Bold', 'Arial Black', sans-serif;
+    color: #ffd700; /* Base dorée */
+    text-shadow: 
+        0 0 3px rgba(255, 215, 0, 0.6),
+        1px 1px 0 #ff9933; /* Ombre orangée légère */
+    letter-spacing: -0.5px;
+    background: linear-gradient(to bottom, #fff4b8 0%, #ffd700 40%, #ff9000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.5));
+    position: relative;
   }

@@ -1,17 +1,12 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn } from '@angular/common/http';
 
-export const authTokenInterceptor: HttpInterceptorFn = (req, next) => {
-
-  const token = localStorage.getItem('token');
-
-  let requestToSend = req;
-
-  if (token){
-    const headers = req.headers.set('Authorization', 'Token' + token);
-    requestToSend = req.clone({
-      headers: headers
-    })
+export const authTokenInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
+  if (req.url.startsWith('http://localhost:3000')) {
+    const requestToSend = req.clone({
+      withCredentials: true
+    });
+    return next(requestToSend);
   }
-
+  
   return next(req);
 };

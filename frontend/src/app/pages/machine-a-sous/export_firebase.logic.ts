@@ -12,7 +12,7 @@ export class FirebaseSendService {
    * @param joueurId L'identifiant du joueur (ex: 'player1')
    * @param solde Le solde du joueur (ex: 50)
    */
-  async sendPartie(joueurId: string, solde: number): Promise<void> {
+  async sendPartie(joueurId: number, solde: number): Promise<void> {
     const rootRef = ref(this.db);
 
     try {
@@ -22,13 +22,14 @@ export class FirebaseSendService {
       const nbData = data ? Object.keys(data).length : 0;
 
       // Générer la clé personnalisée
-      const partieKey = `partie${nbData + 1}`;
+      const partieKey = `MA${nbData + 1}`;
 
       // Préparer les données à insérer
       const partieData = {
         solde: solde,
-        joueurId: joueurId,
+        joueurId: joueurId.toString(),
         partieJouee: false,
+        partieAffichee: false,
         combinaisons: [],
         gain: 0,
       };

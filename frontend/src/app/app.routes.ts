@@ -8,18 +8,22 @@ import { MachineASousComponent } from './pages/machine-a-sous/machine-a-sous.com
 import { StatsComponent } from './pages/stats/stats.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  {
+    path: '',
+    component: HomeComponent,
+    //  canActivate: [isLoggedInGuard],
+  },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   {
     path: 'machine',
     component: MachineASousComponent,
-    //canActivate: [isLoggedInGuard],
+    canActivate: [isLoggedInGuard],
   }, // page de la machine à sous
   {
     path: 'stats',
     component: StatsComponent,
-    // canActivate: [isLoggedInGuard],
+    canActivate: [isLoggedInGuard],
   }, // page de stats
   { path: '**', component: NotFoundComponent },
   // page d'erreur route inexistante. A mettre à la fin !!!!!!!!

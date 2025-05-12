@@ -105,7 +105,7 @@ export class MachineASousLogic {
     const mid = long_arr / 2;
 
     const origine = 1000; // f(0) = 1000
-    const ymin = 100; // f(mid) = 200
+    const ymin = 50; // f(mid) = 50
 
     // Résolution du système avec f(x) = ax^2 + bx + c
     // Conditions : f(0) = c = 1000, f(mid) = a*mid^2 + b*mid + c = 200
@@ -134,18 +134,25 @@ export class MachineASousLogic {
               parseInt(b.replace('partie', ''), 10)
           )
           .map((key) => ({ key, ...data[key] }));
-
+        console.log('Sorted parts:', sortedParts);
         // Filtrer les parties où partieAffichee est à False
-        const unshownParts = sortedParts.filter((part) => !part.partieAffichee);
-
+        const unshownParts = sortedParts.filter(
+          (part) => !part.partieAffichee && part.partieJouee
+        );
+        const shownParts = sortedParts.filter(
+          (part) => part.partieAffichee && part.partieJouee
+        );
         if (unshownParts.length === 0) {
-          // Si aucune partie n'est trouvée, afficher dernière partie
-          const lastPart = sortedParts[sortedParts.length - 1];
+          // Si aucune partie non affichée n'est trouvée, ajouter la dernière partie jouée
+          const lastPart = shownParts[shownParts.length - 1];
           if (lastPart) {
             unshownParts.push(lastPart);
             console.log(
-              'Aucune partie non affichée trouvée. Affichage de la dernière partie.'
+              'Aucune partie non affichée trouvée. Dernière partie ajoutée à unshownParts :',
+              lastPart
             );
+          } else {
+            console.warn('Aucune partie disponible dans les données Firebase.');
           }
         }
 
@@ -154,7 +161,6 @@ export class MachineASousLogic {
         const iterate = () => {
           if (index < unshownParts.length) {
             const part = unshownParts[index];
-
             // Afficher les combinaisons et gérer l'affichage
             const allCombinations: string[] = part.combinaison || [];
             const f = this.computeQuadraticFunction(allCombinations.length);
@@ -214,9 +220,13 @@ export class MachineASousLogic {
   }
 
   private updateGainDisplay(gain: number): void {
-    const gainElement = document.getElementById('gain');
-    if (gainElement) {
-      gainElement.textContent = `Gain: ${gain}`;
+    if (typeof document !== 'undefined') {
+      const gainElement = document.getElementById('gain');
+      if (gainElement) {
+        gainElement.textContent = `Gain: ${gain}`;
+      }
+    } else {
+      console.warn('updateGainDisplay called in a non-browser environment');
     }
   }
 

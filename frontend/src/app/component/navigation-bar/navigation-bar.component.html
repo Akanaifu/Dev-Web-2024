@@ -2,20 +2,29 @@
 <nav class="navigation-bar">
   <div class="logo">
     <a routerLink="/"
-      ><img src="images/logo.png" alt="Logo" class="logo-image"
+      ><img src="favicon.ico" alt="Logo" class="logo-image"
     /></a>
   </div>
+@if (loginService.user()) {
+  <p class="gambler-login">Bonjour {{ loginService.user()?.username }}</p>
+  <div class="gambler">
+    <button mat-button (click)="logout()"><i class="fa-solid fa-sign-out-alt"></i> Déconnexion</button>
+  </div>
+} @else {
+  <div class="gambler">
+    <button mat-button routerLink="/login"><i></i>Login</button>
+  </div>
+  <div class="gambler">
+    <button mat-button routerLink="/register"><i></i>Sign Up</button>
+  </div>
+}
   <div class="menu-container">
-    <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+    <button mat-button [matMenuTriggerFor]="menu">
+      <i class="fa-solid fa-bars"></i> Menu
+    </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item routerLink="/">Accueil</button>
       <button mat-menu-item routerLink="/stats">Statistique</button>
-      <button mat-menu-item routerLink="/register">S'inscrire</button>
-      <button mat-menu-item routerLink="/login">S'identifier</button>
-      <!-- Si vous souhaitez ajouter d'autres pages à l'avenir -->
-      <!-- <button mat-menu-item routerLink="/statistique">Statistique</button> -->
-      <!-- <button mat-menu-item routerLink="/compte">Compte</button> -->
-      <!-- <button mat-menu-item routerLink="/jeux">Jeux</button> -->
     </mat-menu>
   </div>
 </nav>
