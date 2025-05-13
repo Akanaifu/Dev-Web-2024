@@ -34,11 +34,12 @@
   <!-- Plateau de roulette fidèle à sup.js -->
   <div class="roulette-table-wrapper">
     <!-- Labels du haut -->
-    <div class="roulette-table-header">
-      <div class="roulette-table-header-cell" style="width: 48px;"></div>
-      <div class="roulette-table-header-cell" style="width: 240px; text-align: center;">{{ topLabels[0] }}</div>
-      <div class="roulette-table-header-cell" style="width: 240px; text-align: center;">{{ topLabels[1] }}</div>
-      <div class="roulette-table-header-cell" style="width: 120px;"></div>
+    <div class="roulette-table-header" id="headertotal">
+      <!-- <div class="roulette-table-header-cell" style="width: 48px; height: 45px;"></div> -->
+      <div class="roulette-table-header-cell">{{ topLabels[0] }}</div>
+      <div class="roulette-table-header-cell">{{ topLabels[1] }}</div> 
+      <!-- style="width: 240px; text-align: center; -->
+      <!-- <div class="roulette-table-header-cell" style="width: 120px;"></div> -->
     </div>
     <div class="roulette-board-wrapper">
       <div class="zero-arc-wrapper">
@@ -57,7 +58,7 @@
         </div>
       </div>
       <!-- Colonne '2 to 1' à droite -->
-      <div class="roulette-table-side">
+      <div class="roulette-table-side" id="column2to1">
         <div class="side-cell" *ngFor="let label of columnLabels">{{ label }}</div>
       </div>
     </div>
