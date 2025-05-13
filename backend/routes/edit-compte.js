@@ -11,7 +11,8 @@ router.put("/edit-compte", async (req, res) => {
     const params = [username, email];
 
     if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
       query += ", password = ?";
       params.push(hashedPassword);
     }
