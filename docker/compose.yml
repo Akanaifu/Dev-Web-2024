@@ -43,8 +43,6 @@ services:
       - ../backend/.env
       - db.env
     depends_on:
-      - db
-    depends_on:
       db:
         condition: service_healthy 
     networks:
