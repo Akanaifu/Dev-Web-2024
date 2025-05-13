@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { User } from '../../models/user.models';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
+import { environment } from '../../../environments/environments.prod';
 
 export interface LoginCredentials {
  	username: string,
@@ -12,7 +13,7 @@ export interface LoginCredentials {
 export class LoginService {
 
  private http = inject(HttpClient);
- private BASE_URL = 'http://localhost:3000';
+ private BASE_URL = environment.production ? '/api' : 'http://localhost:3000';
 
  user = signal<User | undefined | null>(undefined);
 

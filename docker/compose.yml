@@ -22,6 +22,11 @@ services:
       - ./../db/queries/data-casino.sql:/docker-entrypoint-initdb.d/data-casino.sql
       - ./mariadb-custom.cnf:/etc/mysql/conf.d/custom.cnf
       - db_data:/var/lib/mysql
+    healthcheck:  
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "dev", "-pcasino"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - secure
 
@@ -32,15 +37,20 @@ services:
     volumes:
       - ./../backend:/app
     working_dir: /app
+    
     command: sh -c "npm install && npm start"
     env_file:
       - ../backend/.env
       - db.env
     depends_on:
       - db
+    depends_on:
+      db:
+        condition: service_healthy 
     networks:
       - dmz
       - secure
+    restart: unless-stopped  # Redémarre automatiquement si ça plante
 
 networks:
   dmz:
