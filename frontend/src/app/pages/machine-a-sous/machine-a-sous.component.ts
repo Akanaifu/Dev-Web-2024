@@ -39,6 +39,7 @@ export class MachineASousComponent implements OnInit {
 
   ngOnInit(): void {
     this.getPlayerInfo();
+    this.logic.fetchFirebaseData();
   }
 
   ngOnDestroy(): void {
@@ -94,7 +95,6 @@ export class MachineASousComponent implements OnInit {
       );
       return;
     }
-
     const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
     const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
     console.log(

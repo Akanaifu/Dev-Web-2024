@@ -6,7 +6,8 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-compte',
@@ -16,8 +17,16 @@ import { HttpClient } from '@angular/common/http';
 })
 export class EditCompteComponent {
   editForm: FormGroup;
-
-  constructor(private fb: FormBuilder, http: HttpClient) {
+  playerInfo: {
+    user_id: number;
+  } = {
+    user_id: 0,
+  };
+  constructor(
+    private fb: FormBuilder,
+    http: HttpClient,
+    private router: Router
+  ) {
     this.http = http;
     this.editForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]], // Nom d'utilisateur
@@ -27,29 +36,6 @@ export class EditCompteComponent {
     });
   }
   private http: HttpClient;
-
-  getCurrentUserId(): any {
-    const token = localStorage.getItem('token'); // Récupérer le token
-    if (!token) {
-      console.error('Token not found in localStorage');
-      return;
-    }
-
-    const headers = { Authorization: `Bearer ${token}` }; // Ajouter l'en-tête Authorization
-
-    this.http
-      .get<{ user_id: string }>('http://localhost:3000/get_id', { headers })
-      .subscribe({
-        next: (data) => {
-          console.log('User ID fetched successfully:', data.user_id);
-          // Vous pouvez stocker l'ID utilisateur dans une propriété ou l'utiliser directement
-        },
-        error: (err) => {
-          console.error('Error fetching user ID:', err);
-        },
-      });
-  }
-
   onSubmit() {
     const password = this.editForm.value.password;
     const confirmPassword = this.editForm.value.confirmPassword;
@@ -59,31 +45,41 @@ export class EditCompteComponent {
       return;
     }
 
-    console.log(this.editForm.value);
-    // clean form
-    this.updateUserData();
-    this.editForm.reset();
+    const formData = {
+      userId: this.playerInfo.user_id,
+      username: this.editForm.value.username,
+      email: this.editForm.value.email,
+      password: password || null, // Include password only if provided
+    };
+    console.log(
+      '🚀 ~ EditCompteComponent ~ onSubmit ~ formData.userId:',
+      formData.userId
+    );
+
+    this.http.put('http://localhost:3000/edit-compte', formData).subscribe({
+      next: (response) => {
+        console.log('User updated successfully:', response);
+        this.editForm.reset();
+      },
+      error: (err) => {
+        console.error('Error updating user:', err);
+      },
+    });
   }
 
-  updateUserData() {
-    const token = localStorage.getItem('token'); // Récupérer le token
-    if (!token) {
-      console.error('Token not found in localStorage');
-      return;
-    }
-
-    const headers = { Authorization: `Bearer ${token}` }; // Ajouter l'en-tête Authorization
-    const userData = this.editForm.value; // Récupérer les données du formulaire
-
+  getPlayerInfo(): void {
     this.http
-      .put('http://localhost:3000/edit-compte', userData, { headers })
+      .get<{ user_id: number }>('http://localhost:3000/get_id/info')
       .subscribe({
-        next: (response) => {
-          console.log('User data updated successfully:', response);
-          // Vous pouvez afficher un message de succès ou rediriger l'utilisateur
+        next: (data) => {
+          this.playerInfo = data;
+          console.log('Informations du joueur :', this.playerInfo.user_id);
         },
         error: (err) => {
-          console.error('Error updating user data:', err);
+          console.error(
+            'Erreur lors de la récupération des informations :',
+            err
+          );
         },
       });
   }
