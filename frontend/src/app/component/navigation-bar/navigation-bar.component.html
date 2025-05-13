@@ -5,19 +5,21 @@
       ><img src="favicon.ico" alt="Logo" class="logo-image"
     /></a>
   </div>
-@if (loginService.user()) {
+  @if (loginService.user()) {
   <p class="gambler-login">Bonjour {{ loginService.user()?.username }}</p>
   <div class="gambler">
-    <button mat-button (click)="logout()"><i class="fa-solid fa-sign-out-alt"></i> Déconnexion</button>
+    <button mat-button (click)="logout()">
+      <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+    </button>
   </div>
-} @else {
+  } @else {
   <div class="gambler">
     <button mat-button routerLink="/login"><i></i>Login</button>
   </div>
   <div class="gambler">
     <button mat-button routerLink="/register"><i></i>Sign Up</button>
   </div>
-}
+  }
   <div class="menu-container">
     <button mat-button [matMenuTriggerFor]="menu">
       <i class="fa-solid fa-bars"></i> Menu
@@ -25,6 +27,7 @@
     <mat-menu #menu="matMenu">
       <button mat-menu-item routerLink="/">Accueil</button>
       <button mat-menu-item routerLink="/stats">Statistique</button>
+      <button mat-menu-item routerLink="/compte">compte</button>
     </mat-menu>
   </div>
 </nav>

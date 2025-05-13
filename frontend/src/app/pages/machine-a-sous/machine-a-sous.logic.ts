@@ -1,5 +1,6 @@
 import { Database, ref, get, child, set } from '@angular/fire/database';
-import { NewGameService } from './new-game.service';
+import { HttpClient } from '@angular/common/http';
+import { NewGameService } from '../../services/new-game.service';
 
 interface Combination {
   id: string;
@@ -97,8 +98,10 @@ export class MachineASousLogic {
     { id: 'afficheur2', currentChiffre: 0 },
     { id: 'afficheur3', currentChiffre: 0 },
   ];
+  private http: HttpClient;
 
-  constructor(db: Database, newGameService: NewGameService) {
+  constructor(db: Database, newGameService: NewGameService, http: HttpClient) {
+    this.http = http;
     this.db = db;
     this.newGameService = newGameService;
   }
@@ -176,12 +179,14 @@ export class MachineASousLogic {
 
   // Firebase Data Handling
   fetchFirebaseData(): void {
+    const userId = this.getCurrentUserId(); // Assurez-vous d'avoir une méthode pour obtenir l'ID de l'utilisateur connecté
+
     get(child(ref(this.db), '/'))
       .then((snapshot) => {
         if (!snapshot.exists()) return console.log('No data available');
 
         const data = snapshot.val();
-        const sortedParts = this.sortAndFilterParts(data);
+        const sortedParts = this.sortAndFilterParts(data, userId);
 
         let index = 0;
 
@@ -204,7 +209,7 @@ export class MachineASousLogic {
       );
   }
 
-  private sortAndFilterParts(data: any) {
+  private sortAndFilterParts(data: any, userId: string) {
     const sortedParts = Object.keys(data)
       .filter((key) => key.startsWith('partie'))
       .sort(
@@ -215,10 +220,16 @@ export class MachineASousLogic {
       .map((key) => ({ key, ...data[key] }));
 
     const unshownParts = sortedParts.filter(
-      (part) => !part.partieAffichee && part.partieJouee
+      (part) =>
+        !part.partieAffichee &&
+        part.partieJouee &&
+        part.joueurId.includes(userId) // Filtrer par l'utilisateur connecté
     );
     const shownParts = sortedParts.filter(
-      (part) => part.partieAffichee && part.partieJouee
+      (part) =>
+        part.partieAffichee &&
+        part.partieJouee &&
+        part.joueurId.includes(userId) // Filtrer par l'utilisateur connecté
     );
 
     if (unshownParts.length === 0 && shownParts.length > 0) {
@@ -226,6 +237,28 @@ export class MachineASousLogic {
     }
 
     return { unshownParts, shownParts };
+  }
+
+  getCurrentUserId(): any {
+    const token = localStorage.getItem('token'); // Récupérer le token
+    if (!token) {
+      console.error('Token not found in localStorage');
+      return;
+    }
+
+    const headers = { Authorization: `Bearer ${token}` }; // Ajouter l'en-tête Authorization
+
+    this.http
+      .get<{ user_id: string }>('http://localhost:3000/get_id', { headers })
+      .subscribe({
+        next: (data) => {
+          console.log('User ID fetched successfully:', data.user_id);
+          // Vous pouvez stocker l'ID utilisateur dans une propriété ou l'utiliser directement
+        },
+        error: (err) => {
+          console.error('Error fetching user ID:', err);
+        },
+      });
   }
 
   private processPart(part: any, callback: () => void): void {

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
-import { NewGameService } from './new-game.service';
+import { NewGameService } from '../../services/new-game.service';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -33,12 +33,13 @@ export class MachineASousComponent implements OnInit {
     private http: HttpClient
   ) {
     const db = inject(Database);
-    this.logic = new MachineASousLogic(db, newGameService);
+    this.logic = new MachineASousLogic(db, newGameService, this.http);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }
 
   ngOnInit(): void {
     this.getPlayerInfo();
+    this.logic.fetchFirebaseData();
   }
 
   ngOnDestroy(): void {
@@ -94,7 +95,6 @@ export class MachineASousComponent implements OnInit {
       );
       return;
     }
-
     const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
     const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
     console.log(
