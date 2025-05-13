@@ -19,6 +19,8 @@ export class EditCompteComponent implements OnInit {
   editForm: FormGroup;
   playerInfo: {
     user_id: number;
+    username?: string;
+    email?: string;
   } = {
     user_id: 0,
   };
@@ -58,8 +60,8 @@ export class EditCompteComponent implements OnInit {
 
     const formData = {
       userId: this.playerInfo.user_id,
-      username: this.editForm.value.username,
-      email: this.editForm.value.email,
+      username: this.editForm.value.username || this.playerInfo.username, // Retain previous username if empty
+      email: this.editForm.value.email || this.playerInfo.email, // Retain previous email if empty
       password: password || null, // Include password only if provided
     };
 
@@ -78,7 +80,9 @@ export class EditCompteComponent implements OnInit {
 
   getPlayerInfo(): void {
     this.http
-      .get<{ user_id: number }>('http://localhost:3000/get_id/info')
+      .get<{ user_id: number; username: string; email: string }>(
+        'http://localhost:3000/get_id/info'
+      )
       .subscribe({
         next: (data) => {
           this.playerInfo = data;
