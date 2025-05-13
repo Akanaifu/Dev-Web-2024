@@ -69,4 +69,21 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// Endpoint pour modifier les données d'un utilisateur
+router.post("/add", async (req, res) => {
+  const { joueurId, solde, gain } = req.body;
+
+  try {
+    const query = `
+      INSERT INTO Bets (user_id, amount, profit)
+      VALUES (?, ?, ?)
+    `;
+    await db.execute(query, [joueurId, solde, gain]);
+    res.status(201).json({ message: "Données ajoutées avec succès." });
+  } catch (error) {
+    console.error("Erreur lors de l'ajout des données :", error);
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+});
+
 module.exports = router;
