@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   templateUrl: './edit-compte.component.html',
   styleUrl: './edit-compte.component.css',
 })
-export class EditCompteComponent {
+export class EditCompteComponent implements OnInit {
   editForm: FormGroup;
   playerInfo: {
     user_id: number;
@@ -36,6 +36,12 @@ export class EditCompteComponent {
     });
   }
   private http: HttpClient;
+
+  ngOnInit(): void {
+    console.log('Initialisation du composant EditCompte');
+    this.getPlayerInfo(); // Fetch user ID on component initialization
+  }
+
   onSubmit() {
     const password = this.editForm.value.password;
     const confirmPassword = this.editForm.value.confirmPassword;
@@ -45,26 +51,29 @@ export class EditCompteComponent {
       return;
     }
 
+    if (!this.playerInfo.user_id) {
+      console.error('User ID is not available. Cannot submit the form.');
+      return;
+    }
+
     const formData = {
       userId: this.playerInfo.user_id,
       username: this.editForm.value.username,
       email: this.editForm.value.email,
       password: password || null, // Include password only if provided
     };
-    console.log(
-      '🚀 ~ EditCompteComponent ~ onSubmit ~ formData.userId:',
-      formData.userId
-    );
 
-    this.http.put('http://localhost:3000/edit-compte', formData).subscribe({
-      next: (response) => {
-        console.log('User updated successfully:', response);
-        this.editForm.reset();
-      },
-      error: (err) => {
-        console.error('Error updating user:', err);
-      },
-    });
+    this.http
+      .put('http://localhost:3000/edit-compte/edit-compte', formData)
+      .subscribe({
+        next: (response) => {
+          console.log('User updated successfully:', response);
+          this.editForm.reset();
+        },
+        error: (err) => {
+          console.error('Error updating user:', err);
+        },
+      });
   }
 
   getPlayerInfo(): void {
@@ -73,7 +82,7 @@ export class EditCompteComponent {
       .subscribe({
         next: (data) => {
           this.playerInfo = data;
-          console.log('Informations du joueur :', this.playerInfo.user_id);
+          console.log('Informations du joueur :', this.playerInfo);
         },
         error: (err) => {
           console.error(
