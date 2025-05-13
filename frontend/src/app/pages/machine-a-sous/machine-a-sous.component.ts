@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
-import { NewGameService } from './new-game.service';
+import { NewGameService } from '../../services/new-game.service';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
