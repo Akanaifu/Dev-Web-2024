@@ -5,7 +5,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { ChatComponent } from './component/chat-multy/chat-multy.component';
 
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -14,7 +13,8 @@ import { ChatComponent } from './component/chat-multy/chat-multy.component';
     NavigationBarComponent, 
     MatButtonModule, 
     MatTooltipModule, 
-    ChatComponent
+    ChatComponent,
+
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

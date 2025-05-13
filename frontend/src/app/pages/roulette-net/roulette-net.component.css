@@ -7,13 +7,17 @@ html, body{
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
 }
 
 #container{
 	display: flex;
-	justify-content: center;
+	/* justify-content: center; */
 	background-color: #016D29;
-	height: 470px;
+	height: 100vh;
 	padding: 20px;
 	color: #fff;
 }
@@ -796,3 +800,139 @@ html, body{
 	margin-top: -25px;
 }
 /*chip end*/
+
+/* Plateau de roulette fidèle à sup.js */
+.roulette-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.roulette-table-header, .roulette-table-footer {
+  display: flex;
+  flex-direction: row;
+  width: 648px;
+}
+.roulette-table-header-cell, .footer-cell {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fff;
+  font-size: 18px;
+  font-weight: bold;
+  background: transparent;
+  color: #fff;
+}
+.roulette-board-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.zero-top-row {
+  display: flex;
+  justify-content: center;
+  width: 240px;
+  margin-bottom: 2px;
+}
+.number_0 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 40px;
+  background: #0a5;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 20px 20px 40px 40px;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 auto;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+}
+.number_board {
+  display: flex;
+  flex-direction: column;
+}
+.number_row {
+  display: flex;
+  flex-direction: row;
+}
+.number_block {
+  width: 80px;
+  height: 40px;
+  border: 1px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+  box-sizing: border-box;
+}
+.roulette-table-side {
+  display: flex;
+  flex-direction: column;
+  margin-left: 2px;
+}
+.side-cell {
+  width: 40px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fff;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: transparent;
+}
+.redNum {
+  background: #E0080B !important;
+  color: #fff !important;
+}
+.blackNum {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+/* Pour garder le texte lisible, on inverse la rotation sur les numéros */
+.number_block .nbn, .number_0 .nbn {
+  transform: none;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.zero-arc-wrapper {
+  position: relative;
+  width: 240px;
+  height: 40px;
+  margin-bottom: 0;
+  z-index: 2;
+}
+.zero-arc {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 240px;
+  height: 40px;
+  background: #0a5;
+  border-top-left-radius: 120px 40px;
+  border-top-right-radius: 120px 40px;
+  border: 2px solid #fff;
+  border-bottom: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.zero-arc-label {
+  color: #fff;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
