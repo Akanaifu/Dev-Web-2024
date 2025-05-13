@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoginService } from '../../services/login/login.service';
+import { UserService } from '../../services/user/user.service';
 
 @Component({
   selector: 'navigation-bar',
@@ -16,16 +17,46 @@ import { LoginService } from '../../services/login/login.service';
 })
 export class NavigationBarComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
+  balance: number | null = null;
+  userId: number | null = null; // Initialize as null
 
-  constructor(public loginService: LoginService) {}
+  constructor(public loginService: LoginService, private userService: UserService) {}
 
   ngOnInit() {
     // Vérifier si nous sommes dans un navigateur avant d'accéder à localStorage
     if (isPlatformBrowser(this.platformId)) {
-      // Maintenant nous sommes sûrs d'être dans un navigateur
       if (localStorage.getItem('token') && this.loginService.user() === undefined) {
-        this.loginService.getUser().subscribe();
+        this.loginService.getUser().subscribe({
+          next: (user) => {
+            this.userId = (user as any)?.id || null; // Dynamically set userId
+            if (this.userId) {
+              this.fetchBalance(); // Fetch balance only if userId is available
+            }
+          },
+          error: (err) => {
+            console.error('Erreur lors de la récupération de l\'utilisateur:', err);
+          },
+        });
+      } else {
+        const user = this.loginService.user();
+        this.userId = (user as any)?.id || null; // Set userId if already available
+        if (this.userId) {
+          this.fetchBalance();
+        }
       }
+    }
+  }
+
+  fetchBalance(): void {
+    if (this.userId) {
+      this.userService.getUserBalance(this.userId).subscribe({
+        next: (data) => {
+          this.balance = data.balance;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du solde:', err);
+        },
+      });
     }
   }
 

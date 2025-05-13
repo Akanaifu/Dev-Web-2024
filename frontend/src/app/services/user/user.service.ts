@@ -1,0 +1,18 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UserService {
+  private apiUrl = 'http://localhost:3000/users'; // Replace with your backend URL
+
+  constructor(private http: HttpClient) {}
+
+  // ...existing methods...
+
+  getUserBalance(userId: number): Observable<{ balance: number }> {
+    return this.http.get<{ balance: number }>(`${this.apiUrl}/${userId}/balance`);
+  }
+}

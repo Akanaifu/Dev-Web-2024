@@ -31,6 +31,23 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Endpoint pour récupérer le solde d'un utilisateur par son ID
+router.get("/:id/balance", async (req, res) => {
+  const userId = parseInt(req.params.id);
+  try {
+    const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+    res.json({ balance: rows[0].solde });
+  } catch (err) {
+    console.error("Erreur SQL:", err);
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération du solde de l'utilisateur." });
+  }
+});
+
 // Endpoint pour mettre à jour un utilisateur
 router.put("/:id", async (req, res) => {
   const { nom, email } = req.body;

@@ -18,6 +18,12 @@
     <button mat-button routerLink="/register"><i></i>Sign Up</button>
   </div>
 }
+  <div class="balance-container">
+    <button mat-button>
+      <i class="fa-solid fa-wallet"></i>
+      Solde: {{ balance !== null ? (balance + ' €') : 'Chargement...' }}
+    </button>
+  </div>
   <div class="menu-container">
     <button mat-button [matMenuTriggerFor]="menu">
       <i class="fa-solid fa-bars"></i> Menu
