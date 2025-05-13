@@ -11,6 +11,10 @@ form {
   background-color: #f9f9f9; /* Light background for readability */
 }
 
+form > div {
+  margin-bottom: 1rem; /* Add spacing between form elements */
+}
+
 label {
   font-weight: bold;
   margin-bottom: 0.5rem; /* Add spacing between label and input */
@@ -51,4 +55,12 @@ button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
   border: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+div[ngIf] {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f1f1f1;
+  margin-top: 1rem;
 }

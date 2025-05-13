@@ -1,30 +1,44 @@
-<form>
+<form [formGroup]="editForm" (ngSubmit)="onSubmit()">
   <div>
-    <label for="username">Nom d'utilisateur : </label>
+    <label for="username">Username : </label>
     <input
-      type="text"
       id="username"
-      name="username"
-      placeholder="Entrez votre nom d'utilisateur"
+      formControlName="username"
+      type="text"
+      placeholder="nouveau username"
     />
   </div>
+
   <div>
     <label for="email">Email : </label>
     <input
-      type="email"
       id="email"
-      name="email"
-      placeholder="Entrez votre email"
+      formControlName="email"
+      type="email"
+      placeholder="nouveau email"
     />
   </div>
+
   <div>
-    <label for="password">Mot de passe : </label>
+    <label for="password">New Password : </label>
     <input
-      type="password"
       id="password"
-      name="password"
-      placeholder="Entrez votre mot de passe"
+      formControlName="password"
+      type="password"
+      placeholder="nouveau mot de passe"
     />
   </div>
-  <button type="submit">Mettre à jour</button>
+
+  <div *ngIf="editForm.get('password')?.value">
+    <label for="confirmPassword">Confirm Password : </label>
+    <input
+      id="confirmPassword"
+      formControlName="confirmPassword"
+      type="password"
+    />
+  </div>
+
+  <div>
+    <button type="submit">Submit</button>
+  </div>
 </form>
