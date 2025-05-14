@@ -1,53 +1,57 @@
 <div id="container">
   <!-- Affichage du solde et de la mise courante -->
-  <div class="bankContainer">
-    <div class="bank">Solde : <span id="bankSpan">{{ bankValue }}</span></div>
-    <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
-  </div>
-
-  <!-- Bouton pour lancer la roue -->
-  <div style="margin: 20px 0;">
-    <button (click)="spin()" [disabled]="currentBet === 0">Lancer la roue</button>
-  </div>
-
-  <!-- Affichage de la roue de roulette -->
-  <div class="wheel">
-    <div class="outerRim"></div>
-    <div *ngFor="let section of wheelSections; let i = index" class="sect" [id]="'sect' + (i+1)" [ngStyle]="{'transform': 'rotate(' + section.angle + 'deg)'}">
-      <span [class]="section.number < 10 ? 'single' : 'double'">{{ section.number }}</span>
-      <div class="block" [ngStyle]="{'background-color': section.backgroundColor}"></div>
+  <div class="first-column">
+  
+ 
+    <!-- Affichage de la roue de roulette -->
+    <div class="wheel">
+      <div class="outerRim"></div>
+      <div *ngFor="let section of wheelSections; let i = index" class="sect" [id]="'sect' + (i+1)" [ngStyle]="{'transform': 'rotate(' + section.angle + 'deg)'}">
+        <span [class]="section.number < 10 ? 'single' : 'double'">{{ section.number }}</span>
+        <div class="block" [ngStyle]="{'background-color': section.backgroundColor}"></div>
+      </div>
+      <div class="pocketsRim"></div>
+      <div class="ballTrack">
+        <div class="ball"></div>
+      </div>
+      <div class="pockets"></div>
+      <div class="cone"></div>
+      <div class="turret"></div>
+      <div class="turretHandle">
+        <div class="thendOne"></div>
+        <div class="thendTwo"></div>
+      </div>
     </div>
-    <div class="pocketsRim"></div>
-    <div class="ballTrack">
-      <div class="ball"></div>
-    </div>
-    <div class="pockets"></div>
-    <div class="cone"></div>
-    <div class="turret"></div>
-    <div class="turretHandle">
-      <div class="thendOne"></div>
-      <div class="thendTwo"></div>
-    </div>
-  </div>
-  <!-- Fin roue -->
 
+    <div class="bankContainer">
+      <div class="bank">Solde : <span id="bankSpan">{{ bankValue }}</span></div>
+      <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
+    </div>
+    <!-- Bouton pour lancer la roue -->
+    <div style="margin: 20px 0;">
+      <button (click)="spin()" [disabled]="currentBet === 0">Lancer la roue</button>
+    </div>
+    <!-- Fin roue -->
+  </div>
   <!-- Plateau de roulette fidèle à sup.js -->
-  <div class="roulette-table-wrapper">
+  <div class="second-column">
     <!-- Labels du haut -->
-    <div class="roulette-table-header" id="headertotal">
-      <!-- <div class="roulette-table-header-cell" style="width: 48px; height: 45px;"></div> -->
-      <div class="roulette-table-header-cell">{{ topLabels[0] }}</div>
-      <div class="roulette-table-header-cell">{{ topLabels[1] }}</div> 
+    <div class="table-column-left" id="table-column-left">
+      <!-- <div class="table-column-left-cell" style="width: 48px; height: 45px;"></div> -->
+      <div class="space-zero"></div>
+      <div class="table-column-left-cell">{{ topLabels[0] }}</div>
+      <div class="table-column-left-cell">{{ topLabels[1] }}</div> 
+      <div class="space-2to1"></div>
       <!-- style="width: 240px; text-align: center; -->
-      <!-- <div class="roulette-table-header-cell" style="width: 120px;"></div> -->
+      <!-- <div class="table-column-left-cell" style="width: 120px;"></div> -->
     </div>
-    <div class="roulette-board-wrapper">
+    <div class="roulette-board-bet">
       <div class="zero-arc-wrapper">
         <div class="zero-arc">
           <span class="zero-arc-label">0</span>
         </div>
       </div>
-      <div class="number_board">
+      <div class="numbers_board">
         <div *ngFor="let row of numberBoardRows" class="number_row">
           <div *ngFor="let cell of row" class="number_block"
               [class.redNum]="numRed.includes(cell.numbers[0])"
@@ -58,22 +62,27 @@
         </div>
       </div>
       <!-- Colonne '2 to 1' à droite -->
-      <div class="roulette-table-side" id="column2to1">
+      <div class="roulette-table-side" id="row2to1">
         <div class="side-cell" *ngFor="let label of columnLabels">{{ label }}</div>
       </div>
     </div>
     <!-- Ligne des dozens -->
-    <div class="roulette-table-footer">
-      <div class="footer-cell" style="width: 48px;"></div>
-      <div class="footer-cell" style="width: 160px; text-align: center;" *ngFor="let label of dozenLabels">{{ label }}</div>
-      <div class="footer-cell" style="width: 120px;"></div>
+    <div class="table-column-right">
+      <div class="space-zero"></div>
+        <div class="table-column-right-bet">
+        <div class="table-column-right-first">
+          <!-- <div class="space-zero"></div> -->
+          <div class="table-column-right-first-cell" *ngFor="let label of dozenLabels">{{ label }}</div>
+          <!-- <div class="space-2to1"></div> -->
+        </div>
+        <!-- Ligne EVEN, RED, BLACK, ODD -->
+        <div class="table-column-right-second">
+          <!-- <div class="space-zero"></div> -->
+          <div class="table-column-right-second-cell" *ngFor="let label of evenOddLabels"
+              [ngClass]="{'redNum': label === 'RED', 'blackNum': label === 'BLACK'}">{{ label }}</div>
+              <!-- <div class="space-2to1"></div> -->
+        </div>
+      </div>
+      <div class="space-2to1"></div>
     </div>
-    <!-- Ligne EVEN, RED, BLACK, ODD -->
-    <div class="roulette-table-footer">
-      <div class="footer-cell" style="width: 48px;"></div>
-      <div class="footer-cell" style="width: 90px; text-align: center;" *ngFor="let label of evenOddLabels"
-           [ngClass]="{'redNum': label === 'RED', 'blackNum': label === 'BLACK'}">{{ label }}</div>
-      <div class="footer-cell" style="width: 198px;"></div>
-    </div>
-  </div>
 </div>

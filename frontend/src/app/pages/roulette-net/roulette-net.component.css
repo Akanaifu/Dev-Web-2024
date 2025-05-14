@@ -1,4 +1,4 @@
-html, body{
+/* html, body{
 	font-family: arial;
 	cursor: default;
 	-webkit-touch-callout: none;
@@ -11,10 +11,8 @@ html, body{
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-start;
-	width: 100%;
-	height: 100%;
 
-}
+} */
 
 #container{
 	display: flex;
@@ -22,8 +20,16 @@ html, body{
 	background-color: #016D29;
 	width: 100vw;
 	height: 100vh;
-	padding: 20px;
+	padding: 1%;
 	color: #fff;
+}
+
+.first-column{
+	width: 25%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	/* justify-content: center; */
 }
 
 /*notification*/
@@ -105,7 +111,7 @@ html, body{
 	font-weight: bold;
 }
 
-.number_board{
+.numbers_board{
 	margin-left: 1px;
 }
 
@@ -115,8 +121,8 @@ html, body{
 	border: 1px solid;
 	text-align: center;
 	display: inline-block;
+	/* justify-content: center; */
 	margin: 0 -0.2px;
-	padding: 12px 0px;
 }
 
 .nbn{
@@ -813,53 +819,82 @@ html, body{
 /*chip end*/
 
 /* Plateau de roulette fidèle à sup.js */
-.roulette-table-wrapper {
+.second-column {
   display: flex;
   /* flex-direction: column; */
   flex-direction: row;
   align-items: flex-start;
   /* margin-bottom: 20px; */
   height: auto;
-  margin-top: 20px;
+  /* margin-top: 20px; */
+  width: 50%;
 }
-.roulette-table-header, .roulette-table-footer {
+.table-column-right{
+	width: 50%;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+.table-column-right-bet{
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+}
+.table-column-right-first, 
+ .table-column-right-second {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 50%;
+  height: 100%;
+
+}
+.table-column-left {
+  display: flex;
+  flex-direction: column;
+  width: 25%;
   height: 100%;
   /* min-width: 320px;
   max-width: 100vw; */
 }
-.roulette-table-header-cell, .footer-cell {
-	height: 100%;
-  /* min-height: 24px;
-  max-height: 40px; */
-  width: 7%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #fff;
-  font-size: 18px;
-  /* min-width: 40px;
-  max-width: 120px; */
-  font-weight: bold;
-  background: transparent;
-  color: #fff;
-  /* margin-top: 50px; */
+.space-zero {
+  width: 100%;
+  height: 4%;
 }
-
-#headertotal {
-	margin-top: 4%;
-	height: 100%;
+.space-2to1 {
+  width: 100%;
+  height: 8%;
+}
+.table-column-left-cell,
+.table-column-right-first-cell
+, .table-column-right-second-cell {
 	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #fff;
+	font-size: 18px;
+	font-weight: bold;
+	background: transparent;
+	color: #fff;
+}
+.table-column-left-cell {
+	height: 44%;
 }
 
-.roulette-board-wrapper {
+.table-column-right-first-cell{
+	height: 33.3%;
+} 
+.table-column-right-second-cell{
+	height: 29%;
+
+}
+
+
+
+.roulette-board-bet {
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-  /* margin-bottom: 20px; */
-  width: auto;
+  width: 100%;
   max-width: none;
   height: 100%;
 
@@ -893,44 +928,38 @@ html, body{
   position: relative;
   z-index: 2;
 }
-.number_board {
+.numbers_board {
   display: flex;
   flex-direction: column;
   width: 100%;
   /* min-width: 240px;
   max-width: 480px; */
-  height: auto;
+  height: 100%;
 }
 .number_row {
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .roulette-table-side {
   display: flex;
-  flex-direction: column;
-  height: 10%;
+  flex-direction: row;
+  height: 8%;
   /* margin-left: 10%;
   min-width: 40px;
   max-width: 80px; */
 }
-#column2to1 {
-	flex-direction: row;
-	width: 100%;
-	height: auto;
-	margin-left: 0;
-	align-items: center;
-	justify-content: center;
-}
+
 .side-cell {
 	position: relative;
 	width: 100%;
-	height: auto;
+	height: 100%;
 	display: flex;
 	align-items: center;
-	margin-top: auto;
+	justify-content: center;
+	/* margin-top: auto; */
 	border: 1px solid #fff;
 	font-size: 16px;
 	font-weight: bold;
@@ -951,19 +980,18 @@ html, body{
 /* Pour garder le texte lisible, on inverse la rotation sur les numéros */
 .number_block .nbn, .number_0 .nbn {
   transform: none;
-  display: block;
+  display: flex;
   width: 100%;
-  text-align: center;
+  height: 100%;
+  align-items: center;
+ 
+  justify-content: center;
 }
 
 .zero-arc-wrapper {
   position: relative;
   width: 100%;
-  min-width: 80px;
-  max-width: 240px;
-  height: 40px;
-  min-height: 24px;
-  max-height: 40px;
+  height: 4%;
   margin-bottom: 0;
   /* z-index: 2; */
   display: flex;
@@ -973,10 +1001,9 @@ html, body{
 .zero-arc {
   /* position: absolute; */
   position: relative;
-  left: 0;
-  top: 0;
+
   width: 100%;
-  height:auto;
+  height:100%;
   background: #0a5;
   border-top-left-radius: 120px 40px;
   border-top-right-radius: 120px 40px;
@@ -1002,7 +1029,7 @@ html, body{
     min-width: unset;
     min-height: unset;
   }
-  .number_board {
+  .numbers_board {
     min-width: unset;
     max-width: unset;
   }

@@ -300,7 +300,7 @@
 //         bettingBoard.append(bbtop);
 
 //         let numberBoard = document.createElement('div');
-//         numberBoard.setAttribute('class', 'number_board');
+//         numberBoard.setAttribute('class', 'numbers_board');
 
 //         let zero = document.createElement('div');
 //         zero.setAttribute('class', 'number_0');
