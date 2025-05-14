@@ -299,9 +299,8 @@
 }
 
 .chipDeck, .bankContainer{
-	position: absolute;
-	margin-left: -383px;
-	margin-top: -74px;
+	position: relative;
+
 	width: 310px;
 	height:39px;
 	padding: 3px 0;
@@ -311,7 +310,7 @@
 }
 
 .bankContainer{
-	margin-top: -21px;
+
 }
 
 .cdChip{
@@ -421,9 +420,11 @@
 }
 
 .wheel {
-	height: 312px;
-	width: 312px;
+	height: 30%;
+	width: 100%;
 	position: relative;
+	margin-left: 15%;
+	margin-top: 15%;
 	/* left: -75px; */
 }
 	
@@ -486,9 +487,6 @@
 }
 
 .outerRim {
-	position: absolute;
-	left:0;
-	top:0;
 	width: 290px;
 	height: 290px;
 	border-radius: 100%;

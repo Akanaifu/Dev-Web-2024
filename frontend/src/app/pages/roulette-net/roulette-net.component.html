@@ -5,7 +5,7 @@
  
     <!-- Affichage de la roue de roulette -->
     <div class="wheel">
-      <div class="outerRim"></div>
+      <div class="outerRim">
       <div *ngFor="let section of wheelSections; let i = index" class="sect" [id]="'sect' + (i+1)" [ngStyle]="{'transform': 'rotate(' + section.angle + 'deg)'}">
         <span [class]="section.number < 10 ? 'single' : 'double'">{{ section.number }}</span>
         <div class="block" [ngStyle]="{'background-color': section.backgroundColor}"></div>
@@ -22,7 +22,7 @@
         <div class="thendTwo"></div>
       </div>
     </div>
-
+  </div>
     <div class="bankContainer">
       <div class="bank">Solde : <span id="bankSpan">{{ bankValue }}</span></div>
       <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
