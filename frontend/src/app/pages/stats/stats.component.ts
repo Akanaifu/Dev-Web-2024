@@ -1,34 +1,20 @@
-<<<<<<< Updated upstream
-import { Component } from '@angular/core';
-import {MatSliderModule} from '@angular/material/slider';
-import {MatTooltipModule} from '@angular/material/tooltip';
-=======
 import { Component, AfterViewInit, ViewChild, ElementRef, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { WinRateService } from '../../services/stats/winrate.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import Chart from 'chart.js/auto';
->>>>>>> Stashed changes
 
 // Ajoute l'import de ton service d'authentification si besoin
 import { LoginService } from '../../services/login/login.service';
 
 @Component({
   selector: 'app-stats',
-<<<<<<< Updated upstream
-  imports: [MatSliderModule, MatTooltipModule],
-=======
   standalone: true,
   imports: [FormsModule, CommonModule],
   providers: [WinRateService],
->>>>>>> Stashed changes
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
 })
-<<<<<<< Updated upstream
-export class StatsComponent {
-}
-=======
 export class StatsComponent implements AfterViewInit, OnInit {
   @ViewChild('gainChartCanvas') gainChartCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('winRateChartCanvas') winRateChartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -281,4 +267,3 @@ export class StatsComponent implements AfterViewInit, OnInit {
     this.fetchWinRateData();
   }
 }
->>>>>>> Stashed changes
