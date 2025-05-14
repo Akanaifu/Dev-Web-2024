@@ -35,3 +35,8 @@ mat-slider {
 .stats-card p {
   color: #333;
 }
+
+canvas {
+  max-width: 100%;
+  margin: 0 auto;
+}
