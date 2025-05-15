@@ -27,6 +27,17 @@
       <div class="bank">Solde : <span id="bankSpan">{{ bankValue }}</span></div>
       <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
     </div>
+    <div class="chipDeck">
+   
+      <div
+        *ngFor="let value of chipValues; let i = index"
+        class="cdChip"
+        [ngClass]="[chipColors[i], selectedChipIndex === i ? 'cdChipActive' : '']"
+        (click)="selectChip(i)"
+      >
+        <span class="cdChipSpan">{{ value }}</span>
+      </div>
+    </div>
     <!-- Bouton pour lancer la roue -->
     <div style="margin: 20px 0;">
       <button (click)="spin()" [disabled]="currentBet === 0">Lancer la roue</button>

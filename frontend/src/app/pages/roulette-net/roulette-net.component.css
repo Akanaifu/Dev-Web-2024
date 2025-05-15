@@ -26,6 +26,7 @@
 
 .first-column{
 	width: 25%;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -300,9 +301,12 @@
 
 .chipDeck, .bankContainer{
 	position: relative;
-
-	width: 310px;
-	height:39px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height:10%;
 	padding: 3px 0;
 	border: 1px solid;
 	border-radius: 10px;
@@ -314,22 +318,25 @@
 }
 
 .cdChip{
-	width: 27px;
-    height: 27px;
+	width: 20%;
+    height: 80%;
     background-color: #fff;
     border: 5px solid;
     border-radius: 100%;
     display: inline-block;
     margin-left: 9px;
     color: #000;
+	/* display: flex; */
 	cursor: pointer;
 }
 
 .cdChipSpan{
-	display: inherit;
+	display: flex;
 	position: relative;
-	top: 5px;
-	width: 26px;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
 	font-weight: bold;
 	font-size: 14px;
 	text-align: center;

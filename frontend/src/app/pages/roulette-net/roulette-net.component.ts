@@ -38,6 +38,10 @@ export class RouletteNetComponent implements OnInit {
     get numbersBet() { return this.game.numbersBet; }
     get previousNumbers() { return this.game.previousNumbers; }
 
+    chipValues = [1, 5, 10, 100, 'clear'];
+    chipColors = ['red', 'blue', 'orange', 'gold', 'clearBet'];
+    selectedChipIndex = 1; // Par défaut, 5 est actif
+
     constructor(public game: RouletteGameService) { }
 
     ngOnInit(): void {
@@ -205,6 +209,18 @@ export class RouletteNetComponent implements OnInit {
         if (number === 0) return '#016D29'; // vert
         if (this.numRed.includes(number)) return '#E0080B'; // rouge
         return '#000'; // noir
+    }
+
+    selectChip(index: number) {
+        if (index !== 4) {
+            this.selectedChipIndex = index;
+            this.game.wager = Number(this.chipValues[index]);
+        } else {
+            // clear
+            this.game.bankValue += this.game.currentBet;
+            this.game.currentBet = 0;
+            this.game.clearBet();
+        }
     }
 }
 
