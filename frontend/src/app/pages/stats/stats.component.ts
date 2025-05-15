@@ -1,25 +1,32 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { WinRateService } from '../../services/stats/winrate.service';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import Chart from 'chart.js/auto';
+
+// Ajoute l'import de ton service d'authentification si besoin
+import { LoginService } from '../../services/login/login.service';
 
 @Component({
   selector: 'app-stats',
   standalone: true,
   imports: [FormsModule, CommonModule],
+  providers: [WinRateService],
   templateUrl: './stats.component.html',
-  styleUrl: './stats.component.css'
+  styleUrl: './stats.component.css',
 })
-export class StatsComponent implements AfterViewInit {
+export class StatsComponent implements AfterViewInit, OnInit {
   @ViewChild('gainChartCanvas') gainChartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('winRateChartCanvas') winRateChartCanvas!: ElementRef<HTMLCanvasElement>;
   gainChart!: Chart;
+  winRateChart!: Chart;
 
   stats = [
-    { stat_id: 1, user_id: 3, num_games: 5, num_wins: 2, timestamp: "2025-04-01", gain: 50 },
-    { stat_id: 2, user_id: 3, num_games: 7, num_wins: 4, timestamp: "2025-04-02", gain: -30 },
-    { stat_id: 3, user_id: 3, num_games: 3, num_wins: 1, timestamp: "2025-04-03", gain: 20 },
-    { stat_id: 4, user_id: 3, num_games: 6, num_wins: 3, timestamp: "2025-04-04", gain: -15 },
-    { stat_id: 5, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-05", gain: 5 },
+    { stat_id: 1, user_id: 3, game: 'Poker', num_games: 5, num_wins: 2, timestamp: "2025-04-01", gain: 50 },
+    { stat_id: 2, user_id: 3, game: 'Blackjack', num_games: 7, num_wins: 4, timestamp: "2025-04-02", gain: -30 },
+    { stat_id: 3, user_id: 3, game: 'Roulette', num_games: 3, num_wins: 1, timestamp: "2025-04-03", gain: 20 },
+    { stat_id: 4, user_id: 3, game: 'Poker', num_games: 6, num_wins: 3, timestamp: "2025-04-04", gain: -15 },
+    { stat_id: 5, user_id: 3, game: 'Blackjack', num_games: 2, num_wins: 2, timestamp: "2025-04-05", gain: 5 },
     { stat_id: 6, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-24", gain: 12 },
     { stat_id: 7, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-24", gain: 5 },
     { stat_id: 8, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-02-05", gain: 15 },
@@ -30,14 +37,49 @@ export class StatsComponent implements AfterViewInit {
     { stat_id: 13, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-17", gain: 36 }
   ];
 
+  games: string[] = [];
+  selectedGame: string = '';
   selectedPeriod: string = 'jour';
-  selectedMonth: number = new Date().getMonth(); // new property
-  selectedYear: number = 2025; // Modified default year to 2025 so that data shows up in the "année" graph.
+  selectedMonth: number = new Date().getMonth();
+  selectedYear: number = 2025;
+  userId: number | null = null; // Initialisé à null
+
+  constructor(
+    private winRateService: WinRateService,
+    private loginService: LoginService, // Injection du service d'auth
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      // Si le signal user() n'est pas encore défini, on récupère l'utilisateur via l'API
+      if (localStorage.getItem('token') && this.loginService.user() === undefined) {
+        this.loginService.getUser().subscribe({
+          next: (user) => {
+            this.userId = user?.userId ?? null; // <-- ici
+            if (this.userId) {
+              this.fetchWinRateData();
+            }
+          },
+          error: (err) => {
+            console.error('Erreur lors de la récupération de l\'utilisateur:', err);
+          },
+        });
+      } else {
+        // Sinon, on utilise directement la valeur du signal
+        const user = this.loginService.user();
+        this.userId = user?.userId ?? null; // <-- ici aussi
+        if (this.userId) {
+          this.fetchWinRateData();
+        }
+      }
+    }
+  }
 
   get totalGain(): number {
     return this.stats.reduce((total, stat) => total + stat.gain, 0);
   }
-  
+
   get gainSummary(): string {
     const filtered = this.getFilteredStats();
     const total = filtered.reduce((sum, stat) => sum + stat.gain, 0);
@@ -45,7 +87,7 @@ export class StatsComponent implements AfterViewInit {
     if (total < 0) return `🔴 Perte totale : ${total.toFixed(2)}€`;
     return `⚪ Équilibre : 0€`;
   }
-  
+
   get totalMise(): number {
     return this.stats.reduce((total, stat) => total + Math.abs(stat.gain), 0);
   }
@@ -73,13 +115,66 @@ export class StatsComponent implements AfterViewInit {
         }
       }
     });
+
+    this.initializeWinRateChart();
+    // fetchWinRateData déplacé dans ngOnInit pour éviter double appel
     this.updateChart();
   }
 
+  initializeWinRateChart(): void {
+    this.winRateChart = new Chart(this.winRateChartCanvas.nativeElement, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Win Rate (%)',
+          data: [],
+          backgroundColor: 'rgba(76, 175, 80, 0.6)',
+          borderColor: 'rgba(76, 175, 80, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+  }
+
+  fetchWinRateData(): void {
+    this.winRateService.getWinRateByUser(this.userId!).subscribe(
+      (data) => {
+        if (data && data.length > 0) {
+          const labels = data.map(item => item.game_name);
+          const winRates = data.map(item => item.win_rate);
+          this.updateWinRateChart(labels, winRates);
+        } else {
+          this.updateWinRateChart([], []);
+        }
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération des winrates :', error);
+        this.updateWinRateChart([], []);
+      }
+    );
+  }
+
+  updateWinRateChart(labels: string[], winRates: number[]): void {
+    if (!this.winRateChart) return;
+    this.winRateChart.data.labels = labels;
+    this.winRateChart.data.datasets[0].data = winRates;
+    this.winRateChart.update();
+  }
+
+  // --- NE PAS MODIFIER LA PARTIE SUIVANTE (graph gain/perte) ---
   getFilteredStats(): { label: string; gain: number }[] {
     const today = new Date();
     if(this.selectedPeriod === 'jour') {
-      // Filter only records from today without aggregation
       return this.stats
         .filter(s => {
           const d = new Date(s.timestamp);
@@ -89,7 +184,6 @@ export class StatsComponent implements AfterViewInit {
         })
         .map(s => ({ label: s.timestamp, gain: s.gain }));
     } else if(this.selectedPeriod === 'semaine') {
-      // Nouvelle logique : afficher les données du jour actuel et des 6 jours précédents
       const startDate = new Date(today);
       startDate.setDate(today.getDate() - 7);
       return this.stats
@@ -99,15 +193,12 @@ export class StatsComponent implements AfterViewInit {
         })
         .map(s => ({ label: s.timestamp, gain: s.gain }));
     } else if(this.selectedPeriod === 'mois') { 
-      // Modified logic using a dictionary for the total number of days in the month
       const year = today.getFullYear();
       const month = this.selectedMonth;
       const currentMonth = today.getMonth();
-      
       const isLeapYear = (yr: number): boolean => {
         return (yr % 4 === 0 && (yr % 100 !== 0 || yr % 400 === 0));
       };
-      
       const daysInMonthDict: { [key: number]: number } = {
         0: 31,
         1: isLeapYear(year) ? 29 : 28,
@@ -122,30 +213,26 @@ export class StatsComponent implements AfterViewInit {
         10: 30,
         11: 31
       };
-      
-      const daysCount = (month === currentMonth)
+      const daysCount = (month === today.getMonth())
                           ? today.getDate()
                           : daysInMonthDict[month];
       const daysArray: { label: string; gain: number }[] = [];
       for (let day = 1; day <= daysCount; day++) {
-        // Create the date in UTC to avoid timezone issues
         const currentDate = new Date(Date.UTC(year, month, day));
         const dayGain = this.stats
           .filter(s => {
             const d = new Date(s.timestamp);
-            // Reset hours for UTC comparison
             d.setHours(0,0,0,0);
             return d.getUTCFullYear() === currentDate.getUTCFullYear() &&
                    d.getUTCMonth() === currentDate.getUTCMonth() &&
                    d.getUTCDate() === currentDate.getUTCDate();
           })
           .reduce((sum, s) => sum + s.gain, 0);
-        const label = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+        const label = currentDate.toISOString().split('T')[0];
         daysArray.push({ label: label, gain: dayGain });
       }
       return daysArray;
     } else if(this.selectedPeriod === 'année') {
-      // Updated logic: display for each month of the selected year.
       const currentYear = today.getFullYear();
       const yearToDisplay = this.selectedYear;
       const lastMonth = (yearToDisplay === currentYear) ? today.getMonth() : 11;
@@ -164,7 +251,7 @@ export class StatsComponent implements AfterViewInit {
     }
     return this.stats.map(s => ({ label: s.timestamp, gain: s.gain }));
   }
-  
+
   updateChart(): void {
     const filtered = this.getFilteredStats();
     this.gainChart.data.labels = filtered.map(item => item.label);
@@ -174,5 +261,9 @@ export class StatsComponent implements AfterViewInit {
 
   onPeriodChange(): void {
     this.updateChart();
+  }
+
+  onGameChange(): void {
+    this.fetchWinRateData();
   }
 }
