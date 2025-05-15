@@ -45,10 +45,6 @@ export class StatsComponent implements AfterViewInit {
     if (total < 0) return `🔴 Perte totale : ${total.toFixed(2)}€`;
     return `⚪ Équilibre : 0€`;
   }
-  
-  get totalMise(): number {
-    return this.stats.reduce((total, stat) => total + Math.abs(stat.gain), 0);
-  }
 
   ngAfterViewInit(): void {
     this.gainChart = new Chart(this.gainChartCanvas.nativeElement, {
@@ -145,19 +141,17 @@ export class StatsComponent implements AfterViewInit {
       }
       return daysArray;
     } else if(this.selectedPeriod === 'année') {
-      // Updated logic: display for each month of the selected year.
-      const currentYear = today.getFullYear();
+      // Display data for the selected year only
       const yearToDisplay = this.selectedYear;
-      const lastMonth = (yearToDisplay === currentYear) ? today.getMonth() : 11;
       const monthsArray: { label: string; gain: number }[] = [];
-      for (let m = 0; m <= lastMonth; m++) {
+      for (let m = 0; m <= 11; m++) {
         const monthGain = this.stats
           .filter(s => {
             const d = new Date(s.timestamp);
             return d.getFullYear() === yearToDisplay && d.getMonth() === m;
           })
           .reduce((sum, s) => sum + s.gain, 0);
-        const label = `${yearToDisplay}-${("0" + (m + 1)).slice(-2)}`;
+        const label = `${yearToDisplay}-${("0" + (m + 1)).slice(-2)}`; // Format: YYYY-MM
         monthsArray.push({ label: label, gain: monthGain });
       }
       return monthsArray;
@@ -167,12 +161,20 @@ export class StatsComponent implements AfterViewInit {
   
   updateChart(): void {
     const filtered = this.getFilteredStats();
-    this.gainChart.data.labels = filtered.map(item => item.label);
-    this.gainChart.data.datasets[0].data = filtered.map(item => item.gain);
-    this.gainChart.update();
+    this.gainChart.data.labels = []; // Clear existing labels
+    this.gainChart.data.datasets[0].data = []; // Clear existing data
+
+    this.gainChart.data.labels = filtered.map(item => item.label); // Add new labels
+    this.gainChart.data.datasets[0].data = filtered.map(item => item.gain); // Add new data
+    this.gainChart.update(); // Update the chart
   }
 
   onPeriodChange(): void {
     this.updateChart();
+  }
+
+  onYearChange(year: number): void {
+    this.selectedYear = year;
+    this.updateChart(); // Ensure the chart is updated when the year changes
   }
 }
