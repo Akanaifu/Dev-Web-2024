@@ -42,6 +42,13 @@ export class RouletteNetComponent implements OnInit {
     chipColors = ['red', 'blue', 'orange', 'gold', 'clearBet'];
     selectedChipIndex = 1; // Par défaut, 5 est actif
 
+    // Animation de la roue et de la bille
+    wheelRotation = 0;
+    ballRotation = 0;
+    isSpinning = false;
+
+    resultMessage: string | null = null;
+
     constructor(public game: RouletteGameService) { }
 
     ngOnInit(): void {
@@ -191,10 +198,50 @@ export class RouletteNetComponent implements OnInit {
     }
     
     spin() {
-        const winningSpin = this.game.spin();
-        // Gérer l'affichage du résultat, animation, etc. (à compléter)
-        const result = this.game.win(winningSpin);
-        // Gérer l'affichage du gain, etc. (à compléter)
+        if (this.isSpinning) return;
+        this.isSpinning = true;
+
+        // Réinitialise la position de la bille pour chaque spin
+        // this.wheelRotation = 0; // Désactivé, la roue ne tourne plus
+        this.ballRotation = 0;
+
+        const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+        const winningSpin = numbers[Math.floor(Math.random() * numbers.length)];
+        const index = numbers.indexOf(winningSpin);
+        const baseAngle = 360 - index * 9.73;
+        const extraTurns = 5 * 360;
+        // const targetWheel = baseAngle + extraTurns; // Désactivé
+        const targetBall = -baseAngle - extraTurns * 1.2;
+        const duration = 5000;
+        // const initialWheel = this.wheelRotation; // Désactivé
+        const initialBall = this.ballRotation;
+
+        const animate = (now: number) => {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            // this.wheelRotation = initialWheel + (targetWheel - initialWheel) * progress; // Désactivé
+            this.ballRotation = initialBall + (targetBall - initialBall) * progress;
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                this.isSpinning = false;
+                // Calcul du gain
+                const result = this.game.win(winningSpin);
+                // Affichage du résultat/gain
+                const color = (winningSpin === 0) ? 'vert' : (this.numRed.includes(winningSpin) ? 'rouge' : 'noir');
+                let msg = `Numéro gagnant : ${winningSpin} (${color})`;
+                if (result.winValue > 0) {
+                    msg += ` — Vous gagnez ${result.payout} !`;
+                } else {
+                    msg += ` — Perdu !`;
+                }
+                this.resultMessage = msg;
+                setTimeout(() => { this.resultMessage = null; }, 5000);
+                this.game.currentBet = 0;
+            }
+        };
+        const start = performance.now();
+        requestAnimationFrame(animate);
     }
 
     // Autres méthodes à migrer...

@@ -5,46 +5,55 @@
  
     <!-- Affichage de la roue de roulette -->
     <div class="wheel">
-      <div class="outerRim">
-      <div *ngFor="let section of wheelSections; let i = index" class="sect" [id]="'sect' + (i+1)" [ngStyle]="{'transform': 'rotate(' + section.angle + 'deg)'}">
-        <span [class]="section.number < 10 ? 'single' : 'double'">{{ section.number }}</span>
-        <div class="block" [ngStyle]="{'background-color': section.backgroundColor}"></div>
-      </div>
-      <div class="pocketsRim"></div>
-      <div class="ballTrack">
-        <div class="ball"></div>
-      </div>
-      <div class="pockets"></div>
-      <div class="cone"></div>
-      <div class="turret"></div>
-      <div class="turretHandle">
-        <div class="thendOne"></div>
-        <div class="thendTwo"></div>
+      <div class="wheel-rotating">
+        <div class="outerRim">
+          <div *ngFor="let section of wheelSections; let i = index" class="sect" [id]="'sect' + (i+1)" [ngStyle]="{'transform': 'rotate(' + section.angle + 'deg)'}">
+            <span [class]="section.number < 10 ? 'single' : 'double'">{{ section.number }}</span>
+            <div class="block" [ngStyle]="{'background-color': section.backgroundColor}"></div>
+          </div>
+          <div class="pocketsRim"></div>
+          <div class="ballTrack" [ngStyle]="{'transform': 'rotate(' + ballRotation + 'deg)'}">
+            <div class="ball"></div>
+          </div>
+          <div class="pockets"></div>
+          <div class="cone"></div>
+          <div class="turret"></div>
+          <div class="turretHandle">
+            <div class="thendOne"></div>
+            <div class="thendTwo"></div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+    <!-- Affichage du résultat du spin -->
+    <div *ngIf="resultMessage" class="roulette-result-message">
+      {{ resultMessage }}
+    </div>
+  <div class="chipDeck-container">
     <div class="bankContainer">
       <div class="bank">Solde : <span id="bankSpan">{{ bankValue }}</span></div>
       <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
     </div>
-    <div class="chipDeck">
    
-      <div
-        *ngFor="let value of chipValues; let i = index"
-        class="cdChip"
-        [ngClass]="[chipColors[i], selectedChipIndex === i ? 'cdChipActive' : '']"
-        (click)="selectChip(i)"
-      >
-        <span class="cdChipSpan">{{ value }}</span>
+      <div class="chipDeck">
+    
+        <div
+          *ngFor="let value of chipValues; let i = index"
+          class="cdChip"
+          [ngClass]="[chipColors[i], selectedChipIndex === i ? 'cdChipActive' : '']"
+          (click)="selectChip(i)"
+        >
+          <span class="cdChipSpan">{{ value }}</span>
+        </div>
+      </div>
+      <!-- Bouton pour lancer la roue -->
+      <div class="buttom-launch">
+        <button (click)="spin()" [disabled]="currentBet === 0">Lancer la roue</button>
       </div>
     </div>
-    <!-- Bouton pour lancer la roue -->
-    <div style="margin: 20px 0;">
-      <button (click)="spin()" [disabled]="currentBet === 0">Lancer la roue</button>
-    </div>
-    <!-- Fin roue -->
   </div>
-  <!-- Plateau de roulette fidèle à sup.js -->
+      <!-- Fin roue -->
+  <!-- Plateau de roulette fidèle à sup.js --> 
   <div class="second-column">
     <!-- Labels du haut -->
     <div class="table-column-left" id="table-column-left">
