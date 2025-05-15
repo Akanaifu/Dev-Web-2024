@@ -6,7 +6,7 @@ echo ----------------------------------------
 :: Configuration
 set DB_NAME=dev3
 set MYSQL_USER=root
-set MYSQL_PASSWORD=casino
+set MYSQL_PASSWORD=c@sino
 set SQL_STRUCTURE=casino.sql
 set SQL_DATA=data-casino.sql
 
