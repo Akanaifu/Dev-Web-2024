@@ -5,6 +5,7 @@ import time
 SSID_PASSWORDS = {
     "iPhone de naifu": "akanaifu",
     "Moulin": "kotdessalopes",
+    "WIFI_LEMAIRE": "025124940",
     # Ajoutez d'autres SSID et mots de passe ici
 }
 

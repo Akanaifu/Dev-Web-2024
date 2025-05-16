@@ -1,6 +1,5 @@
 import urequests
 import time
-from id_counter import increment_counter
 import random
 from connexion_wifi import connect_to_wifi
 
@@ -21,12 +20,14 @@ def update_first_unplayed_game(updated_data):
     try:
         # Récupérer toutes les données de Firebase
         data = fetch_from_firebase()
+        print("Données récupérées depuis Firebase :", data)
+        key_data = sorted(data.keys(), key=lambda key: int(key.replace("partie", "")))
         if data is None:
             print("Aucune donnée récupérée depuis Firebase.")
             return
-
         # Trouver la première partie où 'partieJouee' est False
-        for key, value in data.items():
+        for key in key_data:
+            value = data[key]
             if not value.get(
                 "partieJouee", True
             ):  # Par défaut, considère True si la clé est absente
@@ -122,6 +123,7 @@ def generate_random():
         "partieJouee": True,
         "timestamp": time.time(),
         "mise": BET_AMOUNT,
+        "partieAffichee": False,
     }
     update_first_unplayed_game(updated_data)
     GENERATED_COUNT = 0
@@ -140,6 +142,7 @@ def fetch_from_firebase():
         response = urequests.get(f"{URL_FIREBASE}/.json", headers=headers, timeout=5)
         if response.status_code != 200:
             raise RuntimeError(f"Erreur HTTP : {response.status_code}")
+        print(response)
         data = response.json()
         print("Données récupérées depuis Firebase")
         return data
@@ -161,5 +164,5 @@ def fetch_from_firebase():
 if __name__ == "__main__":
     # Exemple d'utilisation
     connect_to_wifi()
-    generate_random()
+    # generate_random()
     # fetch_from_firebase()  # Uncomment to fetch data from Firebase

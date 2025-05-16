@@ -206,7 +206,6 @@ export class MachineASousLogic {
             data,
             this.playerInfo.user_id.toString()
           );
-          console.log('Sorted parts:', sortedParts.notPlayedParts);
           this.showTable = sortedParts.notPlayedParts.length > 0 ? true : false; // Example: Use this property to control the button state
 
           let index = 0;
@@ -307,6 +306,17 @@ export class MachineASousLogic {
         this.updateGainDisplay(part.gain);
 
         part.partieAffichee = true;
+        // Mettre à jour le flag dans Firebase
+        set(ref(this.db, part.key ? `/${part.key}/partieAffichee` : '/'), true)
+          .then(() => {
+            console.log(`partieAffichee mis à jour pour ${part.key}`);
+          })
+          .catch((err) => {
+            console.error(
+              `Erreur lors de la mise à jour de partieAffichee pour ${part.key}:`,
+              err
+            );
+          });
         this.addNewGameToBackend(
           part.joueurId[part.joueurId.length - 1] || 0,
           part.mise || 0,

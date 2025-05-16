@@ -2,8 +2,10 @@ from machine import Pin, Timer, I2C, ADC
 import random
 import time, sys
 from pico_i2c_lcd import I2cLcd  # Assurez-vous d'avoir installé cette bibliothèque
+import urequests
+from connexion_wifi import connect_to_wifi
 
-# Configuration de l'écran LCD
+########## Configuration de l'écran LCD ##########
 I2C_ADDR = (
     0x27  # Adresse I2C de l'écran LCD (vérifiez avec un scanner I2C si nécessaire)
 )
@@ -12,28 +14,36 @@ i2c = I2C(
 )  # Initialisation de l'I2C sur GPIO 16 (SCL) et GPIO 17 (SDA)
 lcd = I2cLcd(i2c, I2C_ADDR, 2, 16)  # Écran LCD 2 lignes, 16 colonnes
 
-# Variables globales
-NUMBER_TO_GENERATE = 5  # Par exemple, 5 chiffres
+########## Variables globales ##########
+NUMBER_OF_DIGITS = 3  # Nombre de chiffres à afficher
+NUMBER_TO_GENERATE = random.randint(5, 15)  # nombres à générer
 GENERATED_COUNT = 0  # Compteur pour suivre combien de chiffres ont été générés
 RANDOM_TIMER = Timer()  # Timer pour générer les chiffres successivement
-CURRENT_DIGIT = 0
-NUMBER_OF_DIGITS = 3
-digits = [7, 7, 7]
 SCORE = 0  # Variable pour stocker le SCORE
 BET_AMOUNT = 10  # Somme initiale pariée
 FREQ_AFFICHEUR = NUMBER_OF_DIGITS * 100
 RUN_CODE = False
+CURRENT_DIGIT = 0
+NUMBER_OF_DIGITS = 3
+digits = [7, 7, 7]
+
+########## bouton pour lancer l'affichage ##########
+button_pin = Pin(11, Pin.IN, Pin.PULL_UP)
+BUTTON_PRESSED = False
 
 pins = [3, 4, 5, 6, 7, 9, 8, 10]  # a, b, c, d, e, f, g, pt
 segments_pins = [Pin(i, Pin.OUT) for i in pins]  # GPIO 3 à 10
 display_select_pins = [Pin(i, Pin.OUT) for i in range(0, 3)]  # GPIO 0, 1, 2
 
-button_pin = Pin(11, Pin.IN, Pin.PULL_UP)
-BUTTON_PRESSED = False
 
 ###################### Configuration des axes X et Y du joystick ######################
 x_axis = ADC(Pin(28))
 y_axis = ADC(Pin(27))
+
+###################### Firebase  ######################
+PARTIE_COUNT = 0  # Compteur d’identifiants personnalisés
+COMBINAISONS = []  # Liste de toutes les combinaisons générées
+URL_FIREBASE = "https://machine-a-sous-default-rtdb.europe-west1.firebasedatabase.app"
 
 
 def button_callback(pin):
@@ -98,19 +108,30 @@ def generate_random(timer):
     """
     Fonction appelée par le timer pour générer un chiffre aléatoire.
     """
-    global digits, GENERATED_COUNT, RANDOM_TIMER, SCORE, RUN_CODE
+    global digits, GENERATED_COUNT, RANDOM_TIMER, SCORE, RUN_CODE, COMBINAISONS
 
     if GENERATED_COUNT < NUMBER_TO_GENERATE:
         random_num = random.randrange(
             10 ** (NUMBER_OF_DIGITS - 1), 10**NUMBER_OF_DIGITS
         )
         digits = number_to_digits(random_num)
+        print(f"Generated digits: {digits}")  # Affiche les chiffres générés
+        COMBINAISONS.append(digits[:])  # copie pour éviter les effets de bord
         GENERATED_COUNT += 1
+
     else:
-        # Arrête le timer une fois que tous les chiffres ont été générés
         RANDOM_TIMER.deinit()
-        SCORE = calculer_gain(digits, BET_AMOUNT)  # Met à jour le SCORE
+        SCORE = calculer_gain(digits, BET_AMOUNT)
+        updated_data = {
+            "gain": SCORE,
+            "combinaison": COMBINAISONS,
+            "partieJouee": True,
+            "timestamp": time.time(),
+            "mise": BET_AMOUNT,
+        }
+        update_first_unplayed_game(updated_data)
         GENERATED_COUNT = 0
+        COMBINAISONS.clear()  # Réinitialiser pour la prochaine partie
         RUN_CODE = False
 
 
@@ -176,6 +197,49 @@ def update_bet_amount():
     lcd.putstr(f"Bet: {BET_AMOUNT} EUR")
 
 
+def update_first_unplayed_game(updated_data):
+    """
+    Met à jour le premier élément de la base de données Firebase où 'partieJouee' est False.
+    """
+    response = None
+    try:
+        # Récupérer toutes les données de Firebase
+        response = urequests.get(URL_FIREBASE, timeout=10)  # Timeout de 10 secondes
+        if response.status_code != 200:
+            raise RuntimeError(f"Erreur HTTP : {response.status_code}")
+        data = response.json()  # Convertit la réponse JSON en dictionnaire Python
+        response.close()
+
+        # Trouver la première partie où 'partieJouee' est False
+        for key, value in data.items():
+            if not value.get(
+                "partieJouee", True
+            ):  # Par défaut, considère True si la clé est absente
+                # Construire l'URL pour mettre à jour cet élément spécifique
+                firebase_url = f"{URL_FIREBASE}/{key}.json"
+                # Envoyer les données mises à jour
+                response = urequests.patch(firebase_url, json=updated_data)
+                if response.status_code != 200:
+                    raise RuntimeError(f"Erreur HTTP : {response.status_code}")
+                print(f"Données mises à jour pour la partie {key} :", response.text)
+                response.close()
+                return  # Arrêter après avoir mis à jour le premier élément
+
+        print("Aucune partie non jouée trouvée.")
+    except OSError as e:
+        print("Erreur réseau ou problème de connexion :", e)
+    except ValueError as e:
+        print("Erreur lors de la conversion JSON :", e)
+    except RuntimeError as e:
+        print("Erreur HTTP :", e)
+    finally:
+        if response:
+            try:
+                response.close()
+            except AttributeError:
+                pass
+
+
 # Attache l'interruption au bouton
 button_pin.irq(trigger=Pin.IRQ_FALLING, handler=button_callback)
 timer1 = Timer()
@@ -192,7 +256,7 @@ while 1:
             print(NUMBER_TO_GENERATE)
             lcd.clear()
             lcd.putstr("Generating...")  # Affiche un message sur l'écran LCD
-            RANDOM_TIMER.init(period=250, mode=Timer.PERIODIC, callback=generate_random)
+            RANDOM_TIMER.init(period=500, mode=Timer.PERIODIC, callback=generate_random)
         time.sleep(0.1)  # Petite pause pour éviter une utilisation excessive du CPU
     except KeyboardInterrupt:
         print("Goodbye")
