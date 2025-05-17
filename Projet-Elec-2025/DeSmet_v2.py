@@ -4,6 +4,8 @@ import time, sys
 from pico_i2c_lcd import I2cLcd  # Assurez-vous d'avoir installé cette bibliothèque
 import urequests
 from connexion_wifi import connect_to_wifi
+from led import allumer_eteindre_led
+from firebase import update_first_unplayed_game
 
 ########## Configuration de l'écran LCD ##########
 I2C_ADDR = (
@@ -128,6 +130,7 @@ def generate_random(timer):
             "partieJouee": True,
             "timestamp": time.time(),
             "mise": BET_AMOUNT,
+            "partieAffichee": False,
         }
         update_first_unplayed_game(updated_data)
         GENERATED_COUNT = 0
@@ -197,53 +200,11 @@ def update_bet_amount():
     lcd.putstr(f"Bet: {BET_AMOUNT} EUR")
 
 
-def update_first_unplayed_game(updated_data):
-    """
-    Met à jour le premier élément de la base de données Firebase où 'partieJouee' est False.
-    """
-    response = None
-    try:
-        # Récupérer toutes les données de Firebase
-        response = urequests.get(URL_FIREBASE, timeout=10)  # Timeout de 10 secondes
-        if response.status_code != 200:
-            raise RuntimeError(f"Erreur HTTP : {response.status_code}")
-        data = response.json()  # Convertit la réponse JSON en dictionnaire Python
-        response.close()
-
-        # Trouver la première partie où 'partieJouee' est False
-        for key, value in data.items():
-            if not value.get(
-                "partieJouee", True
-            ):  # Par défaut, considère True si la clé est absente
-                # Construire l'URL pour mettre à jour cet élément spécifique
-                firebase_url = f"{URL_FIREBASE}/{key}.json"
-                # Envoyer les données mises à jour
-                response = urequests.patch(firebase_url, json=updated_data)
-                if response.status_code != 200:
-                    raise RuntimeError(f"Erreur HTTP : {response.status_code}")
-                print(f"Données mises à jour pour la partie {key} :", response.text)
-                response.close()
-                return  # Arrêter après avoir mis à jour le premier élément
-
-        print("Aucune partie non jouée trouvée.")
-    except OSError as e:
-        print("Erreur réseau ou problème de connexion :", e)
-    except ValueError as e:
-        print("Erreur lors de la conversion JSON :", e)
-    except RuntimeError as e:
-        print("Erreur HTTP :", e)
-    finally:
-        if response:
-            try:
-                response.close()
-            except AttributeError:
-                pass
-
-
 # Attache l'interruption au bouton
 button_pin.irq(trigger=Pin.IRQ_FALLING, handler=button_callback)
 timer1 = Timer()
 timer1.init(freq=FREQ_AFFICHEUR, mode=Timer.PERIODIC, callback=write_displays)
+connect_to_wifi()  # Connexion au Wi-Fi
 while 1:
     try:
         if not RUN_CODE:

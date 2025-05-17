@@ -3,12 +3,12 @@ import random
 import time, sys
 
 current_digit = 0
-NUMBER_OF_DIGITS = 5
-digits = [1, 2, 3, 4, 5]
+NUMBER_OF_DIGITS = 3
+digits = [1, 2, 3]
 
 # Define GPIO pins
 segments_pins = [
-    Pin(i, Pin.OUT) for i in [1, 0, 6, 5, 4, 2, 3, 7]
+    Pin(i, Pin.OUT) for i in [9, 8, 7, 6, 5, 4, 3, 10]
 ]  # GPIO 0 to 7 (wiring order)
 display_select_pins = [Pin(i, Pin.OUT) for i in range(8, 13)]
 
@@ -47,7 +47,7 @@ SEGMENT_MAP = [
 
 def number_to_7segment(digit):
     global SEGMENT_MAP
-    return SEGMENT_MAP[digit]
+    return SEGMENT_MAP[digit]  # Reverse the bits for correct display
 
 
 def write_displays(timer):

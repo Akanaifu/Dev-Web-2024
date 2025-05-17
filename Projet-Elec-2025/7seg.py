@@ -30,6 +30,7 @@ def simulate_decoder(value):
         [1, 1, 1, 1, 1, 1, 1],
         [1, 1, 0, 1, 1, 1, 1],
     ][value][::-1]
+    print(f"Simulating decoder for value {value}: {decoder_values}")
     # Write each bit to the corresponding pin
     for i, pin in enumerate(decoder_pins):
         pin.value(decoder_values[i])
@@ -82,8 +83,8 @@ if __name__ == "__main__":
     #     Pin(i, Pin.OUT).value(0)  # Set all GPIO pins to low
     # Initialize the timer to call write_displays every 0.01 seconds
     timer = Timer()
-    timer.init(freq=300, mode=Timer.PERIODIC, callback=write_displays)
-
+    timer.init(freq=90, mode=Timer.PERIODIC, callback=write_displays)
+    print(decoder_pins)
     # Keep the program running
     try:
         while True:
