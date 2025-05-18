@@ -4,8 +4,8 @@ import time, sys
 from pico_i2c_lcd import I2cLcd  # Assurez-vous d'avoir installé cette bibliothèque
 import urequests
 from connexion_wifi import connect_to_wifi
-from led import allumer_eteindre_led
-from firebase import update_first_unplayed_game
+from led import start_led_blinking, stop_led_blinking
+from firebase import update_first_unplayed_game, fetch_from_firebase
 
 ########## Configuration de l'écran LCD ##########
 I2C_ADDR = (
@@ -28,6 +28,7 @@ RUN_CODE = False
 CURRENT_DIGIT = 0
 NUMBER_OF_DIGITS = 3
 digits = [7, 7, 7]
+SOLDE = 0  # Solde du joueur, à récupérer depuis Firebase
 
 ########## bouton pour lancer l'affichage ##########
 button_pin = Pin(11, Pin.IN, Pin.PULL_UP)
@@ -123,6 +124,7 @@ def generate_random(timer):
 
     else:
         RANDOM_TIMER.deinit()
+        stop_led_blinking()  # Arrête le clignotement des LEDs
         SCORE = calculer_gain(digits, BET_AMOUNT)
         updated_data = {
             "gain": SCORE,
@@ -168,8 +170,28 @@ def calculer_gain(rouleaux: list[int], mise: int) -> int:
     return gain
 
 
+def get_solde_from_firebase():
+    global SOLDE
+    try:
+        data = fetch_from_firebase()
+        print("Données récupérées de Firebase:", data)
+        if data:
+            # Chercher la partie avec le plus grand timestamp
+            last_key = max(data, key=lambda k: data[k].get("timestamp", 0))
+            partie = data[last_key]
+            if "solde" in partie:
+                SOLDE = float(partie["solde"])
+            else:
+                SOLDE = 0
+        else:
+            SOLDE = 0
+    except Exception as e:
+        print("Erreur lors de la récupération du solde:", e)
+        SOLDE = 0
+
+
 def update_bet_amount():
-    global BET_AMOUNT, lcd
+    global BET_AMOUNT, lcd, SOLDE
 
     x = x_axis.read_u16()  # Lire la valeur analogique de l'axe X (416 - 65535)
     y = y_axis.read_u16()  # Lire la valeur analogique de l'axe Y (432 - 65535)
@@ -195,6 +217,12 @@ def update_bet_amount():
     elif y < y_neutral_min - threshold:  # position haut
         BET_AMOUNT += 50
 
+    # Limiter la mise au solde
+    if BET_AMOUNT > SOLDE:
+        BET_AMOUNT = SOLDE
+    if BET_AMOUNT < 0:
+        BET_AMOUNT = 0
+
     # Mettre à jour l'écran LCD
     lcd.clear()
     lcd.putstr(f"Bet: {BET_AMOUNT} EUR")
@@ -205,6 +233,7 @@ button_pin.irq(trigger=Pin.IRQ_FALLING, handler=button_callback)
 timer1 = Timer()
 timer1.init(freq=FREQ_AFFICHEUR, mode=Timer.PERIODIC, callback=write_displays)
 connect_to_wifi()  # Connexion au Wi-Fi
+get_solde_from_firebase()  # Récupère le solde avant la boucle principale
 while 1:
     try:
         if not RUN_CODE:
@@ -217,6 +246,7 @@ while 1:
             print(NUMBER_TO_GENERATE)
             lcd.clear()
             lcd.putstr("Generating...")  # Affiche un message sur l'écran LCD
+            start_led_blinking()  # Démarre le clignotement des LEDs
             RANDOM_TIMER.init(period=500, mode=Timer.PERIODIC, callback=generate_random)
         time.sleep(0.1)  # Petite pause pour éviter une utilisation excessive du CPU
     except KeyboardInterrupt:
