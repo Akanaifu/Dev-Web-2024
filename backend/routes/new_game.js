@@ -38,19 +38,34 @@ router.post("/add", async (req, res) => {
   }
 
   try {
+    // Générer le prochain game_session_id de la forme MAxx
+    const [rows] = await db.execute(
+      `SELECT game_session_id FROM Games_session WHERE game_session_id LIKE 'MA%' ORDER BY game_session_id DESC LIMIT 1`
+    );
+    let nextIndex = 1;
+    if (rows.length > 0) {
+      const lastId = rows[0].game_session_id;
+      const match = lastId.match(/^MA(\d+)$/);
+      if (match) {
+        nextIndex = parseInt(match[1], 10) + 1;
+      }
+    }
+    const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
+
     // Insérer une nouvelle session de jeu dans Games_session
     const gameSessionQuery = `
-      INSERT INTO Games_session (name, bet_min, bet_max)
-      VALUES (?, ?, ?)
+      INSERT INTO Games_session (game_session_id, name, bet_min, bet_max)
+      VALUES (?, ?, ?, ?)
     `;
     const [gameSessionResult] = await db.execute(gameSessionQuery, [
-      `Game for ${joueurId}`,
+      newGameSessionId,
+      "Slot Machine",
       gain, // Valeur par défaut pour bet_min
       gain, // Valeur par défaut pour bet_max
     ]);
 
     // Récupérer l'ID de la session de jeu nouvellement créée
-    const gameSessionId = gameSessionResult.insertId;
+    const gameSessionId = newGameSessionId;
 
     // Insérer les données dans la table Bets
     const betQuery = `

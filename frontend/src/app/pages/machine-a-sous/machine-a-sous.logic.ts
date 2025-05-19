@@ -341,7 +341,7 @@ export class MachineASousLogic {
   ): void {
     const gameData = {
       partieId: 1,
-      partieJouee: gain > 0,
+      partieJouee: true, // <-- Ajouté pour satisfaire le backend
       solde: solde,
       combinaison: combinaison,
       gain: gain,

@@ -1,3 +1,9 @@
+"""
+Module pour gérer les interactions avec Firebase.
+Il inclut des fonctions pour générer des nombres aléatoires, calculer les gains
+mettre à jour la base de données Firebase et récupérer les données.
+"""
+
 import time
 import random
 import urequests
@@ -21,7 +27,7 @@ def update_first_unplayed_game(updated_data):
         # Récupérer toutes les données de Firebase
         data = fetch_from_firebase()
         print("Données récupérées depuis Firebase :", data)
-        key_data = sorted(data.keys(), key=lambda key: int(key.replace("partie", "")))
+        key_data = sorted(data.keys(), key=lambda key: int(key.replace("MA", "")))
         if data is None:
             print("Aucune donnée récupérée depuis Firebase.")
             return
