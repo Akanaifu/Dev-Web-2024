@@ -1,3 +1,9 @@
+"""
+7-Segment Display with ESP32
+This code is designed to work with an ESP32 microcontroller and a 7-segment display.
+It uses the machine module to control GPIO pins and a timer for periodic updates.
+"""
+
 from machine import Pin
 
 SEGMENT_MAP = [
