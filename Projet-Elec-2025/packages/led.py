@@ -35,7 +35,7 @@ def stop_led_blinking():
 
 def allumer_eteindre_led():
     """
-    activate led one after one
+    Active les LEDs une par une en boucle.
     """
     global SET_LED
     cpt = 0
@@ -52,7 +52,7 @@ def allumer_eteindre_led():
 
 def eteindre_led():
     """
-    turn off all leds
+    Éteint toutes les LEDs.
     """
     global SET_LED
     for led in SET_LED:

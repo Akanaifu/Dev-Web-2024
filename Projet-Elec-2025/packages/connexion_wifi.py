@@ -69,6 +69,9 @@ def connect_to_wifi():
 
 
 def scan_networks():
+    """
+    Scanne et affiche les réseaux Wi-Fi disponibles.
+    """
     try:
         wlan = network.WLAN(network.STA_IF)
         wlan.active(True)

@@ -91,7 +91,7 @@ def calculer_gain(rouleaux: list[int], mise: int) -> int:
 
 def number_to_DIGITS(number):
     """
-    Convert a number to an array of its DIGITS.
+    Convertit un nombre en tableau de ses chiffres.
     """
     # Convert number to string, extract DIGITS and convert back to integers
     list_digits = [int(digit) for digit in str(number)]
