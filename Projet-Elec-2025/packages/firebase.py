@@ -1,6 +1,6 @@
-import urequests
 import time
 import random
+import urequests
 from connexion_wifi import connect_to_wifi
 
 NUMBER_TO_GENERATE = 15  # nombres à générer
@@ -89,7 +89,7 @@ def calculer_gain(rouleaux: list[int], mise: int) -> int:
     return gain
 
 
-def number_to_DIGITS(number):
+def number_to_digits(number):
     """
     Convertit un nombre en tableau de ses chiffres.
     """
@@ -104,16 +104,16 @@ def generate_random():
     Fonction appelée par le timer pour générer un chiffre aléatoire.
     """
     global DIGITS, SCORE, RUN_CODE, COMBINAISONS
-    for GENERATED_COUNT in range(NUMBER_TO_GENERATE):
+    for generated_count in range(NUMBER_TO_GENERATE):
         random_num = random.randrange(
             10 ** (NUMBER_OF_DIGITS - 1), 10**NUMBER_OF_DIGITS
         )
-        DIGITS = number_to_DIGITS(random_num)
+        DIGITS = number_to_digits(random_num)
 
         # Mettre à jour COMBINAISONS avec le bon format
-        COMBINAISONS[GENERATED_COUNT] = {i: DIGITS[i] for i in range(len(DIGITS))}
+        COMBINAISONS[generated_count] = {i: DIGITS[i] for i in range(len(DIGITS))}
 
-        GENERATED_COUNT += 1
+        generated_count += 1
 
     SCORE = calculer_gain(DIGITS, BET_AMOUNT)
 
@@ -126,7 +126,7 @@ def generate_random():
         "partieAffichee": False,
     }
     update_first_unplayed_game(updated_data)
-    GENERATED_COUNT = 0
+    generated_count = 0
     COMBINAISONS.clear()  # Réinitialiser pour la prochaine partie
     RUN_CODE = False
     return 0  # Indiquer que la fonction s'est terminée avec succès
@@ -159,6 +159,25 @@ def fetch_from_firebase():
             except AttributeError:
                 pass
     return None
+
+
+def get_balance_from_firebase(fetch_from_firebase_func, user_balance):
+    try:
+        data = fetch_from_firebase_func()
+        print("Données récupérées de Firebase:", data)
+        if data:
+            last_key = max(data, key=lambda k: data[k].get("timestamp", 0))
+            game = data[last_key]
+            if "solde" in game:
+                user_balance = float(game["solde"])
+            else:
+                user_balance = 0
+        else:
+            user_balance = 0
+    except Exception as e:
+        print("Erreur lors de la récupération du solde:", e)
+        user_balance = 0
+    return user_balance
 
 
 if __name__ == "__main__":

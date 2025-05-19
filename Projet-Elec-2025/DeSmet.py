@@ -1,8 +1,15 @@
-from machine import Pin, Timer
-import random
-import time, sys
+"""
+7-Segment Display with ESP32
+This code is designed to work with an ESP32 microcontroller and a 7-segment display.
+It uses the machine module to control GPIO pins and a timer for periodic updates.
+"""
 
-current_digit = 0
+import random
+import time
+import sys
+from machine import Pin, Timer
+
+CURRENT_DIGIT = 0
 NUMBER_OF_DIGITS = 3
 digits = [1, 2, 3]
 
@@ -14,6 +21,10 @@ display_select_pins = [Pin(i, Pin.OUT) for i in range(8, 13)]
 
 
 def display_segments(value):
+    """
+    Write the value to the 7-segment display.
+    Each bit of the value corresponds to a segment of the display.
+    """
     global segments_pins
     # Ensure value is within 8-bit range
     value = value & 0xFF  # Mask to 8-bit
@@ -23,6 +34,10 @@ def display_segments(value):
 
 
 def select_display(value):
+    """
+    Select the display to be activated.
+    Each bit of the value corresponds to a display.
+    """
     global display_select_pins
     # Ensure value is within 8-bit range
     value = value & 0xFF  # Mask to 8-bit
@@ -46,19 +61,27 @@ SEGMENT_MAP = [
 
 
 def number_to_7segment(digit):
+    """
+    Convert a digit to its corresponding 7-segment display value.
+    The digit is expected to be between 0 and 9.
+    """
     global SEGMENT_MAP
     return SEGMENT_MAP[digit]  # Reverse the bits for correct display
 
 
 def write_displays(timer):
-    global current_digit, digits
+    """
+    Write the current digit to the display and cycle through the digits.
+    This function is called periodically by the timer.
+    """
+    global CURRENT_DIGIT, digits
 
     select_display(0)
-    display_segments(number_to_7segment(digits[current_digit]))
-    select_display(1 << current_digit)
-    current_digit += 1
-    if current_digit == NUMBER_OF_DIGITS:
-        current_digit = 0
+    display_segments(number_to_7segment(digits[CURRENT_DIGIT]))
+    select_display(1 << CURRENT_DIGIT)
+    CURRENT_DIGIT += 1
+    if CURRENT_DIGIT == NUMBER_OF_DIGITS:
+        CURRENT_DIGIT = 0
 
 
 timer1 = Timer()
@@ -66,6 +89,8 @@ timer1.init(freq=500, mode=Timer.PERIODIC, callback=write_displays)
 
 
 def number_to_digits(number):
+    """
+    Convert a number to an array of its digits."""
     # Convert number to string, extract digits and convert back to integers
     digits = [int(digit) for digit in str(number)]
     # Return the array of digits (as integers)

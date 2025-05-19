@@ -1,51 +1,66 @@
-from machine import Pin, Timer
+"""
+Module de gestion des LEDs pour le projet électronique.
+Fournit des fonctions pour faire clignoter, allumer et éteindre les LEDs
+connectées aux broches 18 à 21.
+"""
+
 from time import sleep
+from machine import Pin, Timer
 
 SET_LED = [Pin(i, Pin.OUT) for i in range(18, 22)]
 
-led_timer = None
-led_active = 0
+LED_TIMER = None
+LED_ACTIVE = 0
 
 
 def _blink_led(timer):
-    global SET_LED, led_active
+    """
+    Fonction de callback pour le Timer : fait clignoter les LEDs une à une.
+    """
+    global SET_LED, LED_ACTIVE
     # Turn off all LEDs
     for led in SET_LED:
         led.value(0)
     # Turn on the current LED
-    SET_LED[led_active].value(1)
-    led_active = (led_active + 1) % len(SET_LED)
+    SET_LED[LED_ACTIVE].value(1)
+    LED_ACTIVE = (LED_ACTIVE + 1) % len(SET_LED)
 
 
 def start_led_blinking():
-    global led_timer, led_active
-    if led_timer is None:
-        led_active = 0
-        led_timer = Timer()
-        led_timer.init(period=200, mode=Timer.PERIODIC, callback=_blink_led)
+    """
+    Démarre le clignotement cyclique des LEDs à l'aide d'un Timer.
+    """
+    global LED_TIMER, LED_ACTIVE
+    if LED_TIMER is None:
+        LED_ACTIVE = 0
+        LED_TIMER = Timer()
+        LED_TIMER.init(period=200, mode=Timer.PERIODIC, callback=_blink_led)
 
 
 def stop_led_blinking():
-    global led_timer
-    if led_timer is not None:
-        led_timer.deinit()
-        led_timer = None
+    """
+    Arrête le clignotement des LEDs et les éteint toutes.
+    """
+    global LED_TIMER
+    if LED_TIMER is not None:
+        LED_TIMER.deinit()
+        LED_TIMER = None
     eteindre_led()  # Turn off all LEDs
 
 
 def allumer_eteindre_led():
     """
-    Active les LEDs une par une en boucle.
+    Active les LEDs une par une en boucle pendant 10 cycles, avec une pause
+    d'une seconde entre chaque.
     """
-    global SET_LED
+    global SET_LED, LED_ACTIVE
     cpt = 0
-    led_active = 0
-    SET_LED[led_active].value(1)
+    SET_LED[LED_ACTIVE].value(1)
     sleep(1)
     while cpt < 10:
-        SET_LED[led_active].value(0)
-        led_active = (led_active + 1) % len(SET_LED)
-        SET_LED[led_active].value(1)
+        SET_LED[LED_ACTIVE].value(0)
+        LED_ACTIVE = (LED_ACTIVE + 1) % len(SET_LED)
+        SET_LED[LED_ACTIVE].value(1)
         cpt += 1
         sleep(1)
 

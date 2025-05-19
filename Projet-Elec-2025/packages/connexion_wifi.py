@@ -1,5 +1,10 @@
-import network
+"""
+Module de gestion de la connexion Wi-Fi pour microcontrôleur.
+Permet de scanner les réseaux disponibles et de se connecter automatiquement à un réseau connu.
+"""
+
 import time
+import network
 
 # Dictionnaire pour stocker les SSID et leurs mots de passe
 SSID_PASSWORDS = {
@@ -13,6 +18,8 @@ SSID_PASSWORDS = {
 def connect_to_wifi():
     """
     Connecte à un réseau Wi-Fi en vérifiant si le SSID est déjà connu.
+    Si le SSID n'est pas connu, demande le mot de passe à l'utilisateur.
+    Affiche les réseaux disponibles et tente de se connecter à chacun.
     """
     try:
         wlan = network.WLAN(network.STA_IF)
@@ -70,7 +77,7 @@ def connect_to_wifi():
 
 def scan_networks():
     """
-    Scanne et affiche les réseaux Wi-Fi disponibles.
+    Scanne et affiche les réseaux Wi-Fi disponibles avec leur force de signal.
     """
     try:
         wlan = network.WLAN(network.STA_IF)
