@@ -114,15 +114,6 @@ export class MachineASousComponent implements OnInit {
     const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
     const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
 
-    this.firebaseSendService
-      .sendPartie(playerId, solde)
-      .then(() => {
-        console.log('Données envoyées avec succès à Firebase.');
-        this.checkIfSendButtonShouldBeDisabled(); // Recheck after sending
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi des données à Firebase :", error);
-        this.sendButtonDisabled = false; // Re-enable the button if an error occurs
-      });
+    this.firebaseSendService.sendPartie(playerId, solde);
   }
 }
