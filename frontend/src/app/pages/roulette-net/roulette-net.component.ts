@@ -2,18 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouletteWheelSection } from './roulette-wheel.model';
 import { BettingBoardCell } from './betting-board.model';
-import { RouletteGameService } from './roulette-game.service';
+import { RouletteNetLogic } from './roulette-net-logic';
 
 @Component({
     selector: 'app-roulette-net',
     standalone: true,
     imports: [CommonModule],
     templateUrl: './roulette-net.component.html',
-    styleUrls: ['./roulette-net.component.css']
+    styleUrls: ['./roulette-net.component.css'],
 })
 export class RouletteNetComponent implements OnInit {
     // Données d'affichage (plateau, roue)
     wheelSections: RouletteWheelSection[] = [];
+
     outsideBets: BettingBoardCell[] = [];
     numberBoardRows: BettingBoardCell[][] = [];
     zeroCell!: BettingBoardCell;
@@ -24,11 +25,25 @@ export class RouletteNetComponent implements OnInit {
     cornerBets: BettingBoardCell[] = [];
     streetBets: BettingBoardCell[] = [];
     doubleStreetBets: BettingBoardCell[] = [];
+    
     numRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
     columnLabels = ['2 to 1', '2 to 1', '2 to 1'];
     dozenLabels = ['1 to 12', '13 to 24', '25 to 36'];
     evenOddLabels = ['EVEN', 'RED', 'BLACK', 'ODD'];
     topLabels = ['1 to 18', '19 to 36'];
+    chipValues = [1, 5, 10, 100, 'clear'];
+    chipColors = ['red', 'blue', 'orange', 'gold', 'clearBet'];
+    selectedChipIndex = 1; // Par défaut, 5 est actif
+
+    // Animation de la roue et de la bille
+    wheelRotation : number = 0;
+    ballRotation : number = 0;
+    isSpinning : boolean = false;
+
+
+    resultMessage: string | null = null;
+
+    constructor(public game: RouletteNetLogic) { }
 
     // Accès à l'état du jeu via le service
     get bankValue() { return this.game.bankValue; }
@@ -38,26 +53,16 @@ export class RouletteNetComponent implements OnInit {
     get numbersBet() { return this.game.numbersBet; }
     get previousNumbers() { return this.game.previousNumbers; }
 
-    chipValues = [1, 5, 10, 100, 'clear'];
-    chipColors = ['red', 'blue', 'orange', 'gold', 'clearBet'];
-    selectedChipIndex = 1; // Par défaut, 5 est actif
-
-    // Animation de la roue et de la bille
-    wheelRotation = 0;
-    ballRotation = 0;
-    isSpinning = false;
-
-    resultMessage: string | null = null;
-
-    constructor(public game: RouletteGameService) { }
-
     ngOnInit(): void {
         this.prepareWheelSections();
         this.prepareBettingBoard();
     }
 
     prepareWheelSections() {
-        const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+        
+        const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34,
+            6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 
+            1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
         this.wheelSections = numbers.map((num, i) => {
             let color: 'red' | 'black' | 'green' = 'black';
             let backgroundColor = '#000';
@@ -205,7 +210,9 @@ export class RouletteNetComponent implements OnInit {
         // this.wheelRotation = 0; // Désactivé, la roue ne tourne plus
         this.ballRotation = 0;
 
-        const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+        const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34,
+            6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 
+            1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
         const winningSpin = numbers[Math.floor(Math.random() * numbers.length)];
         const index = numbers.indexOf(winningSpin);
         const baseAngle = 360 - index * 9.73;
@@ -238,6 +245,8 @@ export class RouletteNetComponent implements OnInit {
                 this.resultMessage = msg;
                 setTimeout(() => { this.resultMessage = null; }, 5000);
                 this.game.currentBet = 0;
+                // Vide les mises pour faire disparaître les jetons
+                this.game.bet = [];
             }
         };
         const start = performance.now();
@@ -249,7 +258,9 @@ export class RouletteNetComponent implements OnInit {
     // Ajouté pour le template HTML
     getWheelNumbers(): number[] {
         // Ordre des numéros sur la roue européenne
-        return [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+        return [0, 32, 15, 19, 4, 21, 2, 25, 17, 34,
+            6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 
+            1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
     }
 
     getSectionColor(number: number): string {
@@ -268,6 +279,20 @@ export class RouletteNetComponent implements OnInit {
             this.game.currentBet = 0;
             this.game.clearBet();
         }
+    }
+
+    // Affichage des jetons sur les cases du plateau
+    getBetForCell(cell: BettingBoardCell) {
+        const n = cell.numbers.join(', ');
+        const t = cell.type;
+        return this.game.bet.find(b => b.numbers === n && b.type === t) || null;
+    }
+
+    getChipColorClass(amount: number): string {
+        if (amount < 5) return 'red';
+        if (amount < 10) return 'blue';
+        if (amount < 100) return 'orange';
+        return 'gold';
     }
 }
 
