@@ -75,55 +75,20 @@ router.post("/add", async (req, res) => {
     }
     const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
 
-<<<<<<< HEAD
-=======
-  try {
-    // Générer le prochain game_session_id de la forme MAxx
-    const [rows] = await db.execute(
-      `SELECT game_session_id FROM Games_session WHERE game_session_id LIKE 'MA%' ORDER BY game_session_id DESC LIMIT 1`
-    );
-    let nextIndex = 1;
-    if (rows.length > 0) {
-      const lastId = rows[0].game_session_id;
-      const match = lastId.match(/^MA(\d+)$/);
-      if (match) {
-        nextIndex = parseInt(match[1], 10) + 1;
-      }
-    }
-    const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
-
->>>>>>> main
     // Insérer une nouvelle session de jeu dans Games_session
     const gameSessionQuery = `
       INSERT INTO Games_session (game_session_id, name, bet_min, bet_max)
       VALUES (?, ?, ?, ?)
     `;
-<<<<<<< HEAD
-    await db.execute(gameSessionQuery, [
-      `Game for ${joueurId}`,
-      solde, // Valeur par défaut pour bet_min
-      solde, // Valeur par défaut pour bet_max
-=======
     const [gameSessionResult] = await db.execute(gameSessionQuery, [
       newGameSessionId,
       "Slot Machine",
       gain, // Valeur par défaut pour bet_min
       gain, // Valeur par défaut pour bet_max
->>>>>>> main
     ]);
 
     // Récupérer l'ID de la session de jeu nouvellement créée
     const gameSessionId = newGameSessionId;
-<<<<<<< HEAD
-
-    // Calculer le gain à partir de la combinaison et de la mise
-    // combinaison attendue sous forme d'array de 3 chiffres
-    let gain = 0;
-    if (Array.isArray(combinaison) && combinaison.length === 3) {
-      gain = calculerGain(combinaison.map(Number), Number(solde));
-    }
-=======
->>>>>>> main
 
     // Insérer les données dans la table Bets
     const betQuery = `
