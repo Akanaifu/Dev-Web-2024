@@ -33,7 +33,6 @@ CREATE TABLE `Bets` (
   `user_id` int NOT NULL DEFAULT 0,
   `game_session_id` varchar(15) NOT NULL DEFAULT '0',
   `amount` FLOAT NOT NULL DEFAULT 0,
-  `profit` FLOAT NOT NULL DEFAULT 0,
   `bet_status` VARCHAR(50) NOT NULL DEFAULT '0',
   `combinaison` VARCHAR(11) NULL DEFAULT '000',
   PRIMARY KEY (`bet_id`),
