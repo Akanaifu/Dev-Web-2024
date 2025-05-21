@@ -25,7 +25,6 @@ export class RouletteNetComponent implements OnInit {
     streetBets: BettingBoardCell[] = [];
     doubleStreetBets: BettingBoardCell[] = [];
     
-    numRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
     columnLabels = ['2 to 1', '2 to 1', '2 to 1'];
     dozenLabels = ['1 to 12', '13 to 24', '25 to 36'];
     evenOddLabels = ['EVEN', 'RED', 'BLACK', 'ODD'];
@@ -35,11 +34,8 @@ export class RouletteNetComponent implements OnInit {
     selectedChipIndex = 1; // Par défaut, 5 est actif
 
     // Animation de la roue et de la bille
-    wheelRotation : number = 0;
     ballRotation : number = 0;
     isSpinning : boolean = false;
-
-
     resultMessage: string | null = null;
 
     constructor(public game: RouletteNetLogic) { }
@@ -51,22 +47,18 @@ export class RouletteNetComponent implements OnInit {
     get bet() { return this.game.bet; }
     get numbersBet() { return this.game.numbersBet; }
     get previousNumbers() { return this.game.previousNumbers; }
+    get numRed() { return this.game.numRed; }
 
-    ngOnInit(): void {
+    ngOnInit(): void {//prepare le plateau de jeu
         this.prepareWheelSections();
         this.prepareBettingBoard();
     }
 
-    prepareWheelSections() {
-        
-        const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34,
-            6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 
-            1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+    prepareWheelSections() { // Prépare les sections de la roue
+        const numbers = this.game.getWheelNumbers();
         this.wheelSections = numbers.map((num, i) => {
             let color: 'red' | 'black' | 'green' = 'black';
-            let backgroundColor = '#000';
-            if (num === 0) { color = 'green'; backgroundColor = '#016D29'; }
-            else if (this.numRed.includes(num)) { color = 'red'; backgroundColor = '#E0080B'; }
+            let backgroundColor = this.game.getSectionColor(num);
             return {
                 number: num,
                 color,
@@ -76,8 +68,7 @@ export class RouletteNetComponent implements OnInit {
         });
     }
 
-    prepareBettingBoard() {
-        // Outside bets (1-18, 19-36)
+    prepareBettingBoard() {// Prépare le tableau de mise
         this.outsideBets = [
             { label: '1 to 18', numbers: Array.from({length: 18}, (_, i) => i + 1), type: 'outside_low', odds: 1 },
             { label: '19 to 36', numbers: Array.from({length: 18}, (_, i) => i + 19), type: 'outside_high', odds: 1 }
@@ -96,7 +87,7 @@ export class RouletteNetComponent implements OnInit {
                     odds: 35
                 });
             }
-            this.numberBoardRows.push(line); // ligne du haut en premier
+            this.numberBoardRows.push(line);
         }
         this.zeroCell = { label: '0', numbers: [0], type: 'zero', odds: 35 };
 
@@ -187,89 +178,69 @@ export class RouletteNetComponent implements OnInit {
         }
     }
 
-    // Méthodes UI qui délèguent au service
-    setBet(cell: BettingBoardCell) {
-        this.game.setBet(cell);
-    }
 
-    removeBet(event: Event, cell: BettingBoardCell) {
+
+    removeBet(event: Event, cell: BettingBoardCell) {// Supprimer une mise
         event.preventDefault();
         this.game.removeBet(cell);
     }
 
-    resetGame() {
+    resetGame() {// Réinitialiser le jeu
         this.game.resetGame();
     }
     
-    spin() {
+    async spin() {// Lancer la roue
         if (this.isSpinning) return;
         this.isSpinning = true;
 
-        // Réinitialise la position de la bille pour chaque spin
-        // this.wheelRotation = 0; // Désactivé, la roue ne tourne plus
-        this.ballRotation = 0;
+        try {
+            const result = await this.game.spin();
+            // Animation de la bille
+            this.ballRotation = 0;
+            const numbers = this.game.getWheelNumbers();
+            const index = numbers.indexOf(result.number);
+            const baseAngle = 360 - index * 9.73;
+            const extraTurns = 5 * 360;
+            const targetBall = -baseAngle - extraTurns * 1.2;
+            const duration = 5000;
+            const initialBall = this.ballRotation;
+            const start = performance.now();
 
-        const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34,
-            6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 
-            1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
-        const winningSpin = numbers[Math.floor(Math.random() * numbers.length)];
-        const index = numbers.indexOf(winningSpin);
-        const baseAngle = 360 - index * 9.73;
-        const extraTurns = 5 * 360;
-        // const targetWheel = baseAngle + extraTurns; // Désactivé
-        const targetBall = -baseAngle - extraTurns * 1.2;
-        const duration = 5000;
-        // const initialWheel = this.wheelRotation; // Désactivé
-        const initialBall = this.ballRotation;
-
-        const animate = (now: number) => {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            // this.wheelRotation = initialWheel + (targetWheel - initialWheel) * progress; // Désactivé
-            this.ballRotation = initialBall + (targetBall - initialBall) * progress;
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                this.isSpinning = false;
-                // Calcul du gain
-                const result = this.game.win(winningSpin);
-                // Affichage du résultat/gain
-                const color = (winningSpin === 0) ? 'vert' : (this.numRed.includes(winningSpin) ? 'rouge' : 'noir');
-                let msg = `Numéro gagnant : ${winningSpin} (${color})`;
-                if (result.winValue > 0) {
-                    msg += ` — Vous gagnez ${result.payout} !`;
+            const animate = (now: number) => {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                this.ballRotation = initialBall + (targetBall - initialBall) * progress;
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
                 } else {
-                    msg += ` — Perdu !`;
+                    this.isSpinning = false;
+                    // Calcul du gain
+                    const winResult = this.game.win(result.number);
+                    // Affichage du résultat/gain
+                    let msg = `Numéro gagnant : ${result.number} (${result.color})`;
+                    if (winResult.winValue > 0) {
+                        msg += ` — Vous gagnez ${winResult.payout} !`;
+                    } else {
+                        msg += ` — Perdu !`;
+                    }
+                    this.resultMessage = msg;
+                    setTimeout(() => { this.resultMessage = null; }, 5000);
+                    this.game.currentBet = 0;
+                    // Vide les mises pour faire disparaître les jetons
+                    this.game.bet = [];
                 }
-                this.resultMessage = msg;
-                setTimeout(() => { this.resultMessage = null; }, 5000);
-                this.game.currentBet = 0;
-                // Vide les mises pour faire disparaître les jetons
-                this.game.bet = [];
-            }
-        };
-        const start = performance.now();
-        requestAnimationFrame(animate);
-       
+            };
+
+            requestAnimationFrame(animate);
+        } catch (error) {
+            console.error('Error during spin:', error);
+            this.isSpinning = false;
+            this.resultMessage = "Erreur lors du spin. Veuillez réessayer.";
+            setTimeout(() => { this.resultMessage = null; }, 5000);
+        }
     }
 
-    // Autres méthodes à migrer...
-
-    // Ajouté pour le template HTML
-    getWheelNumbers(): number[] {
-        // Ordre des numéros sur la roue européenne
-        return [0, 32, 15, 19, 4, 21, 2, 25, 17, 34,
-            6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 
-            1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
-    }
-
-    getSectionColor(number: number): string {
-        if (number === 0) return '#016D29'; // vert
-        if (this.numRed.includes(number)) return '#E0080B'; // rouge
-        return '#000'; // noir
-    }
-
-    selectChip(index: number) {
+    selectChip(index: number) {// Sélectionner une mise
         if (index !== 4) {
             this.selectedChipIndex = index;
             this.game.wager = Number(this.chipValues[index]);
@@ -281,18 +252,20 @@ export class RouletteNetComponent implements OnInit {
         }
     }
 
-    // Affichage des jetons sur les cases du plateau
+    // Méthodes d'affichage qui délèguent au service
     getBetForCell(cell: BettingBoardCell) {
-        const n = cell.numbers.join(', ');
-        const t = cell.type;
-        return this.game.bet.find(b => b.numbers === n && b.type === t) || null;
+        return this.game.getBetForCell(cell);
     }
 
     getChipColorClass(amount: number): string {
-        if (amount < 5) return 'red';
-        if (amount < 10) return 'blue';
-        if (amount < 100) return 'orange';
-        return 'gold';
+        return this.game.getChipColorClass(amount);
+    }
+
+    // Méthodes UI qui délèguent au service
+    setBet(cell: BettingBoardCell) {
+        this.game.setBet(cell);
     }
 }
+
+
 

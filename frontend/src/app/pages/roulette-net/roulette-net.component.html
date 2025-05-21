@@ -1,6 +1,6 @@
 <!-- page entiere -->
 <div id="container">
-  <!-- Affichage du solde et de la mise courante -->
+  <!-- la partie de gauche-->
   <div class="first-column">
   
 
@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <!-- Affichage du résultat du spin -->
+    <!-- Affichage du résultat de la roulette -->
     <div *ngIf="resultMessage" class="roulette_result_message">
       {{ resultMessage }}
     </div>
@@ -36,8 +36,8 @@
       <div class="bank">Solde : <span id="bankSpan">{{ bankValue }}</span></div>
       <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
     </div>
+    <!-- contenaire solde et mise -->
       <div class="chip_container">
-    
         <div
           *ngFor="let value of chipValues; let i = index"
           class="color_chip"
@@ -57,7 +57,7 @@
 
   <!-- Plateau de roulette  --> 
   <div class="second_column">
-    <!-- Labels du haut -->
+    <!-- premier colonne -->
     <div class="table_column_left">
       <div class="space_zero"></div>
       <div class="table_column_left_cell_top" (click)="setBet(outsideBets[0])" 
@@ -79,6 +79,7 @@
       </div> 
       <div class="space_2to1"></div>
     </div>
+    <!-- partie centrale avec tout les numeros -->
     <div class="wheel_board_bet">
       <div class="zero_arc_wrapper">
         <div class="zero_arc">
@@ -113,7 +114,7 @@
         </div>
       </div>
     </div>
-    <!-- Ligne des dozens -->
+    <!-- la partie de droite du tableau -->
     <div class="table-column-right">
       <div class="space_zero"></div>
         <div class="table-column-right-bet">

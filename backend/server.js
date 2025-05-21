@@ -4,6 +4,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 // Configuration
 const db = require("./config/dbConfig");
@@ -53,7 +54,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
 // Middlewares pour l'API
 app.use(express.json());
 app.use(cookieParser());
