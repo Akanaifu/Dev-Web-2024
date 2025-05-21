@@ -22,7 +22,7 @@ const statsRoutes = require("./routes/stats");
 const gameRoutes = require("./routes/games");
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
-const rouletteRoutes = require("./routes/roulette");
+const rouletteRoutes = require("./routes/roulette-net");
 const registerRoutes = require("./routes/register");
 const playerRoutes = require("./routes/get_id");
 const editCompteRoutes = require("./routes/edit-compte");
@@ -71,6 +71,7 @@ app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
 app.use("/get_id", playerRoutes);
 app.use("/edit-compte", editCompteRoutes);
+app.use("/api/roulette", rouletteRoutes);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {

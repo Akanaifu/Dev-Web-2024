@@ -26,8 +26,9 @@ export const routes: Routes = [
   }, // page de la machine à sous
 
   { //page de la roulette
-    path: 'Roulette', component: RouletteNetComponent, 
-
+    path: 'Roulette', 
+    component: RouletteNetComponent,
+    canActivate: [isLoggedInGuard]
   },
   {
     path: 'stats',

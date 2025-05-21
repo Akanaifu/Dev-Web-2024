@@ -1,6 +1,7 @@
-
 import { Injectable } from '@angular/core';
 import { BettingBoardCell } from './betting-board.model';
+import { RouletteResult } from '../../interfaces/IRoulette-Net-Resultat';
+
 
 @Injectable({ providedIn: 'root' })
 export class RouletteNetLogic {
@@ -82,11 +83,25 @@ export class RouletteNetLogic {
     }
   }
 
-  spin(): number {
-    // Simule un spin et retourne le numéro gagnant
-    const winningSpin = Math.floor(Math.random() * 37); // 0 à 36 inclus
-    this.previousNumbers.push(winningSpin);
-    return winningSpin;
+  async spin(): Promise<RouletteResult> {
+    try {
+        const response = await fetch('/api/roulette/spin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to spin the roulette');
+        }
+
+        const result = await response.json();
+        return result as RouletteResult;
+    } catch (error) {
+        console.error('Error spinning the roulette:', error);
+        throw error;
+    }
   }
 
   win(winningSpin: number): { winValue: number; betTotal: number; payout: number } {
@@ -101,5 +116,11 @@ export class RouletteNetLogic {
       }
     }
     return { winValue, betTotal, payout: winValue + betTotal };
+  }
+
+  getNumberColor(number: number): 'red' | 'black' | 'green' {
+    const RED_NUMBERS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+    if (number === 0) return 'green';
+    return RED_NUMBERS.includes(number) ? 'red' : 'black';
   }
 } 

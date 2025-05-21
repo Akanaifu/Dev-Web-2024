@@ -14,7 +14,6 @@ import { RouletteNetLogic } from './roulette-net-logic';
 export class RouletteNetComponent implements OnInit {
     // Données d'affichage (plateau, roue)
     wheelSections: RouletteWheelSection[] = [];
-
     outsideBets: BettingBoardCell[] = [];
     numberBoardRows: BettingBoardCell[][] = [];
     zeroCell!: BettingBoardCell;
@@ -251,6 +250,7 @@ export class RouletteNetComponent implements OnInit {
         };
         const start = performance.now();
         requestAnimationFrame(animate);
+       
     }
 
     // Autres méthodes à migrer...
