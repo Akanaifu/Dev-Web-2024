@@ -30,16 +30,14 @@ router.get("/:id/winrate", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
     const query = `
-      SELECT 
-        gs.name AS game_name,
-        SUM(s.num_wins) AS total_wins,
-        SUM(s.num_games) AS total_games,
-        (SUM(s.num_wins) / SUM(s.num_games)) * 100 AS win_rate
-      FROM Stats s
-      JOIN Bets b ON s.user_id = b.user_id
-      JOIN Games_session gs ON b.game_session_id = gs.game_session_id
-      WHERE s.user_id = ?
-      GROUP BY gs.name
+      SELECT gs.name AS game_name,
+             SUM(CASE WHEN b.bet_status = 'win' THEN 1 ELSE 0 END) AS total_wins,
+             COUNT(*) AS total_games,
+             ROUND( SUM( CASE WHEN b.bet_status = 'win' THEN 1 ELSE 0 END) / COUNT(*), 2)*100 AS win_rate
+      FROM bets b
+      JOIN games_session gs ON b.game_session_id = gs.game_session_id
+      WHERE b.user_id = ?
+      GROUP BY gs.name;
     `;
     const [rows] = await db.query(query, [userId]);
     res.json(rows);
@@ -54,13 +52,9 @@ router.get("/:id/numberOfGame", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
     const query = `
-      SELECT 
-      gs.name AS game_name,
-      COUNT(DISTINCT b.game_session_id) AS games_played
-      FROM Bets b
-      JOIN Games_session gs ON b.game_session_id = gs.game_session_id
-      WHERE b.user_id = ?
-      GROUP BY gs.name
+      SELECT sum(num_games) 'nombre de partie', SUM(num_wins) AS 'nombre de victoire'
+      FROM stats
+      WHERE user_id = ?
     `;
     const [rows] = await db.query(query, [userId]);
     res.json(rows);

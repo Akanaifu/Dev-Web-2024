@@ -43,6 +43,13 @@ export class StatsComponent implements AfterViewInit, OnInit {
   selectedMonth: number = new Date().getMonth();
   selectedYear: number = 2025;
   userId: number | null = null; // Initialisé à null
+  totalPartiesJouees: number = 0;
+  totalPartiesGagnees: number = 0;
+  numberBaccarat: number = 0;
+  numberBlackjack: number = 0;
+  numberPoker: number = 0;
+  numberRoulette: number = 0;
+  numberMachinesASous: number = 0;
 
   constructor(
     private winRateService: WinRateService,
@@ -59,6 +66,8 @@ export class StatsComponent implements AfterViewInit, OnInit {
             this.userId = user?.userId ?? null; // <-- ici
             if (this.userId) {
               this.fetchWinRateData();
+              this.loadNombreParties(); // Ajoute cet appel
+              this.loadNombrePartiesParJeu(); // Ajoute cet appel
             }
           },
           error: (err) => {
@@ -71,50 +80,13 @@ export class StatsComponent implements AfterViewInit, OnInit {
         this.userId = user?.userId ?? null; // <-- ici aussi
         if (this.userId) {
           this.fetchWinRateData();
+          this.loadNombreParties(); // Ajoute cet appel
+          this.loadNombrePartiesParJeu(); // Ajoute cet appel
         }
       }
     }
   }
   
-  get numberOfGames(): number {
-    return this.stats.reduce((total, stat) => total + stat.num_games, 0);
-  }
-  
-  numberGamesByType: { [game: string]: number } = {};
-
-  // Appel à l'API pour récupérer le nombre de parties par type de jeu
-  fetchNombreParties(game: string): void {
-    if (this.userId) {
-      this.winRateService.getNombrePartiesByUser(this.userId).subscribe({
-        next: (data: any[]) => {
-          // Transforme le tableau en objet { [game_name]: games_played }
-          const d: { [key: string]: number } = {};
-          data.forEach(item => {
-            d[item.game_name] = item.games_played;
-          });
-          // Utilise ensuite d['Baccarat'], d['Slot Machine'], etc.
-          this.numberGamesByType = d;
-        },
-        error: (err) => {
-          console.error('Erreur lors de la récupération du nombre de parties :', err);
-          this.numberGamesByType = {};
-        }
-      });
-    }
-  }
-  get numberPoker(): number {
-    this.fetchNombreParties('Poker');
-    return this.numberGamesByType['Poker'] || 0;
-  }
-  get numberBlackjack(): number {
-    return this.stats.filter(stat => stat.game === 'Blackjack').reduce((total, stat) => total + stat.num_games, 0);
-  }
-  get numberMachinesASous(): number {
-    return this.stats.filter(stat => stat.game === 'Slot Machine').reduce((total, stat) => total + stat.num_games, 0);
-  }
-  get numberBaccarat(): number {
-    return this.stats.filter(stat => stat.game === 'Baccarat').reduce((total, stat) => total + stat.num_games, 0);
-  }
 
   get totalGain(): number {
     return this.stats.reduce((total, stat) => total + stat.gain, 0);
@@ -305,5 +277,60 @@ export class StatsComponent implements AfterViewInit, OnInit {
 
   onGameChange(): void {
     this.fetchWinRateData();
+  }
+
+  loadNombreParties(): void {
+    if (this.userId) {
+      this.winRateService.getNombrePartiesByUser(this.userId).subscribe({
+        next: (data: any[]) => {
+          if (data && data.length > 0) {
+            this.totalPartiesJouees = data[0]['nombre de partie'] || 0;
+            this.totalPartiesGagnees = data[0]['nombre de victoire'] || 0;
+          }
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du nombre de parties :', err);
+        }
+      });
+    }
+  }
+
+
+  loadNombrePartiesParJeu(): void {
+    if (this.userId) {
+      this.winRateService.getWinRateByUser(this.userId).subscribe({
+        next: (data: any[]) => {
+          // Remet à zéro avant de remplir
+          this.numberBaccarat = 0;
+          this.numberBlackjack = 0;
+          this.numberPoker = 0;
+          this.numberRoulette = 0;
+          this.numberMachinesASous = 0;
+
+          data.forEach(item => {
+            switch (item.game_name) {
+              case 'Baccarat':
+                this.numberBaccarat = item.total_games || 0;
+                break;
+              case 'Blackjack':
+                this.numberBlackjack = item.total_games || 0;
+                break;
+              case 'Poker':
+                this.numberPoker = item.total_games || 0;
+                break;
+              case 'Roulette':
+                this.numberRoulette = item.total_games || 0;
+                break;
+              case 'Slot Machine':
+                this.numberMachinesASous = item.total_games || 0;
+                break;
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du nombre de parties par jeu :', err);
+        }
+      });
+    }
   }
 }
