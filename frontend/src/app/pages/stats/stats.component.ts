@@ -43,6 +43,13 @@ export class StatsComponent implements AfterViewInit, OnInit {
   selectedMonth: number = new Date().getMonth();
   selectedYear: number = 2025;
   userId: number | null = null; // Initialisé à null
+  totalPartiesJouees: number = 0;
+  totalPartiesGagnees: number = 0;
+  numberBaccarat: number = 0;
+  numberBlackjack: number = 0;
+  numberPoker: number = 0;
+  numberRoulette: number = 0;
+  numberMachinesASous: number = 0;
 
   constructor(
     private winRateService: WinRateService,
@@ -59,6 +66,8 @@ export class StatsComponent implements AfterViewInit, OnInit {
             this.userId = user?.userId ?? null; // <-- ici
             if (this.userId) {
               this.fetchWinRateData();
+              this.loadNombreParties(); // Ajoute cet appel
+              this.loadNombrePartiesParJeu(); // Ajoute cet appel
             }
           },
           error: (err) => {
@@ -71,10 +80,13 @@ export class StatsComponent implements AfterViewInit, OnInit {
         this.userId = user?.userId ?? null; // <-- ici aussi
         if (this.userId) {
           this.fetchWinRateData();
+          this.loadNombreParties(); // Ajoute cet appel
+          this.loadNombrePartiesParJeu(); // Ajoute cet appel
         }
       }
     }
   }
+  
 
   get totalGain(): number {
     return this.stats.reduce((total, stat) => total + stat.gain, 0);
@@ -265,5 +277,60 @@ export class StatsComponent implements AfterViewInit, OnInit {
 
   onGameChange(): void {
     this.fetchWinRateData();
+  }
+
+  loadNombreParties(): void {
+    if (this.userId) {
+      this.winRateService.getNombrePartiesByUser(this.userId).subscribe({
+        next: (data: any[]) => {
+          if (data && data.length > 0) {
+            this.totalPartiesJouees = data[0]['nombre de partie'] || 0;
+            this.totalPartiesGagnees = data[0]['nombre de victoire'] || 0;
+          }
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du nombre de parties :', err);
+        }
+      });
+    }
+  }
+
+
+  loadNombrePartiesParJeu(): void {
+    if (this.userId) {
+      this.winRateService.getWinRateByUser(this.userId).subscribe({
+        next: (data: any[]) => {
+          // Remet à zéro avant de remplir
+          this.numberBaccarat = 0;
+          this.numberBlackjack = 0;
+          this.numberPoker = 0;
+          this.numberRoulette = 0;
+          this.numberMachinesASous = 0;
+
+          data.forEach(item => {
+            switch (item.game_name) {
+              case 'Baccarat':
+                this.numberBaccarat = item.total_games || 0;
+                break;
+              case 'Blackjack':
+                this.numberBlackjack = item.total_games || 0;
+                break;
+              case 'Poker':
+                this.numberPoker = item.total_games || 0;
+                break;
+              case 'Roulette':
+                this.numberRoulette = item.total_games || 0;
+                break;
+              case 'Slot Machine':
+                this.numberMachinesASous = item.total_games || 0;
+                break;
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du nombre de parties par jeu :', err);
+        }
+      });
+    }
   }
 }
