@@ -101,19 +101,27 @@ export class MachineASousComponent implements OnInit {
       return;
     }
 
-    if (!this.playerInfo || this.playerInfo.solde === undefined) {
-      console.error(
-        "Impossible d'envoyer les données : informations du joueur non disponibles."
-      );
-      return;
-    }
+    // Récupère le solde à jour depuis le backend AVANT d'envoyer à Firebase
+    this.http
+      .get<{ user_id: number; username: string; email: string; solde: number }>(
+        'http://localhost:3000/get_id/info'
+      )
+      .subscribe({
+        next: (data) => {
+          this.playerInfo = data;
+          const solde = this.playerInfo.solde;
+          const playerId = this.playerInfo.user_id;
 
-    // Disable the button immediately after clicking
-    this.sendButtonDisabled = true;
-
-    const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
-    const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
-
-    this.firebaseSendService.sendPartie(playerId, solde);
+          // Désactive le bouton après récupération du solde à jour
+          this.sendButtonDisabled = true;
+          this.firebaseSendService.sendPartie(playerId, solde);
+        },
+        error: (err) => {
+          console.error(
+            "Impossible d'envoyer les données : informations du joueur non disponibles.",
+            err
+          );
+        },
+      });
   }
 }

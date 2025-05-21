@@ -20,6 +20,7 @@ export class FirebaseSendService {
       const snapshot = await get(rootRef);
       const data = snapshot.val();
       const nbData = data ? Object.keys(data).length : 0;
+      console.log('🚀 ~ FirebaseSendService ~ sendPartie ~ nbData:', nbData);
 
       // Générer la clé personnalisée
       const partieKey = `MA${nbData + 1}`;

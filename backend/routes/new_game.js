@@ -4,9 +4,9 @@ const db = require("../config/dbConfig");
 
 // Fonction utilitaire pour calculer le gain (reprend la logique de firebase.py)
 function calculerGain(rouleaux, mise) {
-  const [r2, r1, r3] = rouleaux;
   let multiplicateur = 0;
   let presence_event = false;
+  const [r1, r2, r3] = rouleaux;
 
   if (r1 === r2 && r2 === r3) {
     return r1 === 7 ? 100 : 10;
@@ -44,6 +44,7 @@ router.post("/add", async (req, res) => {
     joueurId,
     timestamp,
     partieAffichee,
+    mise, // <-- Ajoutez la mise dans le body côté frontend
   } = req.body;
 
   console.log("Données reçues :", req.body);
@@ -74,7 +75,7 @@ router.post("/add", async (req, res) => {
       }
     }
     const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
-
+    const gain = calculerGain(combinaison, mise);
     // Insérer une nouvelle session de jeu dans Games_session
     const gameSessionQuery = `
       INSERT INTO Games_session (game_session_id, name, bet_min, bet_max)

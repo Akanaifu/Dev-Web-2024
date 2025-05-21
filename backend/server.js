@@ -15,11 +15,11 @@ const socketConfig = require("./config/socketConfig");
 
 // Routes
 const sessionRoutes = require("./routes/sessions");
-const dataRoutes = require("./routes/data");
+
 const userRoutes = require("./routes/users");
-const transactionRoutes = require("./routes/transactions");
+
 const statsRoutes = require("./routes/stats");
-const gameRoutes = require("./routes/games");
+
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
 const registerRoutes = require("./routes/register");
@@ -61,11 +61,11 @@ app.use(bodyParser.json());
 // Routes de l'API
 app.use("/sessions", sessionRoutes);
 app.use("/register", registerRoutes);
-app.use("/data", dataRoutes);
+
 app.use("/users", userRoutes);
-app.use("/transactions", transactionRoutes);
+
 app.use("/stats", statsRoutes);
-app.use("/games", gameRoutes);
+
 app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
 app.use("/get_id", playerRoutes);
