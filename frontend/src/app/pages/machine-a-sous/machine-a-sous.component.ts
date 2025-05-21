@@ -1,9 +1,10 @@
-import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
-import { NewGameService } from './new-game.service';
+import { NewGameService } from '../../services/new-game.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-machine-a-sous',
@@ -15,19 +16,60 @@ import { NewGameService } from './new-game.service';
 export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
   logic: MachineASousLogic;
+  playerInfo: {
+    user_id: number;
+    username: string;
+    email: string;
+    solde: number;
+  } = {
+    user_id: 0,
+    username: '',
+    email: '',
+    solde: 0,
+  };
+  sendButtonDisabled: boolean = false;
 
-  constructor(private newGameService: NewGameService) {
+  constructor(
+    private newGameService: NewGameService,
+    private http: HttpClient
+  ) {
     const db = inject(Database);
-    this.logic = new MachineASousLogic(db, newGameService);
+    this.logic = new MachineASousLogic(db, newGameService, this.http);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }
 
   ngOnInit(): void {
-    this.logic.fetchFirebaseData();
+    this.getPlayerInfo();
+    this.checkIfSendButtonShouldBeDisabled();
   }
 
   ngOnDestroy(): void {
     clearInterval(this.logic.intervalId);
+  }
+
+  getPlayerInfo(): void {
+    this.http
+      .get<{ user_id: number; username: string; email: string; solde: number }>(
+        'http://localhost:3000/get_id/info'
+      )
+      .subscribe({
+        next: (data) => {
+          this.playerInfo = data;
+        },
+        error: (err) => {
+          console.error(
+            'Erreur lors de la récupération des informations :',
+            err
+          );
+        },
+      });
+  }
+
+  checkIfSendButtonShouldBeDisabled(): void {
+    this.logic.fetchFirebaseData().then(() => {
+      // Update the button state after fetchFirebaseData completes
+      this.sendButtonDisabled = this.logic.showTable; // Use the updated property from logic
+    });
   }
 
   // Getter pour accéder aux propriétés de MachineASousLogic
@@ -54,16 +96,24 @@ export class MachineASousComponent implements OnInit {
   }
   // Méthode pour envoyer les données à Firebase
   sendPartieToFirebase(): void {
-    const playerId = 'player1';
-    const solde = 1000; // Valeur hardcodée
+    if (this.sendButtonDisabled) {
+      console.warn("Le bouton d'envoi est désactivé.");
+      return;
+    }
 
-    this.firebaseSendService
-      .sendPartie(playerId, solde)
-      .then(() => {
-        console.log('Données envoyées avec succès à Firebase.');
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi des données à Firebase :", error);
-      });
+    if (!this.playerInfo || this.playerInfo.solde === undefined) {
+      console.error(
+        "Impossible d'envoyer les données : informations du joueur non disponibles."
+      );
+      return;
+    }
+
+    // Disable the button immediately after clicking
+    this.sendButtonDisabled = true;
+
+    const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
+    const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
+
+    this.firebaseSendService.sendPartie(playerId, solde);
   }
 }

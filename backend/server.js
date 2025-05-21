@@ -22,7 +22,8 @@ const gameRoutes = require("./routes/games");
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
 const registerRoutes = require("./routes/register");
-
+const playerRoutes = require("./routes/get_id");
+const editCompteRoutes = require("./routes/edit-compte");
 // Services
 const SocketService = require("./services/socketService");
 
@@ -61,6 +62,7 @@ app.use((req, res, next) => {
 // Middlewares pour l'API
 app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 // Routes de l'API
 app.use("/sessions", sessionRoutes);
@@ -72,6 +74,8 @@ app.use("/stats", statsRoutes);
 app.use("/games", gameRoutes);
 app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
+app.use("/get_id", playerRoutes);
+app.use("/edit-compte", editCompteRoutes);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {
