@@ -172,17 +172,17 @@ def get_balance_from_firebase(fetch_from_firebase_func, user_balance):
         data = fetch_from_firebase_func()
         print("Données récupérées de Firebase:", data)
         if data:
-            last_key = max(data, key=lambda k: data[k].get("timestamp", 0))
+            last_key = max(data, key=lambda k: int(k.replace("MA", "")))
             game = data[last_key]
-            if "solde" in game:
+            if "solde" in game and not game["partieJouee"]:
                 user_balance = float(game["solde"])
             else:
-                user_balance = 0
+                user_balance = -1
         else:
-            user_balance = 0
+            user_balance = -1
     except Exception as e:
         print("Erreur lors de la récupération du solde:", e)
-        user_balance = 0
+        user_balance = -1
     return user_balance
 
 

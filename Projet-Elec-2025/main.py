@@ -10,8 +10,8 @@ from firebase import (
     get_balance_from_firebase,
     calculer_gain,
 )
-from seven_segment import SevenSegmentDisplay
-from joystick import update_BET_AMOUNT
+from sept_seg import SevenSegmentDisplay
+from joystick import update_bet_amount
 
 ########## LCD SCREEN CONFIGURATION ##########
 I2C_ADDR = (
@@ -109,8 +109,13 @@ USER_BALANCE = get_balance_from_firebase(
 )  # Récupère le solde avant la boucle principale
 while 1:
     try:
+        if USER_BALANCE < 0:
+            lcd.clear()
+            lcd.putstr("No money or game")
+            time.sleep(2)
+            raise KeyboardInterrupt
         if not RUN_CODE:
-            BET_AMOUNT = update_BET_AMOUNT(
+            BET_AMOUNT = update_bet_amount(
                 x_axis, y_axis, lcd, BET_AMOUNT, USER_BALANCE
             )  # Met à jour la somme pariée avec le joystick
         if BUTTON_PRESSED:
@@ -123,6 +128,9 @@ while 1:
             lcd.putstr("Generating...")  # Affiche un message sur l'écran LCD
             start_led_blinking()  # Démarre le clignotement des LEDs
             random_timer.init(period=500, mode=Timer.PERIODIC, callback=generate_random)
+            USER_BALANCE = get_balance_from_firebase(
+                fetch_from_firebase, USER_BALANCE
+            )  # Récupère le solde avant la boucle principale
         time.sleep(0.1)  # Petite pause pour éviter une utilisation excessive du CPU
     except KeyboardInterrupt:
         print("Goodbye")

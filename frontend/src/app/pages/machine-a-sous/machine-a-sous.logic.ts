@@ -303,7 +303,7 @@ export class MachineASousLogic {
         setTimeout(displayCombinations, f(combinationIndex));
       } else {
         this.checkCombination();
-        this.updateGainDisplay(part.gain);
+        this.updateGainDisplay(part.gain - part.mise);
 
         part.partieAffichee = true;
         // Mettre à jour le flag dans Firebase

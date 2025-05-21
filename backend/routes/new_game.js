@@ -75,7 +75,7 @@ router.post("/add", async (req, res) => {
       }
     }
     const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
-    const gain = calculerGain(combinaison, mise);
+    const gain = calculerGain(combinaison, mise) - mise;
     // Insérer une nouvelle session de jeu dans Games_session
     const gameSessionQuery = `
       INSERT INTO Games_session (game_session_id, name, bet_min, bet_max)
