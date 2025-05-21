@@ -1,4 +1,4 @@
-export const rouletteEnvironment = {
+export const rouletteNetEnvironment = {
     apiUrl: 'http://localhost:3000',
     wheelNumbers: [0, 32, 15, 19, 4, 21, 2, 25, 17, 34,
         6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 
