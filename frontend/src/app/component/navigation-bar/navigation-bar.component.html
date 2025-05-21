@@ -7,6 +7,11 @@
   </div>
   @if (loginService.user()) {
   <p class="gambler-login">Bonjour {{ loginService.user()?.username }}</p>
+  <div class="gambler">
+    <button mat-button (click)="logout()">
+      <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
+    </button>
+  </div>
   } @else {
   <div class="gambler">
     <button mat-button routerLink="/login"><i></i>Login</button>
@@ -22,6 +27,7 @@
     <mat-menu #menu="matMenu">
       <button mat-menu-item routerLink="/">Accueil</button>
       <button mat-menu-item routerLink="/stats">Statistique</button>
+      <button mat-menu-item routerLink="/compte">compte</button>
     </mat-menu>
   </div>
 </nav>

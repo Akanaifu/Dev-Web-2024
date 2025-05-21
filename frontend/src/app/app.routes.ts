@@ -8,6 +8,9 @@ import { MachineASousComponent } from './pages/machine-a-sous/machine-a-sous.com
 import { StatsComponent } from './pages/stats/stats.component';
 import { RouletteNetComponent } from './pages/roulette-net/roulette-net.component';
 
+import { EditCompteComponent } from './pages/edit-compte/edit-compte.component';
+
+
 export const routes: Routes = [
   {
     path: '',
@@ -19,7 +22,7 @@ export const routes: Routes = [
   {
     path: 'machine',
     component: MachineASousComponent,
-    //canActivate: [isLoggedInGuard],
+    canActivate: [isLoggedInGuard],
   }, // page de la machine à sous
 
   { //page de la roulette
@@ -29,8 +32,13 @@ export const routes: Routes = [
   {
     path: 'stats',
     component: StatsComponent,
-    // canActivate: [isLoggedInGuard],
+    canActivate: [isLoggedInGuard],
   }, // page de stats
+  {
+    path: 'compte',
+    component: EditCompteComponent,
+    canActivate: [isLoggedInGuard],
+  }, // page de gestion de compte
   { path: '**', component: NotFoundComponent },
   // page d'erreur route inexistante. A mettre à la fin !!!!!!!!
 ];

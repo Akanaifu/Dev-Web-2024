@@ -1,22 +1,60 @@
 <div id="container">
-	<form>
-		<h3>Créate an acount</h3>
-		<mat-form-field>
-			<mat-label>Username</mat-label>
-			<input matInput formControlName="username">
-		</mat-form-field>
-		<mat-form-field>
-			<mat-label>FirstName</mat-label>
-			<input matInput type="firstname" formControlName="firstname">
-		</mat-form-field>
-        <mat-form-field>
-			<mat-label>LastName</mat-label>
-			<input matInput formControlName="username">
-		</mat-form-field>
-        <mat-form-field>
-			<mat-label>Username</mat-label>
-			<input matInput formControlName="username">
-		</mat-form-field>
-		<button mat-flat-button >Login</button>
+	<form [formGroup]="registerForm" (submit)="register()">
+	  <h3>Créer un compte</h3>
+	  
+	  <mat-form-field>
+		<mat-label>Nom d'utilisateur</mat-label>
+		<input matInput formControlName="username">
+		@if (registerForm.get('username')?.hasError('required') && registerForm.get('username')?.touched) {
+		  <mat-error>Le nom d'utilisateur est requis</mat-error>
+		}
+		@if (registerForm.get('username')?.hasError('minlength') && registerForm.get('username')?.touched) {
+		  <mat-error>Le nom d'utilisateur doit contenir au moins 3 caractères</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <mat-form-field>
+		<mat-label>Prénom</mat-label>
+		<input matInput formControlName="firstName">
+		@if (registerForm.get('firstName')?.hasError('required') && registerForm.get('firstName')?.touched) {
+		  <mat-error>Le prénom est requis</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <mat-form-field>
+		<mat-label>Nom</mat-label>
+		<input matInput formControlName="lastName">
+		@if (registerForm.get('lastName')?.hasError('required') && registerForm.get('lastName')?.touched) {
+		  <mat-error>Le nom est requis</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <mat-form-field>
+		<mat-label>Email</mat-label>
+		<input matInput formControlName="email" type="email">
+		@if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+		  <mat-error>L'email est requis</mat-error>
+		}
+		@if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+		  <mat-error>Format d'email invalide</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <mat-form-field>
+		<mat-label>Mot de passe</mat-label>
+		<input matInput type="password" formControlName="password">
+		@if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+		  <mat-error>Le mot de passe est requis</mat-error>
+		}
+		@if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
+		  <mat-error>Le mot de passe doit contenir au moins 6 caractères</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <button mat-flat-button type="submit" [disabled]="registerForm.invalid">S'inscrire</button>
+	  
+	  @if (errorMessage) {
+		<mat-error>{{ errorMessage }}</mat-error>
+	  }
 	</form>
-</div>
+  </div>

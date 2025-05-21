@@ -39,7 +39,7 @@ export class LoginComponent implements OnDestroy {
 	}
 
 	navigateJeux() {
-		this.router.navigate(['jeux']);
+		this.router.navigate(['']);
 	}
 
 	ngOnDestroy(): void {

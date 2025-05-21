@@ -37,6 +37,16 @@ button:hover {
   color: #000;
 }
 
+button:disabled {
+  background-color: #d3d3d3; /* Light gray */
+  color: #a9a9a9; /* Darker gray for text */
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  background-color: #b0b0b0; /* Slightly darker gray on hover */
+}
+
 /* Centrer la table */
 .combinations-table {
   display: flex;

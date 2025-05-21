@@ -25,4 +25,27 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Route pour récupérer le win rate par jeu pour un utilisateur spécifique
+router.get("/:id/winrate", async (req, res) => {
+  const userId = parseInt(req.params.id);
+  try {
+    const query = `
+      SELECT 
+        gs.name AS game_name,
+        SUM(s.num_wins) AS total_wins,
+        SUM(s.num_games) AS total_games,
+        (SUM(s.num_wins) / SUM(s.num_games)) * 100 AS win_rate
+      FROM Stats s
+      JOIN Bets b ON s.user_id = b.user_id
+      JOIN Games_session gs ON b.game_session_id = gs.game_session_id
+      WHERE s.user_id = ?
+      GROUP BY gs.name
+    `;
+    const [rows] = await db.query(query, [userId]);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lors de la récupération du win rate." });
+  }
+});
+
 module.exports = router;

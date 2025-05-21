@@ -19,9 +19,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
-    const [rows] = await db.query("SELECT * FROM utilisateurs WHERE id = ?", [
-      userId,
-    ]);
+    const [rows] = await db.query("SELECT * FROM user WHERE id = ?", [userId]);
     if (rows.length === 0) {
       return res.status(404).json({ error: "Utilisateur non trouvé" });
     }
@@ -68,6 +66,23 @@ router.delete("/:id", async (req, res) => {
     res
       .status(500)
       .json({ error: "Erreur lors de la suppression de l'utilisateur." });
+  }
+});
+
+// Endpoint pour modifier les données d'un utilisateur
+router.post("/add", async (req, res) => {
+  const { joueurId, solde, gain } = req.body;
+
+  try {
+    const query = `
+      INSERT INTO Bets (user_id, amount, profit)
+      VALUES (?, ?, ?)
+    `;
+    await db.execute(query, [joueurId, solde, gain]);
+    res.status(201).json({ message: "Données ajoutées avec succès." });
+  } catch (error) {
+    console.error("Erreur lors de l'ajout des données :", error);
+    res.status(500).json({ error: "Erreur serveur." });
   }
 });
 

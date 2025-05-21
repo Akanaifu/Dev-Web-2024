@@ -18,9 +18,10 @@ export class LoginService {
 
  login(credentials: LoginCredentials): Observable<User | null | undefined> {
 
- 		return this.http.post(this.BASE_URL + '/sessions/login/', credentials).pipe(
+ 		return this.http.post(this.BASE_URL + '/sessions/login/', credentials,{
+      withCredentials:true
+    }).pipe(
  			tap((result: any) => {
- 				localStorage.setItem('token', result['token']);
  				const user = Object.assign(new User(), result['user']);
  				this.user.set(user);
  			}),
@@ -29,7 +30,9 @@ export class LoginService {
   }
 
   getUser(): Observable<User | null | undefined> {
-    return this.http.get(this.BASE_URL + '/sessions/me/').pipe(
+    return this.http.get(this.BASE_URL + '/sessions/me/',{
+      withCredentials:true
+    }).pipe(
       tap((result: any) => {
         const user = Object.assign(new User(), result);
         this.user.set(user);
@@ -39,9 +42,10 @@ export class LoginService {
   }
 
   logout() {
-    return this.http.get(this.BASE_URL + '/sessions/logout/').pipe(
+    return this.http.get(this.BASE_URL + '/sessions/logout/',{
+      withCredentials:true
+    }).pipe(
       tap((result: any) => {
-        localStorage.removeItem('token');
         this.user.set(null);
       })
     )

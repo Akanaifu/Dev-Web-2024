@@ -6,6 +6,7 @@ import {
   provideHttpClient,
   withInterceptors,
   withFetch,
+  withXsrfConfiguration
 } from '@angular/common/http';
 import { authTokenInterceptor } from './interceptor/auth-token.interceptor';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
@@ -20,7 +21,11 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideClientHydration(),
     SocketService,
-    provideHttpClient(withFetch(), withInterceptors([authTokenInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }),
+      withInterceptors([authTokenInterceptor])
+    ),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideDatabase(() => getDatabase()),
   ],

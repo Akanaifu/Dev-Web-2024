@@ -1,5 +1,6 @@
 import { Database, ref, get, child, set } from '@angular/fire/database';
-import { NewGameService } from './new-game.service';
+import { HttpClient } from '@angular/common/http';
+import { NewGameService } from '../../services/new-game.service';
 
 interface Combination {
   id: string;
@@ -16,6 +17,7 @@ interface Afficheur {
 }
 
 export class MachineASousLogic {
+  // Properties
   private db: Database;
   private newGameService: NewGameService;
 
@@ -23,10 +25,6 @@ export class MachineASousLogic {
   public showTable: boolean = false;
   public intervalId: any;
 
-  constructor(db: Database, newGameService: NewGameService) {
-    this.db = db;
-    this.newGameService = newGameService;
-  }
   title = 'Machine à sous';
   combinations: Combination[] = [
     {
@@ -100,119 +98,26 @@ export class MachineASousLogic {
     { id: 'afficheur2', currentChiffre: 0 },
     { id: 'afficheur3', currentChiffre: 0 },
   ];
+  playerInfo: {
+    user_id: number;
+    username: string;
+    email: string;
+    solde: number;
+  } = {
+    user_id: 0,
+    username: '',
+    email: '',
+    solde: 0,
+  };
+  private http: HttpClient;
 
-  computeQuadraticFunction(long_arr: number): (x: number) => number {
-    const mid = long_arr / 2;
-
-    const origine = 1000; // f(0) = 1000
-    const ymin = 50; // f(mid) = 50
-
-    // Résolution du système avec f(x) = ax^2 + bx + c
-    // Conditions : f(0) = c = 1000, f(mid) = a*mid^2 + b*mid + c = 200
-    // b = -2a*mid (pour que le min soit en x = mid)
-
-    const a = (origine - ymin) / (mid * mid); // a = (1000 - 200) / mid²
-    const b = -2 * a * mid;
-
-    // Retourne la fonction f(x)
-    return (x: number) => a * x * x + b * x + origine;
+  constructor(db: Database, newGameService: NewGameService, http: HttpClient) {
+    this.http = http;
+    this.db = db;
+    this.newGameService = newGameService;
   }
 
-  fetchFirebaseData(): void {
-    get(child(ref(this.db), '/'))
-      .then((snapshot) => {
-        if (!snapshot.exists()) return console.log('No data available');
-
-        const data = snapshot.val();
-
-        // Trier les parties par ordre croissant des clés "partieX"
-        const sortedParts = Object.keys(data)
-          .filter((key) => key.startsWith('partie'))
-          .sort(
-            (a, b) =>
-              parseInt(a.replace('partie', ''), 10) -
-              parseInt(b.replace('partie', ''), 10)
-          )
-          .map((key) => ({ key, ...data[key] }));
-        console.log('Sorted parts:', sortedParts);
-        // Filtrer les parties où partieAffichee est à False
-        const unshownParts = sortedParts.filter(
-          (part) => !part.partieAffichee && part.partieJouee
-        );
-        const shownParts = sortedParts.filter(
-          (part) => part.partieAffichee && part.partieJouee
-        );
-        if (unshownParts.length === 0) {
-          // Si aucune partie non affichée n'est trouvée, ajouter la dernière partie jouée
-          const lastPart = shownParts[shownParts.length - 1];
-          if (lastPart) {
-            unshownParts.push(lastPart);
-            console.log(
-              'Aucune partie non affichée trouvée. Dernière partie ajoutée à unshownParts :',
-              lastPart
-            );
-          } else {
-            console.warn('Aucune partie disponible dans les données Firebase.');
-          }
-        }
-
-        let index = 0;
-
-        const iterate = () => {
-          if (index < unshownParts.length) {
-            const part = unshownParts[index];
-            // Afficher les combinaisons et gérer l'affichage
-            const allCombinations: string[] = part.combinaison || [];
-            const f = this.computeQuadraticFunction(allCombinations.length);
-
-            if (!allCombinations.length) {
-              console.error(
-                'Invalid data structure: Missing combinaison in the part'
-              );
-              index++;
-              setTimeout(iterate, 5000); // Passer à la partie suivante après 5 secondes
-              return;
-            }
-
-            let combinationIndex = 0;
-
-            const displayCombinations = () => {
-              if (combinationIndex < allCombinations.length) {
-                const combination = allCombinations[combinationIndex];
-                this.updateAfficheurs(combination);
-                combinationIndex++;
-                setTimeout(displayCombinations, f(combinationIndex)); // Recalculer f(index) pour chaque itération
-              } else {
-                this.checkCombination();
-                this.updateGainDisplay(part.gain);
-
-                // Mettre à jour partieAffichee à True dans la base de données
-                part.partieAffichee = true;
-                this.addNewGameToBackend(
-                  part.joueurId[part.joueurId.length - 1] || 0, // Vérifiez que playerId est défini
-                  part.mise || 0, // Vérifiez que solde est un nombre
-                  part.combinaison[part.combinaison.length - 1] || [], // Vérifiez que combinaison est un tableau
-                  part.gain || 0, // Vérifiez que gain est un nombre
-                  part.timestamp || new Date().toISOString() // Fournissez un timestamp par défaut
-                );
-                index++;
-                setTimeout(iterate, 5000); // Passer à la partie suivante après 5 secondes
-              }
-            };
-
-            displayCombinations();
-          } else {
-            console.log('All unshown parts have been displayed');
-          }
-        };
-
-        iterate();
-      })
-      .catch((error: any) =>
-        console.error('Error fetching Firebase data:', error)
-      ); // Ajout du type explicite pour 'error'
-  }
-
+  // Utility Methods
   private updateAfficheurs(combination: string): void {
     this.afficheurs.forEach((afficheur, i) => {
       afficheur.currentChiffre = +combination[i] || 0;
@@ -228,6 +133,18 @@ export class MachineASousLogic {
     } else {
       console.warn('updateGainDisplay called in a non-browser environment');
     }
+  }
+
+  // Core Logic
+  computeQuadraticFunction(long_arr: number): (x: number) => number {
+    const mid = long_arr / 2;
+    const origine = 1000; // f(0) = 1000
+    const ymin = 50; // f(mid) = 50
+
+    const a = (origine - ymin) / (mid * mid); // a = (1000 - 200) / mid²
+    const b = -2 * a * mid;
+
+    return (x: number) => a * x * x + b * x + origine;
   }
 
   checkCombination(): void {
@@ -270,6 +187,151 @@ export class MachineASousLogic {
 
     this.highlightCombination = matched.length ? matched.join(', ') : null;
   }
+
+  // Firebase Data Handling
+  fetchFirebaseData(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.getCurrentUserId();
+
+      get(child(ref(this.db), '/'))
+        .then((snapshot) => {
+          if (!snapshot.exists()) {
+            console.log('No data available');
+            resolve();
+            return;
+          }
+
+          const data = snapshot.val();
+          const sortedParts = this.sortAndFilterParts(
+            data,
+            this.playerInfo.user_id.toString()
+          );
+          this.showTable = sortedParts.notPlayedParts.length > 0 ? true : false; // Example: Use this property to control the button state
+
+          let index = 0;
+
+          const iterate = () => {
+            if (index < sortedParts.unshownParts.length) {
+              const part = sortedParts.unshownParts[index];
+              this.processPart(part, () => {
+                index++;
+                setTimeout(iterate, 5000);
+              });
+            } else {
+              console.log('All unshown parts have been displayed');
+              resolve();
+            }
+          };
+
+          iterate();
+        })
+        .catch((error: any) => {
+          console.error('Error fetching Firebase data:', error);
+          reject(error);
+        });
+    });
+  }
+
+  private sortAndFilterParts(data: any, userId: string) {
+    const sortedParts = Object.keys(data)
+      .filter((key) => key.startsWith('MA'))
+      .sort(
+        (a, b) =>
+          parseInt(a.replace('MA', ''), 10) - parseInt(b.replace('MA', ''), 10)
+      )
+      .map((key) => ({ key, ...data[key] }));
+
+    const unshownParts = sortedParts.filter(
+      (part) =>
+        !part.partieAffichee &&
+        part.partieJouee &&
+        part.joueurId.includes(userId) // Filtrer par l'utilisateur connecté
+    );
+    const shownParts = sortedParts.filter(
+      (part) =>
+        part.partieAffichee &&
+        part.partieJouee &&
+        part.joueurId.includes(userId) // Filtrer par l'utilisateur connecté
+    );
+    const notPlayedParts = sortedParts.filter(
+      (part) => !part.partieJouee && part.joueurId.includes(userId) // Filtrer par l'utilisateur connecté
+    );
+
+    if (unshownParts.length === 0 && shownParts.length > 0) {
+      unshownParts.push(shownParts[shownParts.length - 1]);
+    }
+
+    return { unshownParts, shownParts, notPlayedParts };
+  }
+
+  getCurrentUserId(): void {
+    this.http
+      .get<{ user_id: number; username: string; email: string; solde: number }>(
+        'http://localhost:3000/get_id/info'
+      )
+      .subscribe({
+        next: (data) => {
+          this.playerInfo = data;
+          console.log('Informations du joueur :', this.playerInfo);
+        },
+        error: (err) => {
+          console.error(
+            'Erreur lors de la récupération des informations :',
+            err
+          );
+        },
+      });
+  }
+
+  private processPart(part: any, callback: () => void): void {
+    const allCombinations: string[] = part.combinaison || [];
+    const f = this.computeQuadraticFunction(allCombinations.length);
+
+    if (!allCombinations.length) {
+      console.error('Invalid data structure: Missing combinaison in the part');
+      callback();
+      return;
+    }
+
+    let combinationIndex = 0;
+
+    const displayCombinations = () => {
+      if (combinationIndex < allCombinations.length) {
+        const combination = allCombinations[combinationIndex];
+        this.updateAfficheurs(combination);
+        combinationIndex++;
+        setTimeout(displayCombinations, f(combinationIndex));
+      } else {
+        this.checkCombination();
+        this.updateGainDisplay(part.gain);
+
+        part.partieAffichee = true;
+        // Mettre à jour le flag dans Firebase
+        set(ref(this.db, part.key ? `/${part.key}/partieAffichee` : '/'), true)
+          .then(() => {
+            console.log(`partieAffichee mis à jour pour ${part.key}`);
+          })
+          .catch((err) => {
+            console.error(
+              `Erreur lors de la mise à jour de partieAffichee pour ${part.key}:`,
+              err
+            );
+          });
+        this.addNewGameToBackend(
+          part.joueurId[part.joueurId.length - 1] || 0,
+          part.mise || 0,
+          part.combinaison[part.combinaison.length - 1] || [],
+          part.gain || 0,
+          part.timestamp || new Date().toISOString()
+        );
+        callback();
+      }
+    };
+
+    displayCombinations();
+  }
+
+  // Backend Communication
   addNewGameToBackend(
     playerId: string,
     solde: number,
@@ -279,7 +341,7 @@ export class MachineASousLogic {
   ): void {
     const gameData = {
       partieId: 1,
-      partieJouee: gain > 0,
+      partieJouee: true, // <-- Ajouté pour satisfaire le backend
       solde: solde,
       combinaison: combinaison,
       gain: gain,
