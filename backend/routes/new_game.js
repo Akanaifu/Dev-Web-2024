@@ -2,6 +2,38 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/dbConfig");
 
+// Fonction utilitaire pour calculer le gain (reprend la logique de firebase.py)
+function calculerGain(rouleaux, mise) {
+  const [r2, r1, r3] = rouleaux;
+  let multiplicateur = 0;
+  let presence_event = false;
+
+  if (r1 === r2 && r2 === r3) {
+    return r1 === 7 ? 100 : 10;
+  }
+  if ((r1 + 1 === r3 && r2 + 1 === r1) || (r1 - 1 === r3 && r2 - 1 === r1)) {
+    multiplicateur = 5;
+    presence_event = true;
+  } else if (r1 === r3 && r1 !== r2) {
+    multiplicateur = 2;
+    presence_event = true;
+  }
+  if (r1 % 2 === r2 % 2 && r2 % 2 === r3 % 2) {
+    multiplicateur = 1.5;
+    presence_event = true;
+  }
+  const count_7 = [r1, r2, r3].filter((v) => v === 7).length;
+  multiplicateur += count_7 * 0.5;
+  if (!presence_event) {
+    if (count_7 === 1) {
+      multiplicateur = 0.5;
+    } else if (count_7 === 2) {
+      multiplicateur = 1;
+    }
+  }
+  return Math.floor(mise * multiplicateur);
+}
+
 // Endpoint pour ajouter une nouvelle partie
 router.post("/add", async (req, res) => {
   const {
@@ -9,20 +41,18 @@ router.post("/add", async (req, res) => {
     partieJouee,
     solde,
     combinaison,
-    gain,
     joueurId,
     timestamp,
     partieAffichee,
   } = req.body;
 
-  console.log("Données reçues :", req.body); // Ajoutez ce log pour inspecter les données
+  console.log("Données reçues :", req.body);
 
   if (
     !partieId ||
     partieJouee === undefined ||
     solde === undefined ||
     !combinaison ||
-    gain === undefined ||
     !joueurId ||
     !timestamp ||
     partieAffichee === undefined
@@ -31,32 +61,39 @@ router.post("/add", async (req, res) => {
   }
 
   try {
-    // Votre logique d'insertion dans la base de données
-  } catch (error) {
-    console.error("Erreur dans le backend :", error); // Log de l'erreur
-    res.status(500).json({ error: "Erreur serveur." });
-  }
+    // Générer le prochain game_session_id de la forme MAxx
+    const [rows] = await db.execute(
+      `SELECT game_session_id FROM Games_session WHERE game_session_id LIKE 'MA%' ORDER BY game_session_id DESC LIMIT 1`
+    );
+    let nextIndex = 1;
+    if (rows.length > 0) {
+      const lastId = rows[0].game_session_id;
+      const match = lastId.match(/^MA(\d+)$/);
+      if (match) {
+        nextIndex = parseInt(match[1], 10) + 1;
+      }
+    }
+    const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
 
-  try {
     // Insérer une nouvelle session de jeu dans Games_session
     const gameSessionQuery = `
-      INSERT INTO Games_session (name, bet_min, bet_max)
-      VALUES (?, ?, ?)
+      INSERT INTO Games_session (game_session_id, name, bet_min, bet_max)
+      VALUES (?, ?, ?, ?)
     `;
     const [gameSessionResult] = await db.execute(gameSessionQuery, [
-      `Game for ${joueurId}`,
+      newGameSessionId,
+      "Slot Machine",
       gain, // Valeur par défaut pour bet_min
       gain, // Valeur par défaut pour bet_max
     ]);
 
     // Récupérer l'ID de la session de jeu nouvellement créée
-    const gameSessionId = gameSessionResult.insertId;
+    const gameSessionId = newGameSessionId;
 
     // Insérer les données dans la table Bets
     const betQuery = `
-      INSERT INTO Bets (user_id, game_session_id, amount, profit, bet_status, combinaison)
+      INSERT INTO Bets (user_id, game_session_id, amount, bet_status, combinaison)
       VALUES (
-        ?, 
         ?, 
         ?, 
         ?, 
@@ -68,8 +105,7 @@ router.post("/add", async (req, res) => {
       joueurId,
       gameSessionId,
       solde,
-      gain,
-      gain > solde ? "win" : "lose",
+      gain > 0 ? "win" : "lose",
       combinaison.join(","),
     ]);
     // Récupérer le solde actuel du joueur

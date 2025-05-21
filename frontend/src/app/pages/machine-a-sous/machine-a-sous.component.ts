@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
-import { NewGameService } from './new-game.service';
+import { NewGameService } from '../../services/new-game.service';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -27,6 +27,7 @@ export class MachineASousComponent implements OnInit {
     email: '',
     solde: 0,
   };
+  sendButtonDisabled: boolean = false;
 
   constructor(
     private newGameService: NewGameService,
@@ -39,6 +40,7 @@ export class MachineASousComponent implements OnInit {
 
   ngOnInit(): void {
     this.getPlayerInfo();
+    this.checkIfSendButtonShouldBeDisabled();
   }
 
   ngOnDestroy(): void {
@@ -53,7 +55,6 @@ export class MachineASousComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.playerInfo = data;
-          console.log('Informations du joueur :', this.playerInfo);
         },
         error: (err) => {
           console.error(
@@ -62,6 +63,13 @@ export class MachineASousComponent implements OnInit {
           );
         },
       });
+  }
+
+  checkIfSendButtonShouldBeDisabled(): void {
+    this.logic.fetchFirebaseData().then(() => {
+      // Update the button state after fetchFirebaseData completes
+      this.sendButtonDisabled = this.logic.showTable; // Use the updated property from logic
+    });
   }
 
   // Getter pour accéder aux propriétés de MachineASousLogic
@@ -88,6 +96,11 @@ export class MachineASousComponent implements OnInit {
   }
   // Méthode pour envoyer les données à Firebase
   sendPartieToFirebase(): void {
+    if (this.sendButtonDisabled) {
+      console.warn("Le bouton d'envoi est désactivé.");
+      return;
+    }
+
     if (!this.playerInfo || this.playerInfo.solde === undefined) {
       console.error(
         "Impossible d'envoyer les données : informations du joueur non disponibles."
@@ -95,20 +108,12 @@ export class MachineASousComponent implements OnInit {
       return;
     }
 
+    // Disable the button immediately after clicking
+    this.sendButtonDisabled = true;
+
     const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
     const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
-    console.log(
-      '🚀 ~ MachineASousComponent ~ sendPartieToFirebase ~ this.playerInfo:',
-      this.playerInfo
-    );
 
-    this.firebaseSendService
-      .sendPartie(playerId, solde)
-      .then(() => {
-        console.log('Données envoyées avec succès à Firebase.');
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi des données à Firebase :", error);
-      });
+    this.firebaseSendService.sendPartie(playerId, solde);
   }
 }

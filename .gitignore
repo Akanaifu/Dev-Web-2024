@@ -45,3 +45,4 @@ Thumbs.db
 
 # dbConfig
 backend/config/dbConfig.js
+db/queries/commandes.bat

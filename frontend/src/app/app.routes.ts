@@ -6,6 +6,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { isLoggedInGuard } from './guards/is-logged-in.guard';
 import { MachineASousComponent } from './pages/machine-a-sous/machine-a-sous.component';
 import { StatsComponent } from './pages/stats/stats.component';
+import { EditCompteComponent } from './pages/edit-compte/edit-compte.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,11 @@ export const routes: Routes = [
     component: StatsComponent,
     canActivate: [isLoggedInGuard],
   }, // page de stats
+  {
+    path: 'compte',
+    component: EditCompteComponent,
+    canActivate: [isLoggedInGuard],
+  }, // page de gestion de compte
   { path: '**', component: NotFoundComponent },
   // page d'erreur route inexistante. A mettre à la fin !!!!!!!!
 ];
