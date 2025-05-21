@@ -48,4 +48,25 @@ router.get("/:id/winrate", async (req, res) => {
   }
 });
 
+// Route pour récupérer le nombre de partie joué par utilisateur
+//http://localhost:3000/stats/:id/numberOfGame
+router.get("/:id/numberOfGame", async (req, res) => {
+  const userId = parseInt(req.params.id);
+  try {
+    const query = `
+      SELECT 
+      gs.name AS game_name,
+      COUNT(DISTINCT b.game_session_id) AS games_played
+      FROM Bets b
+      JOIN Games_session gs ON b.game_session_id = gs.game_session_id
+      WHERE b.user_id = ?
+      GROUP BY gs.name
+    `;
+    const [rows] = await db.query(query, [userId]);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lors de la récupération du win rate." });
+  }
+});
+
 module.exports = router;

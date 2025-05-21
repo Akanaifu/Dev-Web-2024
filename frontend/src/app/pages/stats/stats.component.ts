@@ -75,6 +75,46 @@ export class StatsComponent implements AfterViewInit, OnInit {
       }
     }
   }
+  
+  get numberOfGames(): number {
+    return this.stats.reduce((total, stat) => total + stat.num_games, 0);
+  }
+  
+  numberGamesByType: { [game: string]: number } = {};
+
+  // Appel à l'API pour récupérer le nombre de parties par type de jeu
+  fetchNombreParties(game: string): void {
+    if (this.userId) {
+      this.winRateService.getNombrePartiesByUser(this.userId).subscribe({
+        next: (data: any[]) => {
+          // Transforme le tableau en objet { [game_name]: games_played }
+          const d: { [key: string]: number } = {};
+          data.forEach(item => {
+            d[item.game_name] = item.games_played;
+          });
+          // Utilise ensuite d['Baccarat'], d['Slot Machine'], etc.
+          this.numberGamesByType = d;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du nombre de parties :', err);
+          this.numberGamesByType = {};
+        }
+      });
+    }
+  }
+  get numberPoker(): number {
+    this.fetchNombreParties('Poker');
+    return this.numberGamesByType['Poker'] || 0;
+  }
+  get numberBlackjack(): number {
+    return this.stats.filter(stat => stat.game === 'Blackjack').reduce((total, stat) => total + stat.num_games, 0);
+  }
+  get numberMachinesASous(): number {
+    return this.stats.filter(stat => stat.game === 'Slot Machine').reduce((total, stat) => total + stat.num_games, 0);
+  }
+  get numberBaccarat(): number {
+    return this.stats.filter(stat => stat.game === 'Baccarat').reduce((total, stat) => total + stat.num_games, 0);
+  }
 
   get totalGain(): number {
     return this.stats.reduce((total, stat) => total + stat.gain, 0);

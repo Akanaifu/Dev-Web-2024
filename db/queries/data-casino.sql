@@ -15,7 +15,29 @@ INSERT INTO `Games_session` (`game_session_id`, `name`, `bet_min`, `bet_max`) VA
 ('BA01', 'Baccarat', '20', '2000'),  -- BA pour Baccarat
 ('MA02', 'Slot Machine', '1', '150'), -- Deuxième session de Machine à sous
 ('PO02', 'Poker', '10', '1000'),      -- Deuxième session de Poker
-('RO02', 'Roulette', '5', '300');     -- Deuxième session de Roulette
+('RO02', 'Roulette', '5', '300'),     -- Deuxième session de Roulette
+('MA03', 'Slot Machine', '1', '100'),
+('PO03', 'Poker', '5', '500'),
+('RO03', 'Roulette', '2', '200'),
+('BJ02', 'Blackjack', '10', '1000'),
+('BA02', 'Baccarat', '20', '2000'),
+('MA04', 'Slot Machine', '1', '100'),
+('PO04', 'Poker', '5', '500'),
+('RO04', 'Roulette', '2', '200'),
+('BJ03', 'Blackjack', '10', '1000'),
+('BA03', 'Baccarat', '20', '2000'),
+('MA05', 'Slot Machine', '1', '100'),
+('PO05', 'Poker', '5', '500'),
+('RO05', 'Roulette', '2', '200'),
+('BJ04', 'Blackjack', '10', '1000'),
+('BA04', 'Baccarat', '20', '2000'),
+('MA06', 'Slot Machine', '1', '100'),
+('PO06', 'Poker', '5', '500'),
+('RO06', 'Roulette', '2', '200'),
+('BJ05', 'Blackjack', '10', '1000'),
+('BA05', 'Baccarat', '20', '2000'),
+('MA07', 'Slot Machine', '1', '100'),
+('PO07', 'Poker', '5', '500');
 
 -- Insérer des transactions bancaires dans la table Banking_transaction
 INSERT INTO `Banking_transaction` (`transaction_id`, `user_id`, `amount_banking`, `transaction_type`, `transaction_status`) VALUES
@@ -35,7 +57,29 @@ INSERT INTO `Bets` (`bet_id`,`user_id`, `game_session_id`, `amount`, `profit`, `
 (5,1, 'BA01', 200.00, 500.00, 'win', NULL),  -- Baccarat sans combinaison
 (6,1, 'MA02', 15.00, 75.00, 'win', '8,8,8'), -- Deuxième session de Machine à sous avec combinaison
 (7,2, 'PO02', 50.00, 0.00, 'lose', NULL),    -- Deuxième session de Poker sans combinaison
-(8,3, 'RO02', 10.00, 30.00, 'win', NULL);    -- Deuxième session de Roulette sans combinaison
+(8,3, 'RO02', 10.00, 30.00, 'win', NULL),    -- Deuxième session de Roulette sans combinaison
+(9,2, 'MA03', 5.00, 0.00, 'lose', NULL),     -- Machine à sous sans combinaison
+(10,2, 'PO03', 25.00, 0.00, 'lose', NULL),   -- Poker sans combinaison
+(11,2, 'RO03', 2.00, 0.00, 'lose', NULL),   -- Roulette sans combinaison
+(12,2, 'BJ02', 10.00, 0.00, 'lose', NULL),   -- Blackjack sans combinaison
+(13,2, 'BA02', 20.00, 0.00, 'lose', NULL),   -- Baccarat sans combinaison
+(14,2, 'MA04', 30.00, 0.00, 'lose', NULL),   -- Deuxième session de Machine à sous sans combinaison
+(15,2, 'PO04', 40.00, 50.00, 'win', NULL),   -- Deuxième session
+(16,2, 'RO04', 15.00, 0.00, 'lose', NULL),   -- Deuxième session de Roulette sans combinaison
+(17,2, 'BJ03', 5.00, 0.00, 'lose', NULL),    -- Deuxième session
+(18,2, 'BA03', 10.00, 40.00, 'win', NULL),   -- Deuxième session
+(19,2, 'MA05', 50.00, 0.00, 'lose', NULL),   -- Machine à sous sans combinaison
+(20,2, 'PO05', 100.00, 0.00, 'lose', NULL),  -- Poker sans combinaison
+(21,2, 'RO05', 25.00, 40.00, 'win', NULL),   -- Roulette sans combinaison
+(22,2, 'BJ04', 15.00, 0.00, 'lose', NULL),    -- Blackjack sans combinaison
+(23,2, 'BA04', 5.00, 0.00, 'lose', NULL),     -- Baccarat sans combinaison
+(24,2, 'MA06', 10.00, 50.00, 'win', NULL),    -- Deuxième session de Machine à sous sans combinaison
+(25,2, 'PO06', 20.00, 0.00, 'lose', NULL),    -- Deuxième session de Poker sans combinaison
+(26,2, 'RO06', 50.00, 0.00, 'lose', NULL),    -- Deuxième session de Roulette sans combinaison
+(27,2, 'BJ05', 30.00, 0.00, 'lose', NULL),     -- Deuxième session
+(28,2, 'BA05', 15.00, 100.00, 'win', NULL),    -- Deuxième session
+(29,2, 'MA07', 100.00, 150.00, 'win', NULL),   -- Machine à sous sans combinaison
+(30,2, 'PO07', 200.00, 400.00, 'win', NULL);   -- Poker sans combinaison
 
 -- Insérer des statistiques dans la table Stats
 INSERT INTO `Stats` (`stat_id`,`user_id`, `num_games`, `num_wins`, `timestamp`) VALUES
