@@ -1,12 +1,32 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import {
+  provideHttpClient,
+  withInterceptors,
+  withFetch,
+  withXsrfConfiguration
+} from '@angular/common/http';
+import { authTokenInterceptor } from './interceptor/auth-token.interceptor';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
+import { environment } from '../environments/environments';
+import { provideClientHydration } from '@angular/platform-browser';
+import { SocketService } from './services/socket/socket.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(),
-    importProvidersFrom(/* other modules or providers */)
-  ]
+    provideAnimationsAsync(),
+    provideClientHydration(),
+    SocketService,
+    provideHttpClient(
+      withFetch(),
+      withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }),
+      withInterceptors([authTokenInterceptor])
+    ),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideDatabase(() => getDatabase()),
+  ],
 };

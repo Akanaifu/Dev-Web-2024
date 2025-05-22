@@ -1,192 +1,142 @@
-from random import randint
 from machine import Pin, Timer, I2C, ADC
-from lcd_api import LcdApi
+import random
+import time, sys
 from pico_i2c_lcd import I2cLcd
-import utime
+from connexion_wifi import connect_to_wifi
+from led import start_led_blinking, stop_led_blinking
+from firebase import (
+    update_first_unplayed_game,
+    fetch_from_firebase,
+    get_balance_from_firebase,
+    calculer_gain,
+)
+from sept_seg import SevenSegmentDisplay
+from joystick import update_bet_amount
 
-
-# Configuration GPIO
-PINS_TRANSISTORS = [0, 1, 6]
-PINS_DECODER = [4, 3, 2, 5]
-###################### Configuration de l'I2C pour l'écran LCD ######################
-I2C_ADDR = 0x27
-I2C_NUM_ROWS = 2
-I2C_NUM_COLS = 16
+########## LCD SCREEN CONFIGURATION ##########
+I2C_ADDR = (
+    0x27  # Adresse I2C de l'écran LCD (vérifiez avec un scanner I2C si nécessaire)
+)
 i2c = I2C(
-    0, scl=Pin(17), sda=Pin(16), freq=400000
-)  # se référer à la datasheet du µC pour connaitre les pin sda et scl != GPIO
-lcd = I2cLcd(i2c, I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS)
+    0, scl=Pin(17), sda=Pin(16)
+)  # Initialisation de l'I2C sur GPIO 16 (SCL) et GPIO 17 (SDA)
+lcd = I2cLcd(i2c, I2C_ADDR, 2, 16)  # Écran LCD 2 lignes, 16 colonnes
+
+########## Global variables ##########
+NUM_DIGITS = 3  # Nombre de chiffres à afficher
+NUMBERS_TO_GENERATE = random.randint(5, 15)  # Nombres à générer
+NUMBER_GENERATED_COUNT = 0  # Compteur pour suivre combien de chiffres ont été générés
+random_timer = Timer()  # Timer pour générer les chiffres successivement
+SCORE = 0  # Variable pour stocker le SCORE
+BET_AMOUNT = 10  # Somme initiale pariée
+DISPLAY_FREQ = NUM_DIGITS * 100
+RUN_CODE = False
+CURRENT_DIGIT = 0
+digits = [7, 7, 7]
+USER_BALANCE = 0  # Solde du joueur, à récupérer depuis Firebase
+
+########## Button to start display ##########
+button_pin = Pin(11, Pin.IN, Pin.PULL_UP)
+BUTTON_PRESSED = False
+
+SEGMENTS_PINS = [3, 4, 5, 6, 7, 9, 8, 10]  # a, b, c, d, e, f, g, pt
+DISPLAY_SELECT_PINS = [0, 1, 2]  # GPIO 0, 1, 2
+seven_segment = SevenSegmentDisplay(SEGMENTS_PINS, DISPLAY_SELECT_PINS, NUM_DIGITS)
 
 ###################### Configuration des axes X et Y du joystick ######################
 x_axis = ADC(Pin(28))
 y_axis = ADC(Pin(27))
 
-###################### Configuration du bouton ######################
-bouton = Pin(26, Pin.IN, Pin.PULL_UP)
-
-###################### Variables globales ######################
-MONTANT = 0
-
-
-def dec_to_bin(dec: int) -> str:
-    """Convertit un nombre décimal en binaire sans le préfixe '0b' et complète à 4 chiffres."""
-    binary_str = bin(dec)[2:]  # Convertir en binaire et retirer '0b'
-    return "0" * (4 - len(binary_str)) + binary_str  # Ajouter les zéros manquants
+###################### Firebase  ######################
+GAME_COUNT = 0  # Compteur d’identifiants personnalisés
+combinations = []  # Liste de toutes les combinaisons générées
+FIREBASE_URL = "https://machine-a-sous-default-rtdb.europe-west1.firebasedatabase.app"
 
 
-def random_number(min_val: int, max_val: int) -> int:
-    """Génère un chiffre aléatoire entre [min_val, max_val]."""
-    return randint(min_val, max_val)
-
-
-def calculer_gain(rouleaux: list[int], mise: int) -> int:
-    """Calcule le gain en fonction du tirage et du MONTANT misé."""
-    r2, r1, r3 = rouleaux
-    multiplicateur = 0
-    presence_event = False
-
-    if r1 == r2 == r3:
-        multiplicateur = 100 if r1 == 7 else 10  # (Méga) Jackpot ou Jackpot
-    elif (r1 + 1 == r3 and r2 + 1 == r1) or (r1 - 1 == r3 and r2 - 1 == r1):
-        multiplicateur = 5  # Suite
-        presence_event = True
-    elif r1 == r3 and r1 != r2:
-        multiplicateur = 2  # Sandwich
-        presence_event = True
-    elif r1 % 2 == r2 % 2 == r3 % 2:
-        multiplicateur = 1.5  # Pair/Impair
-        presence_event = True
-
-    count_7 = rouleaux.count(7)
-    multiplicateur += count_7 * 0.5
-    if not presence_event:
-        if count_7 == 1:
-            multiplicateur = 0.5  # Perdre 50% de sa somme
-        elif count_7 == 2:
-            multiplicateur = 1  # Récupérer sa mise
-
-    gain = int(mise * multiplicateur)
-    return gain
-
-
-def update_display(number: int, display_pins: list[int]):
+def button_callback(pin):
     """
-    Met à jour l'afficheur 7 segments avec le nombre donné.
-    Entrée : number (int entre 0 et 9), display_pins (liste des GPIOs de l'afficheur)
+    Fonction de rappel déclenchée lors de l'appui sur le bouton.
     """
-    binary_str = dec_to_bin(number)
-    for i, gpio in enumerate(display_pins):
-        Pin(gpio, Pin.OUT).value(int(binary_str[i]))
+    global BUTTON_PRESSED
+    BUTTON_PRESSED = True
 
 
-def debounce(pin):
-    utime.sleep_ms(20)
-    return pin.value() == 0
+def write_displays(timer):
+    """
+    Affiche cycliquement chaque chiffre sur l'afficheur 7 segments.
+    """
+    seven_segment.write_displays(timer)
 
 
-def get_joystick_position(somme):
-    """Lit la position du joystick et met à jour le MONTANT en conséquence."""
-    x = x_axis.read_u16()  # Lire la valeur analogique de l'axe X (416 - 65535)
-    y = y_axis.read_u16()  # Lire la valeur analogique de l'axe Y (432 - 65535)
+def generate_random(timer):
+    """
+    Fonction appelée par le timer pour générer un chiffre aléatoire.
+    """
+    global digits, NUMBER_GENERATED_COUNT, random_timer, SCORE, RUN_CODE, combinations, NUMBERS_TO_GENERATE, BET_AMOUNT
 
-    # Calcul des seuils pour les positions gauche, droite, haut et bas
-    x_neutral_min = 45000
-    x_neutral_max = 48000
-    y_neutral_min = 48000
-    y_neutral_max = 50000
-    threshold = 65535 / 4
+    if NUMBER_GENERATED_COUNT < NUMBERS_TO_GENERATE:
+        random_num = random.randrange(10 ** (NUM_DIGITS - 1), 10**NUM_DIGITS)
+        digits = seven_segment.number_to_digits(random_num)
+        print(f"Generated digits: {digits}")  # Affiche les chiffres générés
+        combinations.append(digits[:])  # copie pour éviter les effets de bord
+        NUMBER_GENERATED_COUNT += 1
 
-    # Zone morte pour réduire la sensibilité du joystick
-    if x_neutral_min < x < x_neutral_max and y_neutral_min < y < y_neutral_max:
-        # Dans la zone morte, ne rien faire
-        pass
-
-    if x > x_neutral_max + threshold:  # position droite
-        somme += 10
-    elif x < x_neutral_min - threshold:  # position gauche
-        somme -= 10
-    if y > y_neutral_max + threshold * 0.5:  # position bas
-        somme -= 50
-    elif y < y_neutral_min - threshold:  # position haut
-        somme += 50
-    update_lcd_montant(somme)
-    # Petit délai (0.5s) pour ralentir l'exécution de la boucle
-    utime.sleep_ms(5)
-    return somme
-
-
-def update_lcd_montant(somme):
-    """Met à jour l'affichage du MONTANT sur l'écran LCD."""
-    lcd.clear()
-    lcd.move_to(0, 0)
-    lcd.putstr(f"somme: {somme}")
-
-
-def simu_transistor(somme):
-    selectionneur = 0
-    nums = [0, 0, 0]
-    for _ in range(5):  # x chiffres aléatoires
-        nums = [random_number(0, 9), random_number(0, 9), random_number(0, 9)]
-        for _ in range(25):
-
-            # Activer l'afficheur sélectionné
-            afficheur = Pin(PINS_TRANSISTORS[selectionneur], Pin.OUT)
-            afficheur.value(1)
-
-            # Mettre à jour l'afficheur avec le numéro correspondant
-            update_display(nums[selectionneur], PINS_DECODER)
-            utime.sleep_ms(25)
-
-            # Désactiver l'afficheur après la mise à jour
-            afficheur.value(0)
-
-            # Passer à l'afficheur suivant
-            selectionneur = (selectionneur + 1) % 3
-    gain = calculer_gain(nums, somme)
-    lcd.clear()
-    lcd.move_to(0, 0)
-    lcd.putstr(f"{nums[2]}-{nums[0]}-{nums[1]}")
-    utime.sleep(2)  # Attendre 2 secondes avant d'afficher le gain
-    lcd.putstr(f"\nGain: {gain}")
-    while True:
-
-        # Activer l'afficheur sélectionné
-        afficheur = Pin(PINS_TRANSISTORS[selectionneur], Pin.OUT)
-        afficheur.value(1)
-
-        x = x_axis.read_u16()
-        y = y_axis.read_u16()
-        print(f"x = {x}, y = {y}")
-        if x < 44500 or x > 48500 or y < 47500 or y > 50500:
-            lcd.clear()
-            lcd.move_to(0, 0)
-            break
-        # Mettre à jour l'afficheur avec le numéro correspondant
-        update_display(nums[selectionneur], PINS_DECODER)
-        utime.sleep_ms(5)
-
-        # Désactiver l'afficheur après la mise à jour
-        afficheur.value(0)
-
-        # Passer à l'afficheur suivant
-        selectionneur = (selectionneur + 1) % 3
-    somme += gain
-    return somme
-
-
-def joue_partie(somme):
-    # Choisir le MONTANT à parier via le joystick
-    somme = get_joystick_position(somme)
-    if debounce(bouton) and bouton.value() == 0 and somme > 0:
-        somme = simu_transistor(somme)
     else:
-        lcd.move_to(0, 1)
-        lcd.putstr("Pas de mise")
-        lcd.move_to(0, 0)
-    return somme
+        random_timer.deinit()
+        stop_led_blinking()  # Arrête le clignotement des LEDs
+        SCORE = calculer_gain(digits, BET_AMOUNT)
+        updated_data = {
+            "gain": SCORE,
+            "combinaison": combinations,
+            "partieJouee": True,
+            "timestamp": time.time(),
+            "mise": BET_AMOUNT,
+            "partieAffichee": False,
+        }
+        update_first_unplayed_game(updated_data)
+        NUMBER_GENERATED_COUNT = 0
+        combinations.clear()  # Réinitialiser pour la prochaine partie
+        RUN_CODE = False
 
 
-if __name__ == "__main__":
-    while True:
-        MONTANT = joue_partie(MONTANT)
-        utime.sleep_ms(50)
+# Attache l'interruption au bouton
+button_pin.irq(trigger=Pin.IRQ_FALLING, handler=button_callback)
+timer1 = Timer()
+timer1.init(freq=DISPLAY_FREQ, mode=Timer.PERIODIC, callback=write_displays)
+connect_to_wifi()  # Connexion au Wi-Fi
+USER_BALANCE = get_balance_from_firebase(
+    fetch_from_firebase, USER_BALANCE
+)  # Récupère le solde avant la boucle principale
+while 1:
+    try:
+        if USER_BALANCE < 0:
+            lcd.clear()
+            lcd.putstr("No money or game")
+            time.sleep(2)
+            raise KeyboardInterrupt
+        if not RUN_CODE:
+            BET_AMOUNT = update_bet_amount(
+                x_axis, y_axis, lcd, BET_AMOUNT, USER_BALANCE
+            )  # Met à jour la somme pariée avec le joystick
+        if BUTTON_PRESSED:
+            RUN_CODE = True  # bloque l'affichage de la mise
+            BUTTON_PRESSED = False  # Réinitialise le flag
+            NUMBER_GENERATED_COUNT = 0  # Réinitialise le compteur
+            NUMBERS_TO_GENERATE = random.randint(5, 15)
+            print(NUMBERS_TO_GENERATE)
+            lcd.clear()
+            lcd.putstr("Generating...")  # Affiche un message sur l'écran LCD
+            start_led_blinking()  # Démarre le clignotement des LEDs
+            random_timer.init(period=500, mode=Timer.PERIODIC, callback=generate_random)
+            USER_BALANCE = get_balance_from_firebase(
+                fetch_from_firebase, USER_BALANCE
+            )  # Récupère le solde avant la boucle principale
+        time.sleep(0.1)  # Petite pause pour éviter une utilisation excessive du CPU
+    except KeyboardInterrupt:
+        print("Goodbye")
+        lcd.clear()
+        lcd.putstr("Goodbye")  # Affiche un message d'adieu sur l'écran LCD
+        time.sleep(0.01)
+        timer1.deinit()
+        random_timer.deinit()
+        sys.exit()

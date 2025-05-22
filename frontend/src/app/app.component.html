@@ -1,1 +1,13 @@
+<navigation-bar></navigation-bar>
 <router-outlet></router-outlet>
+<div class="app-container">
+  <!-- Votre contenu principal ici -->
+  
+  <!-- Conditionnellement afficher le bouton de chat seulement si un utilisateur est connecté -->
+  @if (loginService.user()) {
+    <button class="chat-button" (click)="toggleChat()">
+      <i class="fas fa-comments"></i> Chat
+    </button>
+    <app-chat-multy #chatComponent></app-chat-multy>
+  }
+</div>

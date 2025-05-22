@@ -1,0 +1,76 @@
+<!-- component/chat-multy/chat-multy.component.html -->
+<div class="chat-container" [ngClass]="{'visible': isVisible}">
+    <button class="close-button" (click)="toggle()">×</button>
+    <div class="main">
+        <!-- En-tête du chat avec le nom d'utilisateur -->
+        <div class="name">
+            <span><i class="far fa-user"></i></span>
+            <span class="user-email">{{ loginService.user()?.username || 'anonymous' }}</span>
+        </div>
+        
+        <!-- Sélecteur de salon déplacé en dessous de l'en-tête -->
+        <div class="room-selector">
+            <div class="room-tabs">
+                <button 
+                    *ngFor="let room of availableRooms" 
+                    [class.active]="currentRoom === room"
+                    [matBadge]="roomStats[room]"
+                    matBadgeSize="small"
+                    (click)="changeRoom(room)">
+                    {{ room | titlecase }}
+                </button>
+            </div>
+        </div>
+        
+        <!-- Indicateur de salon actuel -->
+        <div class="current-room-indicator">
+            Salon actuel : {{ currentRoom | titlecase }}
+        </div>
+        
+        <!-- Zone de messages -->
+        <ul class="message-container">
+            <li *ngFor="let msg of messages"
+                [ngClass]="{
+                  'message-right': msg.isMine && !msg.isSystem,
+                  'message-left': !msg.isMine && !msg.isSystem,
+                  'message-system': msg.isSystem
+                }">
+                <p class="message">
+                    {{ msg.message }}
+                    <span *ngIf="!msg.isSystem">{{ msg.name }} ● {{ formatTime(msg.dateTime) }}</span>
+                </p>
+            </li>
+            <li class="message-feedback" *ngIf="feedback">
+                <p class="feedback">{{ feedback }}</p>
+            </li>
+        </ul>
+        
+        <!-- Formulaire d'envoi de message -->
+        <form (submit)="sendMessage($event)" class="message-form">
+            <input 
+                type="text" 
+                [(ngModel)]="messageText"
+                name="message"
+                class="message-input"
+                [placeholder]="'Écrire dans ' + currentRoom"
+                (focus)="onTyping()"
+                (keypress)="onTyping()"
+                (blur)="onBlur()"
+            />
+            <div class="v-divider"></div>
+            <button type="submit" class="send-button">
+                send <span><i class="fas fa-paper-plane"></i></span>
+            </button>
+        </form>
+    </div>
+    
+    <!-- Statistiques (optionnel) -->
+    <div class="chat-stats">
+        <h3 class="clients-total">Total clients: {{ clientsTotal }}</h3>
+        <div class="room-stats">
+            <span *ngFor="let room of availableRooms">
+                {{ room }}: {{ roomStats[room] }}
+            </span>
+        </div>
+    </div>
+</div>

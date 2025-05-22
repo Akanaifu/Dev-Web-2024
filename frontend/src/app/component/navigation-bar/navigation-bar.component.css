@@ -1,102 +1,74 @@
+.navigation-bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 66px;
+    background-color: rgba(58, 12, 187, 0.4);
+  }
+  
+  .flex-spacer {
+    flex: 1;
+  }
+  
+  .menu-container {
+    margin-left: auto; /* Ceci pousse le menu vers la droite */
+    padding-right: 20px;
+  }
+  .logo {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-image {
+    padding-left: 20px;
+    height: 70%; /* Utilisez un pourcentage de la hauteur du conteneur */
+    max-height: 40px; /* Définissez une hauteur maximale */
+    width: auto; /* Maintient le ratio d'aspect */
+    object-fit: contain; /* Assure que l'image s'adapte sans être déformée */
+  }
 
-    
-    div.bande_d_accueil {
-        position: fixed;
-        width: 100%;
-        height: auto;
-        left: 0px;
-        top: 0px;
-        background-color: var(--navbar);
-        z-index: 3;
-        display: flex;
-        flex-flow: row nowrap;
-        font-size: var(--police_paragraphe);
-
-    }
-    
-    ul.bande_d_accueil {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden;
-        /* background-color: var(--navbar); */
-        display: flex;
-        flex-flow: row nowrap;
-    }
-    
-    
-        ul.bande_d_accueil > li a:link {
-            color:var(--couleur_ecriture);
-            background-color: transparent;
-            text-decoration: none;
-            font-family: var(--ecriture);
-        }
-    
-        ul.bande_d_accueil > li a:visited {
-            color: var(--couleur_ecriture);
-            background-color: transparent;
-            text-decoration: none;
-            font-family: var(--ecriture);
-        }
-    
-        ul.bande_d_accueil > li a {
-            text-align: center;
-            display: block;
-            padding: 22px ;
-            height: 100%;
-            margin: 5px;
-            
-            /* background-color: var(--navbar); */
-            justify-content: center;
-            align-items: center;
-        }
-    
-            ul.bande_d_accueil > li a:hover {
-                background-color: var(--hover);
-            }
-    
-    .logo_entreprise{   
-        flex-grow : 3;
-        z-index: 3;
-        height: 100px;
-        width: auto;
-    }
-    .mon_profile{
-        width: 300px;
-        height: auto;
-        background-image: url(../../../../public/favicon.ico);/**modifier pour photo de la personne*/
-        background-size: contain;
-        background-repeat: no-repeat;
-        z-index: 3;
-    }
-    
-    @media (max-width: 1200px) {
-         .logo_entreprise{
-            cursor: pointer;
-        }
-    
-        ul.bande_d_accueil{
-            display: none;
-        }
-    
-        ul.bande_d_accueil li{
-            margin : 5px;
-            border : 2px solid #ffffff;
-        }
-        
-        div.bande_d_accueil{
-            position : relative;
-        }
-    
-    
-        div.bande_d_accueil:hover ul.bande_d_accueil, div.bande_d_accueil{
-            display : flex;
-            flex-flow: column nowrap;
-        } 
-    
-        
-    }
-    
-    
-    
+  button[mat-button] {
+    background: linear-gradient(135deg, rgba(58, 12, 187, 0.8), rgba(58, 12, 187, 0.6));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    transition: all 0.05s ease;
+  }
+  button:hover {
+    background: linear-gradient(135deg, rgba(58, 12, 187, 0.9), rgba(58, 12, 187, 0.7));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+  }
+  button[mat-button] i {
+    color: #ffd700;
+  }
+  .gambler{
+    padding-left: 10px;
+  }
+  .gambler-login{
+    padding-left: 10px;
+    font-size: 22px;
+    font-weight: bold;
+    font-family: 'Arial Rounded MT Bold', 'Arial Black', sans-serif;
+    color: #ffd700; /* Base dorée */
+    text-shadow: 
+        0 0 3px rgba(255, 215, 0, 0.6),
+        1px 1px 0 #ff9933; /* Ombre orangée légère */
+    letter-spacing: -0.5px;
+    background: linear-gradient(to bottom, #fff4b8 0%, #ffd700 40%, #ff9000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.5));
+    position: relative;
+  }

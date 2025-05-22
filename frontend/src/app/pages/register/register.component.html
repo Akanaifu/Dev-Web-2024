@@ -1,29 +1,60 @@
-<app-navigation-bar></app-navigation-bar>
-
-<div class="page">
-    <div class="center">
-        <div class="title"><h1>Creation de votre compte</h1></div>
-        <p>champs obligatoire *</p>
-        <div class="info">
-            <div class="label">
-                <div>Insérer votre carte d'indentité*</div>
-                <div>Adresse mail *</div>
-                <div>Nom d'utilisateur *</div>
-                <div>Mot de passe *</div>
-                <div>Confirmation du *<br /> mot de passe</div>
-            </div>
-            <div class="input">
-                <form class="input_texte" method="post">
-                    <input type="file" name="id_card" id="id_card" required/>
-                    <input type="email" name="adresse_mail" id="adresse_mail" size="32" required/>
-                    <input type="text" name="nom_utilisateur" id="username" size="32" required/>
-                    <input type="password" name="mot_de_passe" id="mot_de_passe" size="32" required/>
-                    <input type="password" name="confirmation_mot_de_passe" id="confirmer" size="32" required/>
-                </form>
-            </div>     
-        </div>  
-        <div class="submit">
-            <input type="submit" value="Valider">
-        </div>
-    </div>  
-</div>
+<div id="container">
+	<form [formGroup]="registerForm" (submit)="register()">
+	  <h3>Créer un compte</h3>
+	  
+	  <mat-form-field>
+		<mat-label>Nom d'utilisateur</mat-label>
+		<input matInput formControlName="username">
+		@if (registerForm.get('username')?.hasError('required') && registerForm.get('username')?.touched) {
+		  <mat-error>Le nom d'utilisateur est requis</mat-error>
+		}
+		@if (registerForm.get('username')?.hasError('minlength') && registerForm.get('username')?.touched) {
+		  <mat-error>Le nom d'utilisateur doit contenir au moins 3 caractères</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <mat-form-field>
+		<mat-label>Prénom</mat-label>
+		<input matInput formControlName="firstName">
+		@if (registerForm.get('firstName')?.hasError('required') && registerForm.get('firstName')?.touched) {
+		  <mat-error>Le prénom est requis</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <mat-form-field>
+		<mat-label>Nom</mat-label>
+		<input matInput formControlName="lastName">
+		@if (registerForm.get('lastName')?.hasError('required') && registerForm.get('lastName')?.touched) {
+		  <mat-error>Le nom est requis</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <mat-form-field>
+		<mat-label>Email</mat-label>
+		<input matInput formControlName="email" type="email">
+		@if (registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched) {
+		  <mat-error>L'email est requis</mat-error>
+		}
+		@if (registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched) {
+		  <mat-error>Format d'email invalide</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <mat-form-field>
+		<mat-label>Mot de passe</mat-label>
+		<input matInput type="password" formControlName="password">
+		@if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
+		  <mat-error>Le mot de passe est requis</mat-error>
+		}
+		@if (registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched) {
+		  <mat-error>Le mot de passe doit contenir au moins 6 caractères</mat-error>
+		}
+	  </mat-form-field>
+	  
+	  <button mat-flat-button type="submit" [disabled]="registerForm.invalid">S'inscrire</button>
+	  
+	  @if (errorMessage) {
+		<mat-error>{{ errorMessage }}</mat-error>
+	  }
+	</form>
+  </div>

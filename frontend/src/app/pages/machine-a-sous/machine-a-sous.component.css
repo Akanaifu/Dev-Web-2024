@@ -1,0 +1,123 @@
+.slot-machine-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 500px;
+}
+
+.slot-machine {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  background-color: #ddd;
+  border: 2px solid #000;
+  border-radius: 10px;
+}
+
+.reel {
+  font-size: 48px;
+  font-weight: bold;
+  color: #000;
+}
+/* Bouton en jaune */
+button {
+  background-color: yellow;
+  border: 2px solid #000;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #ffd700; /* Couleur légèrement plus foncée au survol */
+  color: #000;
+}
+
+button:disabled {
+  background-color: #d3d3d3; /* Light gray */
+  color: #a9a9a9; /* Darker gray for text */
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  background-color: #b0b0b0; /* Slightly darker gray on hover */
+}
+
+/* Centrer la table */
+.combinations-table {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+table {
+  border-collapse: collapse; /* Fusion des bordures */
+  width: 80%; /* Largeur de la table */
+  text-align: center; /* Centrer le texte */
+  border-radius: 10px; /* Arrondir les bords de la table */
+  overflow: hidden; /* Assure que les bordures internes restent dans les coins arrondis */
+  border: 1px solid #000; /* Bordure de la table */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ombre légère autour de la table */
+  margin-bottom: 20px; /* Marge en bas de la table */
+}
+
+th,
+td {
+  border: 1px solid #000; /* Bordures des cellules */
+  padding: 10px;
+}
+
+thead {
+  background-color: #f4f4f4; /* Couleur de fond pour l'en-tête */
+  font-weight: bold;
+}
+
+/* Mise en évidence de la ligne survolée */
+tbody tr:hover {
+  background-color: #ffffcc; /* Couleur de fond jaune clair */
+  color: #000; /* Couleur du texte noir */
+  cursor: pointer; /* Curseur en main au survol */
+  transition: background-color 0.3s ease; /* Transition douce pour le changement de couleur */
+}
+
+/* Mise en évidence de plusieurs lignes correspondantes */
+.highlight {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+}
+.loss-row {
+  text-align: center;
+  font-weight: bold;
+  color: red;
+  background-color: #ffe6e6; /* Rouge clair */
+  columns: 1;
+}
+/* Style pour le gain */
+.gain-display {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: bold;
+  color: green;
+  text-align: center;
+  border: 2px solid green;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f0fff0; /* Vert clair */
+}
+
+/* Conteneur pour le bouton */
+.button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Conteneur pour le gain */
+.gain-container {
+  text-align: center;
+  margin-top: 10px;
+}
