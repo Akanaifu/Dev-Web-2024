@@ -4,6 +4,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 // Configuration
 const db = require("./config/dbConfig");
@@ -22,6 +23,7 @@ const statsRoutes = require("./routes/stats");
 
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
+const rouletteRoutes = require("./routes/roulette-net");
 const registerRoutes = require("./routes/register");
 const playerRoutes = require("./routes/get_id");
 const editCompteRoutes = require("./routes/edit-compte");
@@ -52,7 +54,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
 // Middlewares pour l'API
 app.use(express.json());
 app.use(cookieParser());
@@ -70,6 +71,7 @@ app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
 app.use("/get_id", playerRoutes);
 app.use("/edit-compte", editCompteRoutes);
+app.use("/api/roulette", rouletteRoutes);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {
