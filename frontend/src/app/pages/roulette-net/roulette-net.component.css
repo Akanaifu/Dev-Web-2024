@@ -1,4 +1,3 @@
-
 html, body {
 	font-family: arial;
 	cursor: default;
@@ -24,7 +23,7 @@ html, body {
 	color: #fff;
 }
 
-
+/* la partie roulette */
 .first-column {
 	width: 310px;
 	height: 100%;
@@ -34,7 +33,7 @@ html, body {
 	margin-right: 5%;
 	margin-left: 3%;
 }
-
+/* la partie de la roulette */
 .wheel {
 	height: 350px;
 	width: 100%;
@@ -353,6 +352,7 @@ html, body {
 .thend_two{
 	left: 83px;
 }
+/* la fin de la partie de la roulette */
 
 .roulette_result_message {
 	margin: 16px auto 8px auto;
@@ -367,7 +367,7 @@ html, body {
 	box-shadow: 0 2px 8px #0005;
 	z-index: 20;
 }
-
+/* la partie du solde */
 .money_container {
 	display: flex;
 	flex-direction: column;
@@ -461,6 +461,8 @@ html, body {
 	margin-left:-2px;
 }
 
+
+
 .buttom_launch{
 	width: 100%;
 	height:10%;
@@ -493,6 +495,8 @@ button:enabled {
 	cursor: pointer;
 }
 
+
+/* fin de la partie roulette */
 .second_column {
 	display: flex;
 	flex-direction: row;
@@ -522,6 +526,21 @@ button:enabled {
 	flex-direction: column;
 	width: 25%;
 	height: 100%;
+}
+
+.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.number_block.disabled, 
+.table_column_left_cell_top.disabled, 
+.table_column_left_cell_bottom.disabled,
+.side_cell.disabled,
+.table-column-right-first-cell.disabled,
+.table-column-right-second-cell.disabled {
+	pointer-events: none;
+	opacity: 0.7;
 }
 
 .table_column_left_cell_top,
@@ -711,6 +730,7 @@ button:enabled {
 	width: 100%;
 }
 
+/* sinon les couleurs des jetons s'affichent en noirs */
 .gold{
 	border-color:gold;
 }

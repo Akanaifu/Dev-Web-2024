@@ -178,14 +178,14 @@ export class RouletteNetComponent implements OnInit {
         }
     }
 
-
-
     removeBet(event: Event, cell: BettingBoardCell) {// Supprimer une mise
         event.preventDefault();
+        if (this.isSpinning) return; // Prevent bet removal when spinning
         this.game.removeBet(cell);
     }
 
     resetGame() {// Réinitialiser le jeu
+        if (this.isSpinning) return; // Prevent reset when spinning
         this.game.resetGame();
     }
     
@@ -205,50 +205,62 @@ export class RouletteNetComponent implements OnInit {
             const duration = 5000;
             const initialBall = this.ballRotation;
             const start = performance.now();
-
+            
             const animate = (now: number) => {
                 const elapsed = now - start;
                 const progress = Math.min(elapsed / duration, 1);
                 this.ballRotation = initialBall + (targetBall - initialBall) * progress;
+                
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
-                    this.isSpinning = false;
-                    // Calcul du gain
-                    const winResult = this.game.win(result.number);
-                    // Affichage du résultat/gain
-                    let msg = `Numéro gagnant : ${result.number} (${result.color})`;
-                    if (winResult.winValue > 0) {
-                        msg += ` — Vous gagnez ${winResult.payout} !`;
-                    } else {
-                        msg += ` — Perdu !`;
+                    // Animation terminée
+                    this.resultMessage = `Le numéro gagnant est ${result.number} ${result.color}`;
+                    
+                    // Mettre à jour les résultats précédents
+                    this.game.previousNumbers.unshift(result.number);
+                    if (this.game.previousNumbers.length > 10) {
+                        this.game.previousNumbers.pop();
                     }
-                    this.resultMessage = msg;
-                    setTimeout(() => { this.resultMessage = null; }, 5000);
+                    
+                    // Calculer les gains
+                    const winResult = this.game.win(result.number);
+                    
+                    // Afficher les gains
+                    if (winResult.winValue > 0) {
+                        this.resultMessage += ` - Vous avez gagné ${winResult.payout}!`;
+                    } else {
+                        this.resultMessage += ` - Vous avez perdu ${this.game.currentBet}`;
+                    }
+                    
+                    // Réinitialiser les mises
                     this.game.currentBet = 0;
-                    // Vide les mises pour faire disparaître les jetons
                     this.game.bet = [];
+                    this.game.numbersBet = [];
+                    
+                    // Reset spinning state to allow new bets
+                    this.isSpinning = false;
                 }
             };
-
+            
             requestAnimationFrame(animate);
         } catch (error) {
             console.error('Error during spin:', error);
-            this.isSpinning = false;
-            this.resultMessage = "Erreur lors du spin. Veuillez réessayer.";
-            setTimeout(() => { this.resultMessage = null; }, 5000);
+            this.resultMessage = 'Une erreur est survenue';
+            this.isSpinning = false; // Make sure to reset on error too
         }
     }
 
     selectChip(index: number) {// Sélectionner une mise
-        if (index !== 4) {
-            this.selectedChipIndex = index;
-            this.game.wager = Number(this.chipValues[index]);
-        } else {
-            // clear
+        if (this.isSpinning) return; // Prevent chip selection when spinning
+        if (index === this.chipValues.length - 1) {
+            // Clear bet
             this.game.bankValue += this.game.currentBet;
             this.game.currentBet = 0;
             this.game.clearBet();
+        } else {
+            this.selectedChipIndex = index;
+            this.game.wager = index === 0 ? 1 : index === 1 ? 5 : index === 2 ? 10 : 100;
         }
     }
 
@@ -263,6 +275,7 @@ export class RouletteNetComponent implements OnInit {
 
     // Méthodes UI qui délèguent au service
     setBet(cell: BettingBoardCell) {
+        if (this.isSpinning) return; // Prevent betting when spinning
         this.game.setBet(cell);
     }
 }

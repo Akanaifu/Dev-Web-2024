@@ -6,6 +6,7 @@ describe('RouletteNetComponent', () => {
   let component: RouletteNetComponent;
   let fixture: ComponentFixture<RouletteNetComponent>;
 
+  // pas encore finalisé avec "jest"
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RouletteNetComponent]

@@ -14,11 +14,13 @@
             <div class="block" [ngStyle]="{'background-color': section.backgroundColor}"></div>
           </div>
           <div class="pockets_rim"></div>
+          <!-- Affichage de la balle -->
           <div class="ball_track" [ngStyle]="{'transform': 'rotate(' + ballRotation + 'deg)'}">
             <div class="ball"></div>
           </div>
           <div class="pockets"></div>
           <div class="cone"></div>
+          <!-- La barre jaune de la roulette -->
           <div class="turret"></div>
           <div class="turret_handle">
             <div class="thend_one"></div>
@@ -31,25 +33,26 @@
     <div *ngIf="resultMessage" class="roulette_result_message">
       {{ resultMessage }}
     </div>
+  <!-- contenaire solde et mise -->
   <div class="money_container">
     <div class="bankContainer">
       <div class="bank">Solde : <span id="bankSpan">{{ bankValue }}</span></div>
       <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
     </div>
-    <!-- contenaire solde et mise -->
+    <!-- contenaire pour jeton a parier -->
       <div class="chip_container">
         <div
           *ngFor="let value of chipValues; let i = index"
           class="color_chip"
-          [ngClass]="[chipColors[i], selectedChipIndex === i ? 'color_chip_on' : '']"
+          [ngClass]="[chipColors[i], selectedChipIndex === i ? 'color_chip_on' : '', isSpinning ? 'disabled' : '']"
           (click)="selectChip(i)"
-        >
+          [style.pointer-events]="isSpinning ? 'none' : 'auto'">
           <span class="color_chip_span">{{ value }}</span>
         </div>
       </div>
       <!-- Bouton pour lancer la roue -->
       <div class="buttom_launch">
-        <button mat-menu-item (click)="spin()" [disabled]="currentBet === 0">Lancer la roue</button>
+        <button mat-menu-item (click)="spin()" [disabled]="currentBet === 0 || isSpinning">Lancer la roue</button>
       </div>
     </div>
   </div>
@@ -61,7 +64,7 @@
     <div class="table_column_left">
       <div class="space_zero"></div>
       <div class="table_column_left_cell_top" (click)="setBet(outsideBets[0])" 
-      (contextmenu)="removeBet($event, outsideBets[0])">{{ topLabels[0] }}
+      (contextmenu)="removeBet($event, outsideBets[0])" [ngClass]="{'disabled': isSpinning}">{{ topLabels[0] }}
         <ng-container *ngIf="getBetForCell(outsideBets[0]) as bet">
           <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
             <span class="chip_span">{{ bet.amt }}</span>
@@ -69,7 +72,7 @@
         </ng-container>
       </div>
       <div class="table_column_left_cell_bottom"
-      (click)="setBet(outsideBets[1])" (contextmenu)="removeBet($event, outsideBets[1])">
+      (click)="setBet(outsideBets[1])" (contextmenu)="removeBet($event, outsideBets[1])" [ngClass]="{'disabled': isSpinning}">
       {{ topLabels[1] }}
       <ng-container *ngIf="getBetForCell(outsideBets[1]) as bet">
         <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
@@ -91,6 +94,7 @@
           <div *ngFor="let cell of row" class="number_block"
               [class.redNum]="numRed.includes(cell.numbers[0])"
               [class.blackNum]="!numRed.includes(cell.numbers[0]) && cell.numbers[0] !== 0"
+              [class.disabled]="isSpinning"
               (click)="setBet(cell)" (contextmenu)="removeBet($event, cell)">
             <div class="nbn">{{ cell.label }}</div>
             <ng-container *ngIf="getBetForCell(cell) as bet">
@@ -104,6 +108,7 @@
       <!-- Colonne '2 to 1' à droite -->
       <div class="roulette_table_side" id="row2to1">
         <div class="side_cell" *ngFor="let label of columnLabels; let i = index"
+          [ngClass]="{'disabled': isSpinning}"
           (click)="setBet(columnBets[i])" (contextmenu)="removeBet($event, columnBets[i])">
           {{ label }}
           <ng-container *ngIf="getBetForCell(columnBets[i]) as bet">
@@ -120,6 +125,7 @@
         <div class="table-column-right-bet">
         <div class="table-column-right-first">
           <div class="table-column-right-first-cell" *ngFor="let label of dozenLabels; let i = index"
+            [ngClass]="{'disabled': isSpinning}"
             (click)="setBet(dozenBets[i])" (contextmenu)="removeBet($event, dozenBets[i])">
             {{ label }}
             <ng-container *ngIf="getBetForCell(dozenBets[i]) as bet">
@@ -132,7 +138,7 @@
         <!-- Ligne EVEN, RED, BLACK, ODD -->
         <div class="table-column-right-second">
           <div class="table-column-right-second-cell" *ngFor="let label of evenOddLabels; let i = index"
-              [ngClass]="{'redNum': label === 'RED', 'blackNum': label === 'BLACK'}"
+              [ngClass]="{'redNum': label === 'RED', 'blackNum': label === 'BLACK', 'disabled': isSpinning}"
               (click)="setBet(evenOddRedBlack[i])" (contextmenu)="removeBet($event, evenOddRedBlack[i])">
             {{ label }}
             <ng-container *ngIf="getBetForCell(evenOddRedBlack[i]) as bet">
