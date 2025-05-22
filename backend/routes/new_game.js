@@ -34,6 +34,26 @@ function calculerGain(rouleaux, mise) {
   return Math.floor(mise * multiplicateur);
 }
 
+// Fonction utilitaire pour convertir un timestamp Firebase (en secondes) en DATETIME MySQL
+function firebaseTimestampToMySQLDatetime(firebaseTimestamp) {
+  // Si déjà une chaîne ISO, retourne tel quel
+  if (
+    typeof firebaseTimestamp === "string" &&
+    firebaseTimestamp.includes("-")
+  ) {
+    return firebaseTimestamp.replace("T", " ").substring(0, 19);
+  }
+  // Si nombre (ex: 1747922783), convertit en DATETIME
+  const ts =
+    typeof firebaseTimestamp === "number"
+      ? firebaseTimestamp
+      : parseInt(firebaseTimestamp, 10);
+  if (isNaN(ts)) return null;
+  const date = new Date(ts * 1000);
+  // Format YYYY-MM-DD HH:MM:SS
+  return date.toISOString().replace("T", " ").substring(0, 19);
+}
+
 // Endpoint pour ajouter une nouvelle partie
 router.post("/add", async (req, res) => {
   const {
@@ -75,17 +95,21 @@ router.post("/add", async (req, res) => {
       }
     }
     const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
-    const gain = calculerGain(combinaison, mise) - mise;
+
+    // Conversion du timestamp Firebase en DATETIME MySQL
+    const mysqlTimestamp = firebaseTimestampToMySQLDatetime(timestamp);
+
     // Insérer une nouvelle session de jeu dans Games_session
     const gameSessionQuery = `
-      INSERT INTO Games_session (game_session_id, name, bet_min, bet_max)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO Games_session (game_session_id, name, bet_min, bet_max, timestamp)
+      VALUES (?, ?, ?, ?, ?)
     `;
     const [gameSessionResult] = await db.execute(gameSessionQuery, [
       newGameSessionId,
       "Slot Machine",
-      gain, // Valeur par défaut pour bet_min
-      gain, // Valeur par défaut pour bet_max
+      mise, // Valeur par défaut pour bet_min
+      mise, // Valeur par défaut pour bet_max
+      mysqlTimestamp, // Ajout du timestamp converti
     ]);
 
     // Récupérer l'ID de la session de jeu nouvellement créée

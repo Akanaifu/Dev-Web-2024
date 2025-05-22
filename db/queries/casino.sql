@@ -15,6 +15,7 @@ CREATE TABLE `Games_session` (
   `name` VARCHAR(50) NOT NULL DEFAULT '',
   `bet_min` VARCHAR(50) NOT NULL DEFAULT '',
   `bet_max` VARCHAR(50) NOT NULL DEFAULT '',
+  `timestamp` DATETIME NULL,
   PRIMARY KEY (`game_session_id`)
 ) COLLATE='utf8mb4_uca1400_ai_ci';
 
