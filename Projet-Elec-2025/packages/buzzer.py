@@ -5,7 +5,7 @@ import time
 BUZZER_PINS = [14, 15]
 
 # Fréquences typiques pour simuler une machine à sous
-SLOT_MACHINE_NOTES = [1047, 1319, 1568, 2093, 0]  # C6  # E6  # G6  # C7  # Silence
+SLOT_MACHINE_NOTES = [1047, 1319, 1568, 2093, 0]  # C6  # E6  # G6  # C7
 
 
 def play_note(pin_num, freq, duration_ms):

@@ -112,7 +112,7 @@ export class MachineASousComponent implements OnInit {
           const solde = this.playerInfo.solde;
           const playerId = this.playerInfo.user_id;
 
-          // Désactive le bouton après récupération du solde à jour
+          // Désactive le bouton après récupération du solde à jou
           this.sendButtonDisabled = true;
           this.firebaseSendService.sendPartie(playerId, solde);
         },
