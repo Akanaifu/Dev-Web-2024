@@ -7,13 +7,13 @@ INSERT INTO `User` (`user_id`, `username`, `name`, `firstname`, `birthdate`, `so
 (5, 'naifu', 'lemaire', 'nathan', '2003-07-30', 50, 'ntm@pd.tg', '$2b$10$l/PYtX.Q.C1vdA04t.ieZOjgmN8P/8/Bgw09TKyF6wvWYSmvnbeK6');
 
 -- Insérer des sessions de jeu dans la table Games_session
-INSERT INTO `Games_session` (`game_session_id`, `name`, `bet_min`, `bet_max`) VALUES
-('PO01', 'Poker', '5', '500'),       -- PO pour Poker
-('RO01', 'Roulette', '2', '200'),    -- RO pour Roulette
-('BJ01', 'Blackjack', '10', '1000'), -- BJ pour Blackjack
-('BA01', 'Baccarat', '20', '2000'),  -- BA pour Baccarat
-('PO02', 'Poker', '10', '1000'),      -- Deuxième session de Poker
-('RO02', 'Roulette', '5', '300');     -- Deuxième session de Roulette
+INSERT INTO `Games_session` (`game_session_id`, `name`, `bet_min`, `bet_max`, `timestamp`) VALUES
+('PO01', 'Poker', '5', '500', '2025-04-20 10:00:00'),       -- PO pour Poker
+('RO01', 'Roulette', '2', '200', '2025-04-19 15:30:00'),    -- RO pour Roulette
+('BJ01', 'Blackjack', '10', '1000', '2025-04-18 20:45:00'), -- BJ pour Blackjack
+('BA01', 'Baccarat', '20', '2000', '2025-04-17 12:00:00'),  -- BA pour Baccarat
+('PO02', 'Poker', '10', '1000', '2025-04-16 18:00:00'),     -- Deuxième session de Poker
+('RO02', 'Roulette', '5', '300', '2025-04-15 14:00:00');    -- Deuxième session de Roulette
 
 -- Insérer des transactions bancaires dans la table Banking_transaction
 INSERT INTO `Banking_transaction` (`transaction_id`, `user_id`, `amount_banking`, `transaction_type`, `transaction_status`) VALUES
