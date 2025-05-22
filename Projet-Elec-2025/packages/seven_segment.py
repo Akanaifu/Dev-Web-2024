@@ -54,13 +54,12 @@ class SevenSegmentDisplay:
         Args:
             value (int): Valeur binaire pour sélectionner l'afficheur.
         """
-        # Désactive tous les afficheurs (tous à 1)
-        for i in range(self.num_digits):
-            self.display_select_pins[i].value(1)
-        # Active l'afficheur correspondant (mettre à 0)
+        # Allume un seul afficheur (0), les autres à 1, jamais tous à 1
         for i in range(self.num_digits):
             if value & (1 << i):
                 self.display_select_pins[i].value(0)
+            else:
+                self.display_select_pins[i].value(1)
 
     def number_to_7segment(self, digit):
         """
