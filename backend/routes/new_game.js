@@ -9,7 +9,7 @@ function calculerGain(rouleaux, mise) {
   const [r1, r2, r3] = rouleaux;
 
   if (r1 === r2 && r2 === r3) {
-    return r1 === 7 ? 100 : 10;
+    return mise * (r1 === 7 ? 100 : 10);
   }
   if ((r1 + 1 === r3 && r2 + 1 === r1) || (r1 - 1 === r3 && r2 - 1 === r1)) {
     multiplicateur = 5;

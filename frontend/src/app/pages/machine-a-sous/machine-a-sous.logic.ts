@@ -206,7 +206,10 @@ export class MachineASousLogic {
             data,
             this.playerInfo.user_id.toString()
           );
-          this.showTable = sortedParts.notPlayedParts.length > 0 ? true : false; // Example: Use this property to control the button state
+          this.showTable =
+            sortedParts.notPlayedParts.length == 0 && this.playerInfo.solde <= 0
+              ? false
+              : true; // Example: Use this property to control the button state
 
           let index = 0;
 

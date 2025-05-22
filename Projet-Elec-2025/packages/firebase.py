@@ -72,7 +72,7 @@ def calculer_gain(rouleaux: list[int], mise: int) -> int:
     presence_event = False
 
     if r1 == r2 == r3:
-        return 100 if r1 == 7 else 10  # (Méga) Jackpot ou Jackpot
+        return mise * 100 if r1 == 7 else mise * 10  # (Méga) Jackpot ou Jackpot
     if (r1 + 1 == r3 and r2 + 1 == r1) or (r1 - 1 == r3 and r2 - 1 == r1):
         multiplicateur = 5  # Suite
         presence_event = True
