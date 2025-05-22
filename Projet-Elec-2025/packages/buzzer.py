@@ -29,7 +29,6 @@ NOTES = {
     "F4": 349,
 }
 
-# Séquence polyphonique simplifiée (melody, bass) pour Victory Fanfare FFX
 VICTORY_FANFARE_POLY = [
     # (melody, bass, duration)
     ("G5", "C5", 120),
@@ -66,64 +65,113 @@ VICTORY_FANFARE_POLY = [
 ]
 
 
-def play_note(pin_num, freq, duration_ms):
-    if freq == 0:
-        time.sleep_ms(duration_ms)
-        return
-    pwm = PWM(Pin(pin_num))
-    pwm.freq(freq)
-    pwm.duty_u16(32768)
-    time.sleep_ms(duration_ms)
-    pwm.deinit()
+class VictoryFanfarePlayer:
+    def __init__(self):
+        self.sequence = VICTORY_FANFARE_POLY
+        self.index = 0
+        self.time_left = 0
+        self.active = False
+        self.pwms = [None, None]
+
+    def start(self):
+        self.index = 0
+        self.time_left = 0
+        self.active = True
+
+    def stop(self):
+        self.active = False
+        self._stop_pwms()
+
+    def _stop_pwms(self):
+        for i in range(2):
+            if self.pwms[i]:
+                self.pwms[i].deinit()
+                self.pwms[i] = None
+
+    def tick(self, ms_step=20):
+        if not self.active or self.index >= len(self.sequence):
+            self.stop()
+            return
+        if self.time_left <= 0:
+            # Nouvelle note
+            self._stop_pwms()
+            melody, bass, duration = self.sequence[self.index]
+            freq1 = NOTES.get(melody, 0)
+            freq2 = NOTES.get(bass, 0)
+            if freq1:
+                self.pwms[0] = PWM(Pin(BUZZER_PINS[0]))
+                self.pwms[0].freq(freq1)
+                self.pwms[0].duty_u16(32768)
+            if freq2:
+                self.pwms[1] = PWM(Pin(BUZZER_PINS[1]))
+                self.pwms[1].freq(freq2)
+                self.pwms[1].duty_u16(32768)
+            self.time_left = duration
+            self.index += 1
+        self.time_left -= ms_step
+        if self.time_left <= 0:
+            self._stop_pwms()
 
 
-def play_victory_fanfare():
-    for melody, bass, duration in VICTORY_FANFARE_POLY:
-        freq1 = NOTES.get(melody, 0)
-        freq2 = NOTES.get(bass, 0)
-        # Jouer les deux notes en même temps
-        pwm1 = PWM(Pin(BUZZER_PINS[0])) if freq1 else None
-        pwm2 = PWM(Pin(BUZZER_PINS[1])) if freq2 else None
-        if pwm1:
-            pwm1.freq(freq1)
-            pwm1.duty_u16(32768)
-        if pwm2:
-            pwm2.freq(freq2)
-            pwm2.duty_u16(32768)
-        time.sleep_ms(duration)
-        if pwm1:
-            pwm1.deinit()
-        if pwm2:
-            pwm2.deinit()
-        time.sleep_ms(20)
+# Pour compatibilité, on garde une version "slot machine" non bloquante
+class SlotMachineSoundPlayer:
+    def __init__(self):
+        self.sequence = VICTORY_FANFARE_POLY[:8]
+        self.index = 0
+        self.time_left = 0
+        self.active = False
+        self.pwms = [None, None]
 
+    def start(self):
+        self.index = 0
+        self.time_left = 0
+        self.active = True
 
-def play_slot_machine_sound():
-    # Pour compatibilité, joue juste le début du Victory Fanfare polyphonique
-    for i in range(8):
-        melody, bass, duration = VICTORY_FANFARE_POLY[i]
-        freq1 = NOTES.get(melody, 0)
-        freq2 = NOTES.get(bass, 0)
-        pwm1 = PWM(Pin(BUZZER_PINS[0])) if freq1 else None
-        pwm2 = PWM(Pin(BUZZER_PINS[1])) if freq2 else None
-        if pwm1:
-            pwm1.freq(freq1)
-            pwm1.duty_u16(32768)
-        if pwm2:
-            pwm2.freq(freq2)
-            pwm2.duty_u16(32768)
-        time.sleep_ms(duration)
-        if pwm1:
-            pwm1.deinit()
-        if pwm2:
-            pwm2.deinit()
-        time.sleep_ms(20)
+    def stop(self):
+        self.active = False
+        self._stop_pwms()
+
+    def _stop_pwms(self):
+        for i in range(2):
+            if self.pwms[i]:
+                self.pwms[i].deinit()
+                self.pwms[i] = None
+
+    def tick(self, ms_step=20):
+        if not self.active or self.index >= len(self.sequence):
+            self.stop()
+            return
+        if self.time_left <= 0:
+            self._stop_pwms()
+            melody, bass, duration = self.sequence[self.index]
+            freq1 = NOTES.get(melody, 0)
+            freq2 = NOTES.get(bass, 0)
+            if freq1:
+                self.pwms[0] = PWM(Pin(BUZZER_PINS[0]))
+                self.pwms[0].freq(freq1)
+                self.pwms[0].duty_u16(32768)
+            if freq2:
+                self.pwms[1] = PWM(Pin(BUZZER_PINS[1]))
+                self.pwms[1].freq(freq2)
+                self.pwms[1].duty_u16(32768)
+            self.time_left = duration
+            self.index += 1
+        self.time_left -= ms_step
+        if self.time_left <= 0:
+            self._stop_pwms()
 
 
 # Partie test indépendante
 if __name__ == "__main__":
-    print("Test des buzzers : Victory Fanfare FFX 8-bit polyphonique")
-    play_victory_fanfare()
-    time.sleep(1)
-    print("Slot machine sound (début du Victory Fanfare polyphonique)")
-    play_slot_machine_sound()
+    print("Test Victory Fanfare non bloquant")
+    player = VictoryFanfarePlayer()
+    player.start()
+    while player.active:
+        player.tick()
+        time.sleep_ms(20)
+    print("Test Slot Machine Sound non bloquant")
+    slot = SlotMachineSoundPlayer()
+    slot.start()
+    while slot.active:
+        slot.tick()
+        time.sleep_ms(20)
