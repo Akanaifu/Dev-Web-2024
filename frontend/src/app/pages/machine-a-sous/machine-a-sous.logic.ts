@@ -206,7 +206,10 @@ export class MachineASousLogic {
             data,
             this.playerInfo.user_id.toString()
           );
-          this.showTable = sortedParts.notPlayedParts.length > 0 ? true : false; // Example: Use this property to control the button state
+          this.showTable =
+            sortedParts.notPlayedParts.length == 0 && this.playerInfo.solde <= 0
+              ? false
+              : true; // Example: Use this property to control the button state
 
           let index = 0;
 
@@ -303,7 +306,7 @@ export class MachineASousLogic {
         setTimeout(displayCombinations, f(combinationIndex));
       } else {
         this.checkCombination();
-        this.updateGainDisplay(part.gain);
+        this.updateGainDisplay(part.gain - part.mise);
 
         part.partieAffichee = true;
         // Mettre à jour le flag dans Firebase
