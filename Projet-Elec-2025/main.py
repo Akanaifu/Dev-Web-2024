@@ -12,6 +12,7 @@ from firebase import (
 )
 from sept_seg import SevenSegmentDisplay
 from joystick import update_bet_amount
+from buzzer import play_slot_machine_sound  # <-- ajout de l'import
 
 ########## LCD SCREEN CONFIGURATION ##########
 I2C_ADDR = (
@@ -52,6 +53,12 @@ GAME_COUNT = 0  # Compteur d’identifiants personnalisés
 combinations = []  # Liste de toutes les combinaisons générées
 FIREBASE_URL = "https://machine-a-sous-default-rtdb.europe-west1.firebasedatabase.app"
 
+buzzer_timer = Timer(-1)  # Timer dédié à la musique
+
+
+def buzzer_timer_callback(timer):
+    play_slot_machine_sound()
+
 
 def button_callback(pin):
     """
@@ -72,7 +79,7 @@ def generate_random(timer):
     """
     Fonction appelée par le timer pour générer un chiffre aléatoire.
     """
-    global digits, NUMBER_GENERATED_COUNT, random_timer, SCORE, RUN_CODE, combinations, NUMBERS_TO_GENERATE, BET_AMOUNT
+    global digits, NUMBER_GENERATED_COUNT, random_timer, SCORE, RUN_CODE, combinations, NUMBERS_TO_GENERATE, BET_AMOUNT, buzzer_timer
 
     if NUMBER_GENERATED_COUNT < NUMBERS_TO_GENERATE:
         random_num = random.randrange(10 ** (NUM_DIGITS - 1), 10**NUM_DIGITS)
@@ -83,6 +90,7 @@ def generate_random(timer):
 
     else:
         random_timer.deinit()
+        buzzer_timer.deinit()  # Arrête la musique
         stop_led_blinking()  # Arrête le clignotement des LEDs
         SCORE = calculer_gain(digits, BET_AMOUNT)
         updated_data = {
@@ -127,6 +135,9 @@ while 1:
             lcd.clear()
             lcd.putstr("Generating...")  # Affiche un message sur l'écran LCD
             start_led_blinking()  # Démarre le clignotement des LEDs
+            buzzer_timer.init(
+                period=600, mode=Timer.PERIODIC, callback=buzzer_timer_callback
+            )  # Lance la musique en boucle
             random_timer.init(period=500, mode=Timer.PERIODIC, callback=generate_random)
             USER_BALANCE = get_balance_from_firebase(
                 fetch_from_firebase, USER_BALANCE
