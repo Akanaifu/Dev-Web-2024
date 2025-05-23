@@ -21,6 +21,10 @@ SEGMENT_MAP = [
 
 
 class SevenSegmentDisplay:
+    """
+    Classe pour contrôler un afficheur 7 segments avec ESP32.
+    """
+
     def __init__(self, segment_pins, display_select_pins, num_digits=3):
         """
         Initialise l'afficheur 7 segments.
