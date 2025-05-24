@@ -130,7 +130,7 @@ router.post("/add", async (req, res) => {
       joueurId,
       gameSessionId,
       solde,
-      gain > 0 ? "win" : "lose",
+      gain - mise > 0 ? "win" : "lose",
       combinaison.join(","),
     ]);
     // Récupérer le solde actuel du joueur
@@ -141,7 +141,7 @@ SELECT solde FROM User WHERE user_id = ?
     const currentSolde = userResult[0]?.solde || 0;
 
     // Mettre à jour le solde du joueur
-    const updatedSolde = currentSolde + gain;
+    const updatedSolde = currentSolde + gain - mise;
     const updateSoldeQuery = `
 UPDATE User SET solde = ? WHERE user_id = ?
 `;
