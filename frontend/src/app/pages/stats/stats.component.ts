@@ -203,7 +203,7 @@ export class StatsComponent implements AfterViewInit, OnInit {
   // --- NE PAS MODIFIER LA PARTIE SUIVANTE (graph gain/perte) ---
   getFilteredStats(): { label: string; gain: number }[] {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Réinitialise l'heure pour comparer uniquement la date
+    today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
 
     // Sort stats by date in ascending order
     const sortedStats = this.stats.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
@@ -214,72 +214,96 @@ export class StatsComponent implements AfterViewInit, OnInit {
       formattedDate: new Date(s.created_at).toLocaleDateString('fr-FR') // Format dd/mm/yyyy
     }));
 
+    // Group stats by date
+    const groupedStats = formattedStats.reduce((acc, stat) => {
+      const date = stat.formattedDate;
+      if (!acc[date]) {
+        acc[date] = 0;
+      }
+      acc[date] += stat.gain;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    const groupedArray = Object.entries(groupedStats).map(([label, gain]) => ({ label, gain }));
+
     if (this.selectedPeriod === 'jour') {
-      return formattedStats
-        .filter(s => {
-          const createdAtDate = new Date(s.created_at);
-          return createdAtDate.toDateString() === today.toDateString(); // Compare uniquement la date
-        })
-        .map(s => ({
-          label: s.formattedDate, // Use preformatted date
-          gain: s.gain
-        }));
+      return groupedArray.filter(item => {
+        const date = new Date(item.label.split('/').reverse().join('-')); // Convert dd/mm/yyyy to Date
+        return date.toDateString() === today.toDateString();
+      });
     } else if (this.selectedPeriod === 'semaine') {
       const startDate = new Date(today);
-      startDate.setDate(today.getDate() - 6);
-      return formattedStats
-        .filter(s => {
-          const d = new Date(s.created_at);
-          return d >= startDate && d <= today;
-        })
-        .map(s => ({ label: s.formattedDate, gain: s.gain })); // Use preformatted date
+      startDate.setDate(today.getDate() - 6); // Start from 6 days ago, including today
+      startDate.setHours(0, 0, 0, 0); // Reset time for accurate comparison
+      const endDate = new Date(today);
+      endDate.setHours(23, 59, 59, 999); // Include the entire current day
+
+      return groupedArray.filter(item => {
+        const date = new Date(item.label.split('/').reverse().join('-')); // Convert dd/mm/yyyy to Date
+        return date >= startDate && date <= endDate;
+      });
     } else if (this.selectedPeriod === 'mois') {
       const year = today.getFullYear();
       const month = this.selectedMonth;
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Dictionary for the number of days in each month
+      const isLeapYear = (yr: number): boolean => (yr % 4 === 0 && (yr % 100 !== 0 || yr % 400 === 0));
+      const daysInMonthDict: { [key: number]: number } = {
+        0: 31, // January
+        1: isLeapYear(year) ? 29 : 28, // February
+        2: 31, // March
+        3: 30, // April
+        4: 31, // May
+        5: 30, // June
+        6: 31, // July
+        7: 31, // August
+        8: 30, // September
+        9: 31, // October
+        10: 30, // November
+        11: 31, // December
+      };
+
+      const daysInMonth = daysInMonthDict[month];
       const daysArray: { label: string; gain: number }[] = [];
       for (let day = 1; day <= daysInMonth; day++) {
         const currentDate = new Date(year, month, day);
-        const dayGain = formattedStats
-          .filter(s => {
-            const d = new Date(s.created_at);
-            return d.getFullYear() === currentDate.getFullYear() &&
-                   d.getMonth() === currentDate.getMonth() &&
-                   d.getDate() === currentDate.getDate();
+        const dayGain = groupedArray
+          .filter(item => {
+            const date = new Date(item.label.split('/').reverse().join('-')); // Convert dd/mm/yyyy to Date
+            return date.getFullYear() === currentDate.getFullYear() &&
+                   date.getMonth() === currentDate.getMonth() &&
+                   date.getDate() === currentDate.getDate();
           })
-          .reduce((sum, s) => sum + s.gain, 0);
-        daysArray.push({ label: currentDate.toLocaleDateString('fr-FR'), gain: dayGain }); // Format dd/mm/yyyy
+          .reduce((sum, item) => sum + item.gain, 0);
+        daysArray.push({ label: currentDate.toLocaleDateString('fr-FR'), gain: dayGain });
       }
       return daysArray;
     } else if (this.selectedPeriod === 'année') {
       const yearToDisplay = this.selectedYear;
       const monthsArray: { label: string; gain: number }[] = [];
       for (let m = 0; m <= 11; m++) {
-        const monthGain = formattedStats
-          .filter(s => {
-            const d = new Date(s.created_at);
-            return d.getFullYear() === yearToDisplay && d.getMonth() === m;
+        const monthGain = groupedArray
+          .filter(item => {
+            const date = new Date(item.label.split('/').reverse().join('-')); // Convert dd/mm/yyyy to Date
+            return date.getFullYear() === yearToDisplay && date.getMonth() === m;
           })
-          .reduce((sum, s) => sum + s.gain, 0);
+          .reduce((sum, item) => sum + item.gain, 0);
         const label = `${yearToDisplay}-${("0" + (m + 1)).slice(-2)}`; // Format: YYYY-MM
-        monthsArray.push({ label: label, gain: monthGain });
+        monthsArray.push({ label, gain: monthGain });
       }
       return monthsArray;
     }
-    return formattedStats.map(s => ({ label: s.formattedDate, gain: s.gain })); // Use preformatted date
+    return groupedArray;
   }
 
   updateChart(): void {
     const filtered = this.getFilteredStats();
     this.gainChart.data.labels = filtered.map(item => {
-      const date = new Date(item.label);
-      if (isNaN(date.getTime())) {
-        return item.label; // Use the label directly if it's already a valid string
-      }
+      const date = new Date(item.label.split('/').reverse().join('-')); // Ensure consistent parsing of dd/mm/yyyy
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Les mois commencent à 0
       const year = date.getFullYear();
-      return `${day}-${month}-${year}`; // Format dd-mm-yyyy
+      return `${day}/${month}/${year}`; // Format dd/mm/yyyy
     });
     this.gainChart.data.datasets[0].data = filtered.map(item => item.gain); // Met à jour les données dynamiques
     this.gainChart.update(); // Rafraîchit le graphique
