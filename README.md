@@ -24,3 +24,129 @@ Si vous trouvez que les pages sont trop longues, vous pouvez en créer de nouvel
 Projet pour le cour de Dev
 
 ### Site Casino
+
+---
+
+## Tests backend avec Jest
+
+### Installation de Jest
+
+Dans le dossier `backend`, lancez la commande suivante pour installer Jest et Supertest (pour les tests d'API) :
+
+```sh
+cd backend
+npm install --save-dev jest supertest
+```
+
+Ajoutez le script suivant dans le fichier `backend/package.json` si ce n'est pas déjà fait :
+
+```json
+"scripts": {
+  "test": "jest"
+}
+```
+
+### Lancer les tests backend
+
+Pour exécuter tous les tests du backend, utilisez :
+
+```sh
+npm test
+```
+ou
+```sh
+npx jest
+```
+
+Les fichiers de test doivent être placés dans le dossier `backend/tests` et avoir l'extension `.test.js` ou `.spec.js`.
+
+### Exemple de test backend
+
+Créez un fichier `backend/tests/example.test.js` avec le contenu suivant :
+
+```javascript
+// backend/tests/example.test.js
+test('addition simple', () => {
+  expect(1 + 2).toBe(3);
+});
+```
+
+Lancez ensuite la commande `npm test` pour vérifier que le test fonctionne.
+
+---
+
+## Tests frontend avec Jest (Angular)
+
+### Installation de Jest dans le frontend
+
+Dans le dossier `frontend`, lancez :
+
+```sh
+cd frontend
+npm install --save-dev jest jest-preset-angular @types/jest
+```
+
+Ajoutez un fichier `jest.config.js` dans `frontend/` :
+
+```javascript
+// frontend/jest.config.js
+module.exports = {
+  preset: 'jest-preset-angular',
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  testMatch: ['**/+(*.)+(spec|test).+(ts)'],
+  moduleFileExtensions: ['ts', 'html', 'js', 'json'],
+};
+```
+
+Créez un fichier `setup-jest.ts` dans `frontend/` :
+
+```typescript
+// frontend/setup-jest.ts
+import 'jest-preset-angular/setup-jest';
+```
+
+Modifiez le script de test dans `frontend/package.json` :
+
+```json
+"scripts": {
+  "test": "jest"
+}
+```
+
+### Exemple de test frontend
+
+Créez un fichier `src/app/example/example.component.spec.ts` :
+
+```typescript
+// frontend/src/app/example/example.component.spec.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-example',
+  template: '<p>{{greet()}}</p>'
+})
+export class ExampleComponent {
+  greet() {
+    return 'Hello Jest!';
+  }
+}
+
+describe('ExampleComponent', () => {
+  it('should return greeting', () => {
+    const component = new ExampleComponent();
+    expect(component.greet()).toBe('Hello Jest!');
+  });
+});
+```
+
+### Lancer les tests frontend
+
+Dans le dossier `frontend`, lancez :
+
+```sh
+npm test
+```
+
+---
+
+**Remarque** : Vous pouvez utilisé Jasmine ou Karma mais Jest est plus rapide pour les tests unitaires
