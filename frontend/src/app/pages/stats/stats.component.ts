@@ -214,7 +214,7 @@ export class StatsComponent implements AfterViewInit, OnInit {
         }));
     } else if (this.selectedPeriod === 'semaine') {
       const startDate = new Date(today);
-      startDate.setDate(today.getDate() - 7);
+      startDate.setDate(today.getDate() - 6);
       return formattedStats
         .filter(s => {
           const d = new Date(s.created_at);
