@@ -1,6 +1,7 @@
 const express = require("express");
 const db = require("../config/dbConfig"); // Utilisation de MariaDB
 const router = express.Router();
+const { calculerGain } = require("./new_game"); // Assurez-vous que le chemin est correct
 
 router.get("/", async (req, res) => {
   try {
@@ -60,6 +61,33 @@ router.get("/:id/numberOfGame", async (req, res) => {
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: "Erreur lors de la récupération du win rate." });
+  }
+});
+
+router.get("/bets/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const query = `
+      SELECT amount, bet_status, combinaison, created_at 
+      FROM Bets 
+      WHERE user_id = ?
+    `;
+    const [rows] = await db.execute(query, [userId]);
+
+    // Passe chaque combinaison et mise dans la fonction calculerGain
+    const results = rows.map((row) => {
+      const rouleaux = row.combinaison.split(",").map(Number); // Convertir la combinaison en tableau de nombres
+      const gain = calculerGain(rouleaux, row.amount, row.bet_status); // Appel avec bet_status
+      console.log("🚀 ~ results ~ calculerGain:", calculerGain)
+
+      return { ...row, gain };
+    });
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des paris :", error);
+    res.status(500).json({ error: "Erreur serveur." });
   }
 });
 
