@@ -114,7 +114,7 @@ router.post("/add", async (req, res) => {
 
     // Récupérer l'ID de la session de jeu nouvellement créée
     const gameSessionId = newGameSessionId;
-
+    const gain = calculerGain(combinaison, mise);
     // Insérer les données dans la table Bets
     const betQuery = `
       INSERT INTO Bets (user_id, game_session_id, amount, bet_status, combinaison)
@@ -141,6 +141,8 @@ SELECT solde FROM User WHERE user_id = ?
     const currentSolde = userResult[0]?.solde || 0;
 
     // Mettre à jour le solde du joueur
+    console.log("🚀 ~ router.post ~ mise:", mise);
+    console.log("🚀 ~ router.post ~ gain:", gain);
     const updatedSolde = currentSolde + gain - mise;
     const updateSoldeQuery = `
 UPDATE User SET solde = ? WHERE user_id = ?

@@ -13,7 +13,31 @@ INSERT INTO `Games_session` (`game_session_id`, `name`, `bet_min`, `bet_max`, `t
 ('BJ01', 'Blackjack', '10', '1000', '2025-04-18 20:45:00'), -- BJ pour Blackjack
 ('BA01', 'Baccarat', '20', '2000', '2025-04-17 12:00:00'),  -- BA pour Baccarat
 ('PO02', 'Poker', '10', '1000', '2025-04-16 18:00:00'),     -- Deuxième session de Poker
-('RO02', 'Roulette', '5', '300', '2025-04-15 14:00:00');    -- Deuxième session de Roulette
+('RO02', 'Roulette', '5', '300', '2025-04-15 14:00:00'),    -- Deuxième session de Roulette
+('MA01', 'Machine à sous', '1', '100', '2025-04-14 10:00:00'),
+('MA02', 'Machine à sous', '1', '100', '2025-04-13 10:00:00'),
+('MA03', 'Machine à sous', '1', '100', '2025-04-12 10:00:00'),
+('MA04', 'Machine à sous', '1', '100', '2025-04-11 10:00:00'),
+('MA05', 'Machine à sous', '1', '100', '2025-04-10 10:00:00'),
+('MA06', 'Machine à sous', '1', '100', '2025-04-09 10:00:00'),
+('MA07', 'Machine à sous', '1', '100', '2025-04-08 10:00:00'),
+('PO03', 'Poker', '10', '1000', '2025-04-07 18:00:00'),
+('PO04', 'Poker', '10', '1000', '2025-04-06 18:00:00'),
+('PO05', 'Poker', '10', '1000', '2025-04-05 18:00:00'),
+('PO06', 'Poker', '10', '1000', '2025-04-04 18:00:00'),
+('PO07', 'Poker', '10', '1000', '2025-04-03 18:00:00'),
+('RO03', 'Roulette', '5', '300', '2025-04-02 14:00:00'),
+('RO04', 'Roulette', '5', '300', '2025-04-01 14:00:00'),
+('RO05', 'Roulette', '5', '300', '2025-03-31 14:00:00'),
+('RO06', 'Roulette', '5', '300', '2025-03-30 14:00:00'),
+('BJ02', 'Blackjack', '10', '1000', '2025-03-29 20:45:00'),
+('BJ03', 'Blackjack', '10', '1000', '2025-03-28 20:45:00'),
+('BJ04', 'Blackjack', '10', '1000', '2025-03-27 20:45:00'),
+('BJ05', 'Blackjack', '10', '1000', '2025-03-26 20:45:00'),
+('BA02', 'Baccarat', '20', '2000', '2025-03-25 12:00:00'),
+('BA03', 'Baccarat', '20', '2000', '2025-03-24 12:00:00'),
+('BA04', 'Baccarat', '20', '2000', '2025-03-23 12:00:00'),
+('BA05', 'Baccarat', '20', '2000', '2025-03-22 12:00:00');
 
 -- Insérer des transactions bancaires dans la table Banking_transaction
 INSERT INTO `Banking_transaction` (`transaction_id`, `user_id`, `amount_banking`, `transaction_type`, `transaction_status`) VALUES
