@@ -49,7 +49,10 @@ export class MachineASousComponent implements OnInit {
       .subscribe({
         next: (data) => {
           console.log('Mise à jour des parties en temps réel :', data);
-          // Traite ici les données reçues (par exemple, mettre à jour l'affichage)
+          // Met à jour l'affichage à chaque changement
+          this.logic.fetchFirebaseData().then(() => {
+            this.sendButtonDisabled = this.logic.showTable;
+          });
         },
         error: (err) => {
           console.error("Erreur lors de l'écoute des parties Firebase :", err);

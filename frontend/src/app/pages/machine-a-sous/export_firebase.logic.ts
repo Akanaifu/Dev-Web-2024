@@ -49,7 +49,7 @@ export class FirebaseSendService {
 
   listenToParties(): Observable<any> {
     return new Observable((observer) => {
-      const partiesRef = ref(this.db, 'parties');
+      const partiesRef = ref(this.db, '/');
       const unsubscribe = onValue(
         partiesRef,
         (snapshot) => {
