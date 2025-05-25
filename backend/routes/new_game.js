@@ -3,18 +3,20 @@ const router = express.Router();
 const db = require("../config/dbConfig");
 
 // Fonction utilitaire pour calculer le gain (reprend la logique de firebase.py)
-function calculerGain(rouleaux, mise) {
+
+function calculerGain(rouleaux, mise, status="win") {
+  const [r2, r1, r3] = String(rouleaux).split("").map(Number); // Split rouleaux into three constants
   let multiplicateur = 0;
   let presence_event = false;
   const [r1, r2, r3] = rouleaux;
 
   if (r1 === r2 && r2 === r3) {
-    return mise * (r1 === 7 ? 100 : 10);
+    return mise*(r1 === 7 ? 100 : 10)-mise;
   }
   if ((r1 + 1 === r3 && r2 + 1 === r1) || (r1 - 1 === r3 && r2 - 1 === r1)) {
     multiplicateur = 5;
     presence_event = true;
-  } else if (r1 === r3 && r1 !== r2) {
+  } else if (r2 === r3 && r1 !== r2) {
     multiplicateur = 2;
     presence_event = true;
   }
@@ -31,7 +33,12 @@ function calculerGain(rouleaux, mise) {
       multiplicateur = 1;
     }
   }
-  return Math.floor(mise * multiplicateur);
+  gain = (mise * multiplicateur)-mise;
+  if (status === "lose") {
+    gain = -gain;
+    return Math.floor(gain);
+  }
+  return Math.floor(gain);
 }
 
 // Fonction utilitaire pour convertir un timestamp Firebase (en secondes) en DATETIME MySQL
@@ -153,4 +160,5 @@ UPDATE User SET solde = ? WHERE user_id = ?
   }
 });
 
-module.exports = router;
+module.exports = router; // Export par défaut pour le router
+module.exports.calculerGain = calculerGain; // Export séparé pour calculerGain
