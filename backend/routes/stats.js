@@ -33,7 +33,7 @@ router.get("/:id/winrate", async (req, res) => {
   try {
     const query = `
       SELECT gs.name AS game_name,
-             SUM(CASE WHEN b.bet_status = 'win' THEN 1 ELSE 0 END) AS total_wins,
+             CAST(SUM(CASE WHEN b.bet_status = 'win' THEN 1 ELSE 0 END) AS UNSIGNED) AS total_wins,
              COUNT(*) AS total_games,
              ROUND( SUM( CASE WHEN b.bet_status = 'win' THEN 1 ELSE 0 END) / COUNT(*), 2)*100 AS win_rate
       FROM bets b
@@ -50,20 +50,20 @@ router.get("/:id/winrate", async (req, res) => {
 
 // Route pour récupérer le nombre de partie joué par utilisateur
 //http://localhost:3000/stats/:id/numberOfGame
-router.get("/:id/numberOfGame", async (req, res) => {
-  const userId = parseInt(req.params.id);
-  try {
-    const query = `
-      SELECT sum(num_games) 'nombre de partie', SUM(num_wins) AS 'nombre de victoire'
-      FROM stats
-      WHERE user_id = ?
-    `;
-    const [rows] = await db.query(query, [userId]);
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: "Erreur lors de la récupération du win rate." });
-  }
-});
+// router.get("/:id/numberOfGame", async (req, res) => {
+//   const userId = parseInt(req.params.id);
+//   try {
+//     const query = `
+//       SELECT sum(num_games) 'nombre de partie', SUM(num_wins) AS 'nombre de victoire'
+//       FROM stats
+//       WHERE user_id = ?
+//     `;
+//     const [rows] = await db.query(query, [userId]);
+//     res.json(rows);
+//   } catch (err) {
+//     res.status(500).json({ error: "Erreur lors de la récupération du win rate." });
+//   }
+// });
 
 router.get("/bets/:userId", async (req, res) => {
   const { userId } = req.params;
