@@ -1,70 +1,66 @@
-from firebase import calculer_gain, number_to_DIGITS
+from firebase import calculer_gain, number_to_digits
 
 
+# Teste le gain pour un jackpot (3x7)
 def test_calculer_gain_jackpot():
     """
-    Teste le calcul du gain pour un jackpot.
+    Gain pour jackpot (3x7).
     """
     rouleaux = [7, 7, 7]
     mise = 10
-    assert calculer_gain(rouleaux, mise) == 100, "Jackpot incorrect."
+    assert calculer_gain(rouleaux, mise) == 100
 
 
+# Teste le gain pour un sandwich (ex: 7,5,7)
 def test_calculer_gain_sandwich():
     """
-    Teste le calcul du gain pour un sandwich.
+    Gain pour sandwich (1er et 3e identiques, 2e différent).
     """
     rouleaux = [7, 5, 7]
     mise = 10
-    assert calculer_gain(rouleaux, mise) == 20, "Sandwich incorrect."
+    assert calculer_gain(rouleaux, mise) == 20
 
 
+# Teste le gain pour une suite (ex: 1,2,3)
 def test_calculer_gain_suite():
     """
-    Teste le calcul du gain pour une suite.
+    Gain pour une suite (ex: 1,2,3).
     """
     rouleaux = [1, 2, 3]
     mise = 10
-    assert calculer_gain(rouleaux, mise) == 50, "Suite incorrecte."
+    assert calculer_gain(rouleaux, mise) == 50
 
 
+# Teste le gain pour tous pairs ou tous impairs
 def test_calculer_gain_pair_impair():
     """
-    Teste le calcul du gain pour des nombres pairs ou impairs.
+    Gain pour tous pairs (ou tous impairs).
     """
     rouleaux = [2, 4, 6]
     mise = 10
-    assert calculer_gain(rouleaux, mise) == 15, "Pair/Impair incorrect."
+    assert calculer_gain(rouleaux, mise) == 15
 
 
-def test_number_to_DIGITS():
+# Teste la conversion d'un nombre en liste de chiffres
+def test_number_to_digits():
     """
-    Teste la conversion d'un nombre en chiffres.
+    Conversion d'un nombre en liste de chiffres.
     """
     number = 123
-    assert number_to_DIGITS(number) == [1, 2, 3], "Conversion incorrecte."
+    assert number_to_digits(number) == [1, 2, 3]
 
 
-def test_number_to_DIGITS_single_digit():
+def test_number_to_digits_single_digit():
     """
-    Teste la conversion d'un nombre à un seul chiffre.
+    Conversion d'un nombre à un seul chiffre.
     """
     number = 7
-    assert number_to_DIGITS(number) == [
-        7
-    ], "Conversion incorrecte pour un seul chiffre."
+    assert number_to_digits(number) == [7]
 
 
-def test_number_to_DIGITS_large_number():
+def test_number_to_digits_large_number():
     """
-    Teste la conversion d'un grand nombre.
+    Conversion d'un grand nombre.
     """
     number = 987654
-    assert number_to_DIGITS(number) == [
-        9,
-        8,
-        7,
-        6,
-        5,
-        4,
-    ], "Conversion incorrecte pour un grand nombre."
+    assert number_to_digits(number) == [9, 8, 7, 6, 5, 4]
