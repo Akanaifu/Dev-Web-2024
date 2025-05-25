@@ -1,0 +1,34 @@
+{
+  "MA1": {
+    "combinaison": [
+      [8, 0, 4],
+      [7, 4, 5],
+      [1, 8, 8],
+      [8, 2, 7],
+      [4, 0, 6],
+      [4, 2, 9],
+      [6, 2, 9],
+      [7, 8, 4],
+      [5, 2, 7],
+      [6, 6, 1],
+      [5, 8, 1],
+      [1, 9, 6],
+      [3, 4, 3],
+      [2, 0, 6]
+    ],
+    "gain": 30,
+    "joueurId": "5",
+    "mise": 20,
+    "partieAffichee": true,
+    "partieJouee": true,
+    "solde": 45,
+    "timestamp": 1748010247
+  },
+  "MA2": {
+    "gain": 0,
+    "joueurId": "3",
+    "partieAffichee": false,
+    "partieJouee": false,
+    "solde": 50.75
+  }
+}
