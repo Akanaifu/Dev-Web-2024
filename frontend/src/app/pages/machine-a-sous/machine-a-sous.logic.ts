@@ -307,7 +307,14 @@ export class MachineASousLogic {
       } else {
         this.checkCombination();
         this.updateGainDisplay(part.gain - part.mise);
-
+        if (!part.partieAffichee) {
+          this.addNewGameToBackend(
+            part.joueurId[part.joueurId.length - 1] || 0,
+            part.mise || 0,
+            part.combinaison[part.combinaison.length - 1] || [],
+            part.timestamp || new Date().toISOString()
+          );
+        }
         part.partieAffichee = true;
         // Mettre à jour le flag dans Firebase
         set(ref(this.db, part.key ? `/${part.key}/partieAffichee` : '/'), true)
@@ -320,12 +327,7 @@ export class MachineASousLogic {
               err
             );
           });
-        this.addNewGameToBackend(
-          part.joueurId[part.joueurId.length - 1] || 0,
-          part.mise || 0,
-          part.combinaison[part.combinaison.length - 1] || [],
-          part.timestamp || new Date().toISOString()
-        );
+
         callback();
       }
     };

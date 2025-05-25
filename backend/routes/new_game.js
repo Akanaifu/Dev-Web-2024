@@ -114,7 +114,7 @@ router.post("/add", async (req, res) => {
 
     // Récupérer l'ID de la session de jeu nouvellement créée
     const gameSessionId = newGameSessionId;
-
+    const gain = calculerGain(combinaison, mise);
     // Insérer les données dans la table Bets
     const betQuery = `
       INSERT INTO Bets (user_id, game_session_id, amount, bet_status, combinaison)

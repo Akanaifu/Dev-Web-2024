@@ -5,6 +5,7 @@ import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
 import { NewGameService } from '../../services/new-game.service';
 import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-machine-a-sous',
@@ -15,6 +16,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
+  private partiesSubscription?: Subscription;
   logic: MachineASousLogic;
   playerInfo: {
     user_id: number;
@@ -41,10 +43,27 @@ export class MachineASousComponent implements OnInit {
   ngOnInit(): void {
     this.getPlayerInfo();
     this.checkIfSendButtonShouldBeDisabled();
+    // S'abonner aux changements en temps réel de Firebase
+    this.partiesSubscription = this.firebaseSendService
+      .listenToParties()
+      .subscribe({
+        next: (data) => {
+          console.log('Mise à jour des parties en temps réel :', data);
+          // Met à jour l'affichage à chaque changement
+          this.logic.fetchFirebaseData().then(() => {
+            this.sendButtonDisabled = this.logic.showTable;
+          });
+        },
+        error: (err) => {
+          console.error("Erreur lors de l'écoute des parties Firebase :", err);
+        },
+      });
   }
 
   ngOnDestroy(): void {
     clearInterval(this.logic.intervalId);
+    // Désabonnement pour éviter les fuites de mémoire
+    this.partiesSubscription?.unsubscribe();
   }
 
   getPlayerInfo(): void {
