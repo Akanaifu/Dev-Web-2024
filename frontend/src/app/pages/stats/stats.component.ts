@@ -227,10 +227,15 @@ export class StatsComponent implements AfterViewInit, OnInit {
     const groupedArray = Object.entries(groupedStats).map(([label, gain]) => ({ label, gain }));
 
     if (this.selectedPeriod === 'jour') {
-      return groupedArray.filter(item => {
-        const date = new Date(item.label.split('/').reverse().join('-')); // Convert dd/mm/yyyy to Date
-        return date.toDateString() === today.toDateString();
-      });
+      return formattedStats
+        .filter(s => {
+          const createdAtDate = new Date(s.created_at);
+          return createdAtDate.toDateString() === today.toDateString(); // Compare uniquement la date
+        })
+        .map(s => ({
+          label: s.formattedDate, // Use preformatted date
+          gain: s.gain
+        })); // Do not group gains for the day
     } else if (this.selectedPeriod === 'semaine') {
       const startDate = new Date(today);
       startDate.setDate(today.getDate() - 6); // Start from 6 days ago, including today
