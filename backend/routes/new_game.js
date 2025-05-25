@@ -4,14 +4,13 @@ const db = require("../config/dbConfig");
 
 // Fonction utilitaire pour calculer le gain (reprend la logique de firebase.py)
 
-function calculerGain(rouleaux, mise, status="win") {
+function calculerGain(rouleaux, mise, status = "win") {
   const [r2, r1, r3] = String(rouleaux).split("").map(Number); // Split rouleaux into three constants
   let multiplicateur = 0;
   let presence_event = false;
-  const [r1, r2, r3] = rouleaux;
 
   if (r1 === r2 && r2 === r3) {
-    return mise*(r1 === 7 ? 100 : 10)-mise;
+    return mise * (r1 === 7 ? 100 : 10) - mise;
   }
   if ((r1 + 1 === r3 && r2 + 1 === r1) || (r1 - 1 === r3 && r2 - 1 === r1)) {
     multiplicateur = 5;
@@ -33,7 +32,7 @@ function calculerGain(rouleaux, mise, status="win") {
       multiplicateur = 1;
     }
   }
-  gain = (mise * multiplicateur)-mise;
+  gain = mise * multiplicateur - mise;
   if (status === "lose") {
     gain = -gain;
     return Math.floor(gain);
@@ -137,7 +136,7 @@ router.post("/add", async (req, res) => {
       joueurId,
       gameSessionId,
       solde,
-      gain - mise > 0 ? "win" : "lose",
+      gain > 0 ? "win" : "lose",
       combinaison.join(","),
     ]);
     // Récupérer le solde actuel du joueur
@@ -150,7 +149,7 @@ SELECT solde FROM User WHERE user_id = ?
     // Mettre à jour le solde du joueur
     console.log("🚀 ~ router.post ~ mise:", mise);
     console.log("🚀 ~ router.post ~ gain:", gain);
-    const updatedSolde = currentSolde + gain - mise;
+    const updatedSolde = currentSolde + gain;
     const updateSoldeQuery = `
 UPDATE User SET solde = ? WHERE user_id = ?
 `;
