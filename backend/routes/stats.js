@@ -27,6 +27,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Route pour récupérer le win rate par jeu pour un utilisateur spécifique
+// http://localhost:3000/stats/:id/winrate
 router.get("/:id/winrate", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {

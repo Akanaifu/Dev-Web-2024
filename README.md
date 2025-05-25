@@ -146,7 +146,9 @@ Dans le dossier `frontend`, lancez :
 ```sh
 npm test
 ```
-
+Sinon il y ng test qui permet de lancer Jasmine, il faut le lancé depuis ./frontend
 ---
 
 **Remarque** : Vous pouvez utilisé Jasmine ou Karma mais Jest est plus rapide pour les tests unitaires
+
+

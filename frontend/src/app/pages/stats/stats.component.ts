@@ -3,8 +3,6 @@ import { WinRateService } from '../../services/stats/winrate.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import Chart from 'chart.js/auto';
-
-// Ajoute l'import de ton service d'authentification si besoin
 import { LoginService } from '../../services/login/login.service';
 import { StatsService } from '../../services/stats/stats.service';
 
@@ -295,15 +293,20 @@ export class StatsComponent implements AfterViewInit, OnInit {
 
   loadNombreParties(): void {
     if (this.userId) {
-      this.winRateService.getNombrePartiesByUser(this.userId).subscribe({
+      this.winRateService.getWinRateByUser(this.userId).subscribe({
         next: (data: any[]) => {
           if (data && data.length > 0) {
-            this.totalPartiesJouees = data[0]['nombre de partie'] || 0;
-            this.totalPartiesGagnees = data[0]['nombre de victoire'] || 0;
+            this.totalPartiesJouees = data.reduce((sum, item) => sum + Number(item.total_games || 0), 0);
+            this.totalPartiesGagnees = data.reduce((sum, item) => sum + Number(item.total_wins || 0), 0);
+          } else {
+            this.totalPartiesJouees = 0;
+            this.totalPartiesGagnees = 0;
           }
         },
         error: (err) => {
           console.error('Erreur lors de la récupération du nombre de parties :', err);
+          this.totalPartiesJouees = 0;
+          this.totalPartiesGagnees = 0;
         }
       });
     }
