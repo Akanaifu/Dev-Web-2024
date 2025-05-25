@@ -8,7 +8,6 @@ function calculerGain(rouleaux, mise, status="win") {
   const [r2, r1, r3] = String(rouleaux).split("").map(Number); // Split rouleaux into three constants
   let multiplicateur = 0;
   let presence_event = false;
-  const [r1, r2, r3] = rouleaux;
 
   if (r1 === r2 && r2 === r3) {
     return mise*(r1 === 7 ? 100 : 10)-mise;
