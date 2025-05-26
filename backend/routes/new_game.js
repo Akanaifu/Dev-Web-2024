@@ -10,12 +10,12 @@ function calculerGain(rouleaux, mise, status="win") {
   let presence_event = false;
 
   if (r1 === r2 && r2 === r3) {
-    return mise*(r1 === 7 ? 100 : 10)-mise;
+    return (mise*(r1 === 7 ? 100 : 10))-mise;
   }
   if ((r1 + 1 === r3 && r2 + 1 === r1) || (r1 - 1 === r3 && r2 - 1 === r1)) {
     multiplicateur = 5;
     presence_event = true;
-  } else if (r2 === r3 && r1 !== r2) {
+  } else if (r1 === r3 && r1 !== r2) {
     multiplicateur = 2;
     presence_event = true;
   }
