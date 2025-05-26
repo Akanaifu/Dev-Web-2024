@@ -36,7 +36,7 @@
   <!-- contenaire solde et mise -->
   <div class="money_container">
     <div class="bankContainer">
-      <div class="bank">Solde : <span id="bankSpan">{{ bankValue }}</span></div>
+      <div class="bank">Solde : <span id="bankSpan">{{ solde }}</span></div>
       <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
     </div>
     <!-- contenaire pour jeton a parier -->
@@ -105,7 +105,7 @@
           </div>
         </div>
       </div>
-      <!-- Colonne '2 to 1' à droite -->
+      <!-- Colonne '2 à 1' à droite -->
       <div class="roulette_table_side" id="row2to1">
         <div class="side_cell" *ngFor="let label of columnLabels; let i = index"
           [ngClass]="{'disabled': isSpinning}"

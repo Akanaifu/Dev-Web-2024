@@ -12,7 +12,7 @@ export class RouletteNetLogic {
   
   currentUser: IUser | null = null;
   
-  bankValue = 1000;
+  solde = 1000;
   currentBet = 0;
   wager = 5;
   lastWager = 0;
@@ -40,7 +40,7 @@ export class RouletteNetLogic {
           
           // Si l'utilisateur a un solde, on peut l'utiliser comme valeur initiale de la banque
           if (this.currentUser && this.currentUser.solde) {
-            this.bankValue = this.currentUser.solde;
+            this.solde = this.currentUser.solde;
           }
         },
         error: (error) => {
@@ -52,7 +52,7 @@ export class RouletteNetLogic {
 
   resetGame() {
     // Utiliser le solde de l'utilisateur connecté ou 1000 par défaut
-    this.bankValue = (this.currentUser && this.currentUser.solde) ? this.currentUser.solde : 1000;
+    this.solde = (this.currentUser && this.currentUser.solde) ? this.currentUser.solde : 1000;
     this.currentBet = 0;
     this.wager = 5;
     this.bet = [];
@@ -65,8 +65,6 @@ export class RouletteNetLogic {
     this.numbersBet = [];
   }
 
-  
-
   removeBet(cell: BettingBoardCell) {// Supprimer la mise
     this.wager = (this.wager === 0) ? 100 : this.wager;
     const n = cell.numbers.join(', ');
@@ -76,7 +74,7 @@ export class RouletteNetLogic {
         if (b.amt !== 0) {
           this.wager = (b.amt > this.wager) ? this.wager : b.amt;
           b.amt -= this.wager;
-          this.bankValue += this.wager;
+          this.solde += this.wager;
           this.currentBet -= this.wager;
         }
       }
@@ -99,7 +97,7 @@ export class RouletteNetLogic {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to spin the roulette');
+            throw new Error('Failed à spin the roulette');
         }
 
         const result = await response.json();
@@ -110,18 +108,39 @@ export class RouletteNetLogic {
     }
   }
 
-  win(winningSpin: number): { winValue: number; betTotal: number; payout: number } {// Calculer les gains
-    let winValue = 0;
-    let betTotal = 0;
-    for (let b of this.bet) {
-      const numArray = b.numbers.split(',').map(Number);
-      if (numArray.includes(winningSpin)) {
-        this.bankValue += (b.odds * b.amt) + b.amt;
-        winValue += b.odds * b.amt;
-        betTotal += b.amt;
+  async win(winningSpin: number): Promise<{ winValue: number; betTotal: number; payout: number }> {
+    try {
+      // Appel de l'API win du backend
+      const response = await this.http.post<{ 
+        winValue: number; 
+        betTotal: number; 
+        payout: number;
+        newsolde: number;
+      }>(
+        `${this.BASE_URL}/roulette/win`, 
+        { 
+          winningSpin, 
+          bets: this.bet,
+          solde: this.solde
+        }
+      ).toPromise();
+      
+      if (response) {
+        // Mettre à jour la valeur de la banque avec celle calculée par le backend
+        this.solde = response.newsolde;
+        // Retourner juste les informations de gain sans la nouvelle valeur de la banque
+        return { 
+          winValue: response.winValue, 
+          betTotal: response.betTotal, 
+          payout: response.payout 
+        };
       }
+      
+      throw new Error('Échec du calcul des gains');
+    } catch (error) {
+        console.error('Erreur lors du calcul des gains:', error);
+      return { winValue: 0, betTotal: 0, payout: 0 };
     }
-    return { winValue, betTotal, payout: winValue + betTotal };
   }
 
   getNumberColor(number: number): 'red' | 'black' | 'green' {// Obtenir la couleur du numéro
@@ -159,11 +178,11 @@ export class RouletteNetLogic {
 
   setBet(cell: BettingBoardCell) {// Vérifier si la mise est supérieure à 0
     this.lastWager = this.wager;
-    this.wager = (this.bankValue < this.wager) ? this.bankValue : this.wager;
+    this.wager = (this.solde < this.wager) ? this.solde : this.wager;
 
     if (this.wager > 0) {
 
-      this.bankValue -= this.wager;
+      this.solde -= this.wager;
       this.currentBet += this.wager;
       // Vérifier si la mise existe déjà
       const n = cell.numbers.join(', ');

@@ -44,7 +44,7 @@ describe('RouletteNetLogic', () => {
       req.flush(mockUser);
 
       expect(service.currentUser).toEqual(mockUser);
-      expect(service.bankValue).toBe(2000);
+      expect(service.solde).toBe(2000);
     });
 
     it('should handle errors when fetching user data', () => {
@@ -60,7 +60,7 @@ describe('RouletteNetLogic', () => {
   describe('resetGame', () => {
     it('should reset game with default values', () => {
       // Définir des valeurs initiales
-      service.bankValue = 500;
+      service.solde = 500;
       service.currentBet = 50;
       service.wager = 10;
       service.bet = [{ amt: 20, type: 'straight', odds: 35, numbers: '5' }];
@@ -71,7 +71,7 @@ describe('RouletteNetLogic', () => {
       service.resetGame();
 
       // Vérifier les valeurs par défaut quand aucun utilisateur n'est connecté
-      expect(service.bankValue).toBe(1000);
+      expect(service.solde).toBe(1000);
       expect(service.currentBet).toBe(0);
       expect(service.wager).toBe(5);
       expect(service.bet).toEqual([]);
@@ -89,7 +89,7 @@ describe('RouletteNetLogic', () => {
       };
 
       // Définir des valeurs initiales
-      service.bankValue = 500;
+      service.solde = 500;
       service.currentBet = 50;
       service.bet = [{ amt: 20, type: 'straight', odds: 35, numbers: '5' }];
 
@@ -97,7 +97,7 @@ describe('RouletteNetLogic', () => {
       service.resetGame();
 
       // Vérifier que les valeurs sont réinitialisées avec le solde utilisateur
-      expect(service.bankValue).toBe(3000);
+      expect(service.solde).toBe(3000);
       expect(service.currentBet).toBe(0);
       expect(service.bet).toEqual([]);
     });
@@ -124,7 +124,7 @@ describe('RouletteNetLogic', () => {
   describe('setBet', () => {
     it('should add a new bet correctly', () => {
       // Configurer des valeurs initiales
-      service.bankValue = 1000;
+      service.solde = 1000;
       service.currentBet = 0;
       service.wager = 10;
       service.bet = [];
@@ -142,7 +142,7 @@ describe('RouletteNetLogic', () => {
       service.setBet(cell);
 
       // Vérifier que la mise a été placée correctement
-      expect(service.bankValue).toBe(990);
+      expect(service.solde).toBe(990);
       expect(service.currentBet).toBe(10);
       expect(service.bet).toEqual([{ amt: 10, type: 'straight', odds: 35, numbers: '5' }]);
       expect(service.numbersBet).toEqual([5]);
@@ -150,7 +150,7 @@ describe('RouletteNetLogic', () => {
 
     it('should add to an existing bet', () => {
       // Configurer des valeurs initiales avec une mise existante
-      service.bankValue = 1000;
+      service.solde = 1000;
       service.currentBet = 10;
       service.wager = 5;
       service.bet = [{ amt: 10, type: 'straight', odds: 35, numbers: '5' }];
@@ -168,7 +168,7 @@ describe('RouletteNetLogic', () => {
       service.setBet(cell);
 
       // Vérifier que la mise a été mise à jour correctement
-      expect(service.bankValue).toBe(995);
+      expect(service.solde).toBe(995);
       expect(service.currentBet).toBe(15);
       expect(service.bet).toEqual([{ amt: 15, type: 'straight', odds: 35, numbers: '5' }]);
       expect(service.numbersBet).toEqual([5]);
@@ -176,7 +176,7 @@ describe('RouletteNetLogic', () => {
 
     it('should not place bet if wager is 0', () => {
       // Configurer des valeurs initiales
-      service.bankValue = 0;
+      service.solde = 0;
       service.currentBet = 0;
       service.wager = 5;
       service.bet = [];
@@ -193,7 +193,7 @@ describe('RouletteNetLogic', () => {
       service.setBet(cell);
 
       // Vérifier qu'aucune mise n'a été placée
-      expect(service.bankValue).toBe(0);
+      expect(service.solde).toBe(0);
       expect(service.currentBet).toBe(0);
       expect(service.bet).toEqual([]);
     });
@@ -202,7 +202,7 @@ describe('RouletteNetLogic', () => {
   describe('removeBet', () => {
     it('should remove part of a bet', () => {
       // Configurer des valeurs initiales avec une mise existante
-      service.bankValue = 990;
+      service.solde = 990;
       service.currentBet = 10;
       service.wager = 5;
       service.bet = [{ amt: 10, type: 'straight', odds: 35, numbers: '5' }];
@@ -219,14 +219,14 @@ describe('RouletteNetLogic', () => {
       service.removeBet(cell);
 
       // Vérifier que la mise a été mise à jour correctement
-      expect(service.bankValue).toBe(995);
+      expect(service.solde).toBe(995);
       expect(service.currentBet).toBe(5);
       expect(service.bet).toEqual([{ amt: 5, type: 'straight', odds: 35, numbers: '5' }]);
     });
 
     it('should remove entire bet if amount equals wager', () => {
       // Configurer des valeurs initiales avec une mise existante
-      service.bankValue = 995;
+      service.solde = 995;
       service.currentBet = 5;
       service.wager = 5;
       service.bet = [{ amt: 5, type: 'straight', odds: 35, numbers: '5' }];
@@ -243,7 +243,7 @@ describe('RouletteNetLogic', () => {
       service.removeBet(cell);
 
       // Vérifier que la mise a été complètement supprimée
-      expect(service.bankValue).toBe(1000);
+      expect(service.solde).toBe(1000);
       expect(service.currentBet).toBe(0);
       expect(service.bet).toEqual([]);
     });
@@ -252,7 +252,7 @@ describe('RouletteNetLogic', () => {
   describe('win', () => {
     it('should calculate win amounts correctly', () => {
       // Configurer les mises
-      service.bankValue = 980;
+      service.solde = 980;
       service.bet = [
         { amt: 10, type: 'straight', odds: 35, numbers: '5' },
         { amt: 10, type: 'split', odds: 17, numbers: '7, 8' }
@@ -265,12 +265,12 @@ describe('RouletteNetLogic', () => {
       expect(result.winValue).toBe(350); // 10 * 35
       expect(result.betTotal).toBe(10);
       expect(result.payout).toBe(360); // 350 + 10
-      expect(service.bankValue).toBe(1340); // 980 + 360
+      expect(service.solde).toBe(1340); // 980 + 360
     });
 
     it('should return zero for no wins', () => {
       // Configurer les mises
-      service.bankValue = 980;
+      service.solde = 980;
       service.bet = [
         { amt: 10, type: 'straight', odds: 35, numbers: '5' },
         { amt: 10, type: 'split', odds: 17, numbers: '7, 8' }
@@ -283,7 +283,7 @@ describe('RouletteNetLogic', () => {
       expect(result.winValue).toBe(0);
       expect(result.betTotal).toBe(0);
       expect(result.payout).toBe(0);
-      expect(service.bankValue).toBe(980); // Inchangé
+      expect(service.solde).toBe(980); // Inchangé
     });
   });
 
