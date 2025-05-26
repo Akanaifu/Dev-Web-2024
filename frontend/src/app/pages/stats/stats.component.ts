@@ -237,16 +237,23 @@ export class StatsComponent implements AfterViewInit, OnInit {
           gain: s.gain
         })); // Do not group gains for the day
     } else if (this.selectedPeriod === 'semaine') {
-      const startDate = new Date(today);
-      startDate.setDate(today.getDate() - 6); // Start from 6 days ago, including today
-      startDate.setHours(0, 0, 0, 0); // Reset time for accurate comparison
-      const endDate = new Date(today);
-      endDate.setHours(23, 59, 59, 999); // Include the entire current day
+      const startOfWeek = new Date(today);
+      const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust for Monday as the start of the week
+      startOfWeek.setDate(today.getDate() + diffToMonday); // Set to the start of the current week (Monday)
+      startOfWeek.setHours(0, 0, 0, 0); // Reset time for accurate comparison
 
-      return groupedArray.filter(item => {
-        const date = new Date(item.label.split('/').reverse().join('-')); // Convert dd/mm/yyyy to Date
-        return date >= startDate && date <= endDate;
-      });
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6); // Set to the end of the current week (Sunday)
+      endOfWeek.setHours(23, 59, 59, 999); // Include the entire last day of the week
+
+      return formattedStats.filter(s => {
+        const createdAtDate = new Date(s.created_at);
+        return createdAtDate >= startOfWeek && createdAtDate <= endOfWeek; // Only include dates within the current week
+      }).map(s => ({
+        label: s.formattedDate, // Use preformatted date
+        gain: s.gain
+      }));
     } else if (this.selectedPeriod === 'mois') {
       const year = today.getFullYear();
       const month = this.selectedMonth;
@@ -254,18 +261,18 @@ export class StatsComponent implements AfterViewInit, OnInit {
       // Dictionary for the number of days in each month
       const isLeapYear = (yr: number): boolean => (yr % 4 === 0 && (yr % 100 !== 0 || yr % 400 === 0));
       const daysInMonthDict: { [key: number]: number } = {
-        0: 31, // January
-        1: isLeapYear(year) ? 29 : 28, // February
-        2: 31, // March
-        3: 30, // April
-        4: 31, // May
-        5: 30, // June
-        6: 31, // July
-        7: 31, // August
-        8: 30, // September
-        9: 31, // October
-        10: 30, // November
-        11: 31, // December
+        0: 31,
+        1: isLeapYear(year) ? 29 : 28,
+        2: 31,
+        3: 30,
+        4: 31,
+        5: 30,
+        6: 31,
+        7: 31,
+        8: 30,
+        9: 31,
+        10: 30,
+        11: 31,
       };
 
       const daysInMonth = daysInMonthDict[month];
