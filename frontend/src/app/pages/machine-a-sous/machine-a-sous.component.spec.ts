@@ -2,17 +2,33 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Database } from '@angular/fire/database';
 
+// Mock le module firebase/database AVANT tout import qui l'utilise
+jest.mock('firebase/database', () => ({
+  ref: jest.fn(() => ({
+    on: jest.fn(),
+    off: jest.fn(),
+  })),
+  get: jest.fn(() => Promise.resolve({ exists: () => false, val: () => null })),
+  child: jest.fn((ref: any, path: string) => ref),
+}));
+
+import * as database from 'firebase/database';
 import { MachineASousComponent } from './machine-a-sous.component';
 import { NewGameService } from '../../services/new-game.service';
 
-// Mock complet pour Database
+// Ajoute la définition de databaseMock ici
 const databaseMock = {
-  // Ajoute ici les méthodes utilisées dans ton code, par exemple :
   ref: jest.fn(() => ({
-    // Simule les méthodes sur le ref retourné si besoin
+    on: jest.fn(),
+    off: jest.fn(),
   })),
-  // Ajoute d'autres méthodes si nécessaire
 };
+
+// Mock console et méthodes Firebase une seule fois, sans spyOn redondant
+beforeAll(() => {
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
 
 describe('MachineASousComponent', () => {
   let component: MachineASousComponent;
