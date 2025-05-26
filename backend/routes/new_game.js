@@ -88,6 +88,18 @@ router.post("/add", async (req, res) => {
   }
 
   try {
+    // Conversion du timestamp Firebase en DATETIME MySQL
+    const mysqlTimestamp = firebaseTimestampToMySQLDatetime(timestamp);
+
+    // Vérifier si une session existe déjà avec ce timestamp
+    const [existingSession] = await db.execute(
+      `SELECT game_session_id FROM Games_session WHERE timestamp = ?`,
+      [mysqlTimestamp]
+    );
+    if (existingSession.length > 0) {
+      return res.status(409).json({ error: "Une session existe déjà avec ce timestamp." });
+    }
+
     // Générer le prochain game_session_id de la forme MAxx
     const [rows] = await db.execute(
       `SELECT game_session_id FROM Games_session WHERE game_session_id LIKE 'MA%' ORDER BY game_session_id DESC LIMIT 1`
@@ -101,9 +113,6 @@ router.post("/add", async (req, res) => {
       }
     }
     const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
-
-    // Conversion du timestamp Firebase en DATETIME MySQL
-    const mysqlTimestamp = firebaseTimestampToMySQLDatetime(timestamp);
 
     // Insérer une nouvelle session de jeu dans Games_session
     const gameSessionQuery = `
