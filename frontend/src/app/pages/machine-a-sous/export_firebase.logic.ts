@@ -6,7 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class FirebaseSendService {
-  constructor(private db: Database) {}
+  constructor(private _db: Database) {}
+
+  get db() {
+    return this._db;
+  }
 
   /**
    * Envoie une partie dans la base de données Firebase avec une clé personnalisée.

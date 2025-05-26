@@ -118,7 +118,7 @@ export class MachineASousLogic {
   }
 
   // Utility Methods
-  private updateAfficheurs(combination: string): void {
+  updateAfficheurs(combination: string): void {
     this.afficheurs.forEach((afficheur, i) => {
       afficheur.currentChiffre = +combination[i] || 0;
     });

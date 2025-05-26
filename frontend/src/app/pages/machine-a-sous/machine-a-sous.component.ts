@@ -33,9 +33,9 @@ export class MachineASousComponent implements OnInit {
 
   constructor(
     private newGameService: NewGameService,
-    private http: HttpClient
+    private http: HttpClient,
+    public db: Database
   ) {
-    const db = inject(Database);
     this.logic = new MachineASousLogic(db, newGameService, this.http);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }

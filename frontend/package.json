@@ -39,21 +39,27 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@angular-builders/jest": "^19.0.1",
     "@angular-devkit/build-angular": "^19.2.4",
     "@angular/cli": "^19.2.4",
     "@angular/compiler-cli": "^19.2.4",
     "@types/chart.js": "^2.9.41",
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^18.18.0",
     "@types/socket.io-client": "^1.4.36",
     "http-proxy-middleware": "^3.0.5",
     "jasmine-core": "~5.6.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-preset-angular": "^14.5.5",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "ts-jest": "^29.3.4",
     "typescript": "~5.7.2"
   }
 }
