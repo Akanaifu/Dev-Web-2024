@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1747910323456" clover="3.2.0">
-  <project timestamp="1747910323456" name="All files">
-    <metrics statements="29" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="1" elements="33" coveredelements="15" complexity="0" loc="29" ncloc="29" packages="1" files="1" classes="1"/>
+<coverage generated="1748212311036" clover="3.2.0">
+  <project timestamp="1748212311036" name="All files">
+    <metrics statements="22" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="1" elements="25" coveredelements="14" complexity="0" loc="22" ncloc="22" packages="1" files="1" classes="1"/>
     <file name="stats.js" path="C:\Users\Arthur\Desktop\github\Dev-Web-2024\backend\routes\stats.js">
-      <metrics statements="29" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="1"/>
+      <metrics statements="22" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="1"/>
       <line num="1" count="1" type="stmt"/>
       <line num="2" count="1" type="stmt"/>
       <line num="3" count="1" type="stmt"/>
@@ -18,21 +18,14 @@
       <line num="17" count="0" type="stmt"/>
       <line num="20" count="0" type="stmt"/>
       <line num="22" count="0" type="stmt"/>
-      <line num="29" count="1" type="stmt"/>
-      <line num="30" count="2" type="stmt"/>
+      <line num="30" count="1" type="stmt"/>
       <line num="31" count="2" type="stmt"/>
       <line num="32" count="2" type="stmt"/>
-      <line num="42" count="2" type="stmt"/>
-      <line num="43" count="1" type="stmt"/>
-      <line num="45" count="1" type="stmt"/>
-      <line num="51" count="1" type="stmt"/>
-      <line num="52" count="0" type="stmt"/>
-      <line num="53" count="0" type="stmt"/>
-      <line num="54" count="0" type="stmt"/>
-      <line num="59" count="0" type="stmt"/>
-      <line num="60" count="0" type="stmt"/>
-      <line num="62" count="0" type="stmt"/>
-      <line num="66" count="1" type="stmt"/>
+      <line num="33" count="2" type="stmt"/>
+      <line num="43" count="2" type="stmt"/>
+      <line num="44" count="1" type="stmt"/>
+      <line num="46" count="1" type="stmt"/>
+      <line num="50" count="1" type="stmt"/>
     </file>
   </project>
 </coverage>
