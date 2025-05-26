@@ -72,7 +72,7 @@ def calculer_gain(rouleaux: list[int], mise: int) -> int:
     presence_event = False
 
     if r1 == r2 == r3:
-        return 100 if r1 == 7 else 10  # (Méga) Jackpot ou Jackpot
+        return mise * 100 if r1 == 7 else mise * 10  # (Méga) Jackpot ou Jackpot
     if (r1 + 1 == r3 and r2 + 1 == r1) or (r1 - 1 == r3 and r2 - 1 == r1):
         multiplicateur = 5  # Suite
         presence_event = True
@@ -168,21 +168,24 @@ def fetch_from_firebase():
 
 
 def get_balance_from_firebase(fetch_from_firebase_func, user_balance):
+    """
+    Récupère le solde de l'utilisateur depuis Firebase.
+    """
     try:
         data = fetch_from_firebase_func()
         print("Données récupérées de Firebase:", data)
         if data:
-            last_key = max(data, key=lambda k: data[k].get("timestamp", 0))
+            last_key = max(data, key=lambda k: int(k.replace("MA", "")))
             game = data[last_key]
-            if "solde" in game:
+            if "solde" in game and not game["partieJouee"]:
                 user_balance = float(game["solde"])
             else:
-                user_balance = 0
+                user_balance = -1
         else:
-            user_balance = 0
-    except Exception as e:
-        print("Erreur lors de la récupération du solde:", e)
-        user_balance = 0
+            user_balance = -1
+    except OSError as e:
+        print("Erreur réseau ou problème de connexion :", e)
+        user_balance = -1
     return user_balance
 
 

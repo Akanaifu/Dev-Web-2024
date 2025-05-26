@@ -3,18 +3,19 @@ const router = express.Router();
 const db = require("../config/dbConfig");
 
 // Fonction utilitaire pour calculer le gain (reprend la logique de firebase.py)
-function calculerGain(rouleaux, mise) {
-  const [r2, r1, r3] = rouleaux;
+
+function calculerGain(rouleaux, mise, status = "win") {
+  const [r2, r1, r3] = String(rouleaux).split("").map(Number); // Split rouleaux into three constants
   let multiplicateur = 0;
   let presence_event = false;
 
   if (r1 === r2 && r2 === r3) {
-    return r1 === 7 ? 100 : 10;
+    return mise * (r1 === 7 ? 100 : 10) - mise;
   }
   if ((r1 + 1 === r3 && r2 + 1 === r1) || (r1 - 1 === r3 && r2 - 1 === r1)) {
     multiplicateur = 5;
     presence_event = true;
-  } else if (r1 === r3 && r1 !== r2) {
+  } else if (r2 === r3 && r1 !== r2) {
     multiplicateur = 2;
     presence_event = true;
   }
@@ -31,7 +32,32 @@ function calculerGain(rouleaux, mise) {
       multiplicateur = 1;
     }
   }
-  return Math.floor(mise * multiplicateur);
+  gain = mise * multiplicateur - mise;
+  if (status === "lose") {
+    gain = -gain;
+    return Math.floor(gain);
+  }
+  return Math.floor(gain);
+}
+
+// Fonction utilitaire pour convertir un timestamp Firebase (en secondes) en DATETIME MySQL
+function firebaseTimestampToMySQLDatetime(firebaseTimestamp) {
+  // Si déjà une chaîne ISO, retourne tel quel
+  if (
+    typeof firebaseTimestamp === "string" &&
+    firebaseTimestamp.includes("-")
+  ) {
+    return firebaseTimestamp.replace("T", " ").substring(0, 19);
+  }
+  // Si nombre (ex: 1747922783), convertit en DATETIME
+  const ts =
+    typeof firebaseTimestamp === "number"
+      ? firebaseTimestamp
+      : parseInt(firebaseTimestamp, 10);
+  if (isNaN(ts)) return null;
+  const date = new Date(ts * 1000);
+  // Format YYYY-MM-DD HH:MM:SS
+  return date.toISOString().replace("T", " ").substring(0, 19);
 }
 
 // Endpoint pour ajouter une nouvelle partie
@@ -44,6 +70,7 @@ router.post("/add", async (req, res) => {
     joueurId,
     timestamp,
     partieAffichee,
+    mise, // <-- Ajoutez la mise dans le body côté frontend
   } = req.body;
 
   console.log("Données reçues :", req.body);
@@ -61,6 +88,18 @@ router.post("/add", async (req, res) => {
   }
 
   try {
+    // Conversion du timestamp Firebase en DATETIME MySQL
+    const mysqlTimestamp = firebaseTimestampToMySQLDatetime(timestamp);
+
+    // Vérifier si une session existe déjà avec ce timestamp
+    const [existingSession] = await db.execute(
+      `SELECT game_session_id FROM Games_session WHERE timestamp = ?`,
+      [mysqlTimestamp]
+    );
+    if (existingSession.length > 0) {
+      return res.status(409).json({ error: "Une session existe déjà avec ce timestamp." });
+    }
+
     // Générer le prochain game_session_id de la forme MAxx
     const [rows] = await db.execute(
       `SELECT game_session_id FROM Games_session WHERE game_session_id LIKE 'MA%' ORDER BY game_session_id DESC LIMIT 1`
@@ -77,19 +116,20 @@ router.post("/add", async (req, res) => {
 
     // Insérer une nouvelle session de jeu dans Games_session
     const gameSessionQuery = `
-      INSERT INTO Games_session (game_session_id, name, bet_min, bet_max)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO Games_session (game_session_id, name, bet_min, bet_max, timestamp)
+      VALUES (?, ?, ?, ?, ?)
     `;
     const [gameSessionResult] = await db.execute(gameSessionQuery, [
       newGameSessionId,
       "Slot Machine",
-      gain, // Valeur par défaut pour bet_min
-      gain, // Valeur par défaut pour bet_max
+      mise, // Valeur par défaut pour bet_min
+      mise, // Valeur par défaut pour bet_max
+      mysqlTimestamp, // Ajout du timestamp converti
     ]);
 
     // Récupérer l'ID de la session de jeu nouvellement créée
     const gameSessionId = newGameSessionId;
-
+    const gain = calculerGain(combinaison, mise);
     // Insérer les données dans la table Bets
     const betQuery = `
       INSERT INTO Bets (user_id, game_session_id, amount, bet_status, combinaison)
@@ -116,6 +156,8 @@ SELECT solde FROM User WHERE user_id = ?
     const currentSolde = userResult[0]?.solde || 0;
 
     // Mettre à jour le solde du joueur
+    console.log("🚀 ~ router.post ~ mise:", mise);
+    console.log("🚀 ~ router.post ~ gain:", gain);
     const updatedSolde = currentSolde + gain;
     const updateSoldeQuery = `
 UPDATE User SET solde = ? WHERE user_id = ?
@@ -128,4 +170,5 @@ UPDATE User SET solde = ? WHERE user_id = ?
   }
 });
 
-module.exports = router;
+module.exports = router; // Export par défaut pour le router
+module.exports.calculerGain = calculerGain; // Export séparé pour calculerGain

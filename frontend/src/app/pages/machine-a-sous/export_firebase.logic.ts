@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Database, ref, set, get } from '@angular/fire/database';
+import { Database, ref, set, get, onValue } from '@angular/fire/database';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,7 @@ export class FirebaseSendService {
       const snapshot = await get(rootRef);
       const data = snapshot.val();
       const nbData = data ? Object.keys(data).length : 0;
+      console.log('🚀 ~ FirebaseSendService ~ sendPartie ~ nbData:', nbData);
 
       // Générer la clé personnalisée
       const partieKey = `MA${nbData + 1}`;
@@ -43,5 +45,23 @@ export class FirebaseSendService {
       console.error("Erreur lors de l'envoi des données à Firebase :", error);
       throw error;
     }
+  }
+
+  listenToParties(): Observable<any> {
+    return new Observable((observer) => {
+      const partiesRef = ref(this.db, '/');
+      const unsubscribe = onValue(
+        partiesRef,
+        (snapshot) => {
+          observer.next(snapshot.val());
+        },
+        (error) => {
+          observer.error(error);
+        }
+      );
+
+      // Nettoyage à la destruction de l'observable
+      return { unsubscribe };
+    });
   }
 }

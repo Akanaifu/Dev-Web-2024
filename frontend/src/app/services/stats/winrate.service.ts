@@ -14,4 +14,8 @@ export class WinRateService {
   getWinRateByUser(userId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/${userId}/winrate`);
   }
+  // Fetch nombre de parties par user spécifique
+  getNombrePartiesByUser(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/${userId}/numberOfGame`);
+  }
 }
