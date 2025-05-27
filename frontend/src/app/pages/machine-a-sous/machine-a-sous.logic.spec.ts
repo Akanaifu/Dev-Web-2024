@@ -32,6 +32,27 @@ describe('MachineASousLogic', () => {
     expect(logic.afficheurs[2].currentChiffre).toBe(3);
   });
 
+  it('updateAfficheurs should set missing digits to 0 if input is too short', () => {
+    logic.updateAfficheurs('1');
+    expect(logic.afficheurs[0].currentChiffre).toBe(1);
+    expect(logic.afficheurs[1].currentChiffre).toBe(0);
+    expect(logic.afficheurs[2].currentChiffre).toBe(0);
+  });
+
+  it('updateAfficheurs should set all to 0 if input is empty', () => {
+    logic.updateAfficheurs('');
+    expect(logic.afficheurs[0].currentChiffre).toBe(0);
+    expect(logic.afficheurs[1].currentChiffre).toBe(0);
+    expect(logic.afficheurs[2].currentChiffre).toBe(0);
+  });
+
+  it('updateAfficheurs should set NaN to 0 for non-numeric input', () => {
+    logic.updateAfficheurs('abc');
+    expect(logic.afficheurs[0].currentChiffre).toBe(0);
+    expect(logic.afficheurs[1].currentChiffre).toBe(0);
+    expect(logic.afficheurs[2].currentChiffre).toBe(0);
+  });
+
   it('checkCombination should set highlightCombination', () => {
     logic.afficheurs[0].currentChiffre = 7;
     logic.afficheurs[1].currentChiffre = 7;
