@@ -26,6 +26,8 @@ mysql -u %MYSQL_USER% -p%MYSQL_PASSWORD% --port=3307 %DB_NAME% < %SQL_STRUCTURE%
 echo Importer les donnees depuis %SQL_DATA%...
 mysql -u %MYSQL_USER% -p%MYSQL_PASSWORD% --port=3307 %DB_NAME% < %SQL_DATA%
 
+echo Operation terminee.
+pause
 :: lancer le serveur
 echo Lancer le serveur MySQL...
 node ../../backend/server.js
