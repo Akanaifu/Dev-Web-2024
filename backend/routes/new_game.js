@@ -3,28 +3,33 @@ const router = express.Router();
 const db = require("../config/dbConfig");
 
 // Fonction utilitaire pour calculer le gain (reprend la logique de firebase.py)
-
 function calculerGain(rouleaux, mise, status = "win") {
-  const [r2, r1, r3] = String(rouleaux).split("").map(Number); // Split rouleaux into three constants
+  // rouleaux doit être [r1, r2, r3]
+  const [r1, r2, r3] = Array.isArray(rouleaux)
+    ? rouleaux.map(Number)
+    : String(rouleaux).split("").map(Number);
   let multiplicateur = 0;
   let presence_event = false;
 
   if (r1 === r2 && r2 === r3) {
     return mise * (r1 === 7 ? 100 : 10) - mise;
   }
-  if ((r1 + 1 === r3 && r2 + 1 === r1) || (r1 - 1 === r3 && r2 - 1 === r1)) {
+  // Suite ascendante ou descendante stricte
+  if ((r1 + 1 === r2 && r2 + 1 === r3) || (r1 - 1 === r2 && r2 - 1 === r3)) {
     multiplicateur = 5;
     presence_event = true;
-  } else if (r2 === r3 && r1 !== r2) {
+  }
+  // sandwich => celui du milieu est différent
+  else if (r1 === r3 && r2 !== r1) {
     multiplicateur = 2;
     presence_event = true;
   }
+  // Tous pairs ou tous impairs
   if (r1 % 2 === r2 % 2 && r2 % 2 === r3 % 2) {
-    multiplicateur = 1.5;
+    multiplicateur += 1.5;
     presence_event = true;
   }
   const count_7 = [r1, r2, r3].filter((v) => v === 7).length;
-  multiplicateur += count_7 * 0.5;
   if (!presence_event) {
     if (count_7 === 1) {
       multiplicateur = 0.5;
@@ -32,9 +37,15 @@ function calculerGain(rouleaux, mise, status = "win") {
       multiplicateur = 1;
     }
   }
-  gain = mise * multiplicateur - mise;
+  let gain = mise * multiplicateur - mise;
+
+  // Empêche le statut "lose" si la combinaison est gagnante (gain > 0)
+  if (gain > 0 && status === "lose") {
+    status = "win";
+  }
+
   if (status === "lose") {
-    gain = -gain;
+    gain = -Math.abs(gain);
     return Math.floor(gain);
   }
   return Math.floor(gain);
@@ -60,7 +71,72 @@ function firebaseTimestampToMySQLDatetime(firebaseTimestamp) {
   return date.toISOString().replace("T", " ").substring(0, 19);
 }
 
-// Endpoint pour ajouter une nouvelle partie
+// --- Fonctions utilitaires extraites pour simplifier la route ---
+
+async function sessionExists(mysqlTimestamp) {
+  const [existingSession] = await db.execute(
+    `SELECT game_session_id FROM Games_session WHERE timestamp = ?`,
+    [mysqlTimestamp]
+  );
+  return existingSession.length > 0;
+}
+
+async function getNextGameSessionId() {
+  const [rows] = await db.execute(
+    `SELECT game_session_id FROM Games_session WHERE game_session_id LIKE 'MA%' ORDER BY game_session_id DESC LIMIT 1`
+  );
+  let nextIndex = 1;
+  if (rows.length > 0) {
+    const lastId = rows[0].game_session_id;
+    const match = lastId.match(/^MA(\d+)$/);
+    if (match) {
+      nextIndex = parseInt(match[1], 10) + 1;
+    }
+  }
+  return `MA${nextIndex.toString().padStart(2, "0")}`;
+}
+
+async function insertGameSession(gameSessionId, mise, mysqlTimestamp) {
+  const gameSessionQuery = `
+    INSERT INTO Games_session (game_session_id, name, bet_min, bet_max, timestamp)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  await db.execute(gameSessionQuery, [
+    gameSessionId,
+    "Slot Machine",
+    mise,
+    mise,
+    mysqlTimestamp,
+  ]);
+}
+
+async function insertBet(joueurId, gameSessionId, solde, gain, combinaison) {
+  const betQuery = `
+    INSERT INTO Bets (user_id, game_session_id, amount, bet_status, combinaison)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  await db.execute(betQuery, [
+    joueurId,
+    gameSessionId,
+    solde,
+    gain > 0 ? "win" : "lose",
+    combinaison.join(","),
+  ]);
+}
+
+async function getUserSolde(joueurId) {
+  const getSoldeQuery = `SELECT solde FROM User WHERE user_id = ?`;
+  const [userResult] = await db.execute(getSoldeQuery, [joueurId]);
+  return userResult[0]?.solde || 0;
+}
+
+async function updateUserSolde(joueurId, newSolde) {
+  const updateSoldeQuery = `UPDATE User SET solde = ? WHERE user_id = ?`;
+  await db.execute(updateSoldeQuery, [newSolde, joueurId]);
+}
+
+// --- Route principale simplifiée ---
+
 router.post("/add", async (req, res) => {
   const {
     partieId,
@@ -70,7 +146,7 @@ router.post("/add", async (req, res) => {
     joueurId,
     timestamp,
     partieAffichee,
-    mise, // <-- Ajoutez la mise dans le body côté frontend
+    mise,
   } = req.body;
 
   console.log("Données reçues :", req.body);
@@ -88,72 +164,24 @@ router.post("/add", async (req, res) => {
   }
 
   try {
-    // Générer le prochain game_session_id de la forme MAxx
-    const [rows] = await db.execute(
-      `SELECT game_session_id FROM Games_session WHERE game_session_id LIKE 'MA%' ORDER BY game_session_id DESC LIMIT 1`
-    );
-    let nextIndex = 1;
-    if (rows.length > 0) {
-      const lastId = rows[0].game_session_id;
-      const match = lastId.match(/^MA(\d+)$/);
-      if (match) {
-        nextIndex = parseInt(match[1], 10) + 1;
-      }
-    }
-    const newGameSessionId = `MA${nextIndex.toString().padStart(2, "0")}`;
-
-    // Conversion du timestamp Firebase en DATETIME MySQL
     const mysqlTimestamp = firebaseTimestampToMySQLDatetime(timestamp);
 
-    // Insérer une nouvelle session de jeu dans Games_session
-    const gameSessionQuery = `
-      INSERT INTO Games_session (game_session_id, name, bet_min, bet_max, timestamp)
-      VALUES (?, ?, ?, ?, ?)
-    `;
-    const [gameSessionResult] = await db.execute(gameSessionQuery, [
-      newGameSessionId,
-      "Slot Machine",
-      mise, // Valeur par défaut pour bet_min
-      mise, // Valeur par défaut pour bet_max
-      mysqlTimestamp, // Ajout du timestamp converti
-    ]);
+    if (await sessionExists(mysqlTimestamp)) {
+      return res
+        .status(409)
+        .json({ error: "Une session existe déjà avec ce timestamp." });
+    }
 
-    // Récupérer l'ID de la session de jeu nouvellement créée
-    const gameSessionId = newGameSessionId;
+    const newGameSessionId = await getNextGameSessionId();
+    await insertGameSession(newGameSessionId, mise, mysqlTimestamp);
+
     const gain = calculerGain(combinaison, mise);
-    // Insérer les données dans la table Bets
-    const betQuery = `
-      INSERT INTO Bets (user_id, game_session_id, amount, bet_status, combinaison)
-      VALUES (
-        ?, 
-        ?, 
-        ?, 
-        ?, 
-        ?
-      )
-    `;
-    await db.execute(betQuery, [
-      joueurId,
-      gameSessionId,
-      solde,
-      gain > 0 ? "win" : "lose",
-      combinaison.join(","),
-    ]);
-    // Récupérer le solde actuel du joueur
-    const getSoldeQuery = `
-SELECT solde FROM User WHERE user_id = ?
-`;
-    const [userResult] = await db.execute(getSoldeQuery, [joueurId]);
-    const currentSolde = userResult[0]?.solde || 0;
+    await insertBet(joueurId, newGameSessionId, solde, gain, combinaison);
 
-    // Mettre à jour le solde du joueur
-    console.log("🚀 ~ router.post ~ mise:", mise);
-    console.log("🚀 ~ router.post ~ gain:", gain);
+    const currentSolde = await getUserSolde(joueurId);
     const updatedSolde = currentSolde + gain;
-    const updateSoldeQuery = `
-UPDATE User SET solde = ? WHERE user_id = ?
-`;
-    await db.execute(updateSoldeQuery, [updatedSolde, joueurId]);
+    await updateUserSolde(joueurId, updatedSolde);
+
     res.status(201).json({ message: "Partie ajoutée avec succès." });
   } catch (error) {
     console.error("Erreur lors de l'ajout de la partie :", error);
@@ -163,3 +191,5 @@ UPDATE User SET solde = ? WHERE user_id = ?
 
 module.exports = router; // Export par défaut pour le router
 module.exports.calculerGain = calculerGain; // Export séparé pour calculerGain
+module.exports.firebaseTimestampToMySQLDatetime =
+  firebaseTimestampToMySQLDatetime; // Export pour les tests
