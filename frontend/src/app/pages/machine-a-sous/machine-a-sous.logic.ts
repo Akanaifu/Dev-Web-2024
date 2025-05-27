@@ -270,7 +270,7 @@ export class MachineASousLogic {
   getCurrentUserId(): void {
     this.http
       .get<{ user_id: number; username: string; email: string; solde: number }>(
-        'http://localhost:3000/get_id/info'
+        '/api/get_id/info'
       )
       .subscribe({
         next: (data) => {

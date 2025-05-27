@@ -66,7 +66,7 @@ export class EditCompteComponent implements OnInit {
     };
 
     this.http
-      .put('http://localhost:3000/edit-compte/edit-compte', formData)
+      .put('/api/edit-compte/edit-compte', formData)
       .subscribe({
         next: (response) => {
           console.log('User updated successfully:', response);
@@ -81,7 +81,7 @@ export class EditCompteComponent implements OnInit {
   getPlayerInfo(): void {
     this.http
       .get<{ user_id: number; username: string; email: string }>(
-        'http://localhost:3000/get_id/info'
+        '/api/get_id/info'
       )
       .subscribe({
         next: (data) => {

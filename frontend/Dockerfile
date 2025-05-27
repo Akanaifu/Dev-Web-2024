@@ -1,10 +1,10 @@
-FROM node:20 as builder
+FROM node:20 AS builder
 WORKDIR /app
 COPY package.json ./
 RUN npm install
 COPY . .
-RUN ng build
+RUN npm run build
 
 FROM nginx:1.27.5
-COPY --FROM=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]

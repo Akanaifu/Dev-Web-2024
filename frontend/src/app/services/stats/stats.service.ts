@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class StatsService {
-  private apiUrl = 'http://localhost:3000/stats'; // Utilisation de HTTP pour le serveur local
+  private apiUrl = '/api/stats'; // Utilisation de HTTP pour le serveur local
 
   constructor(private http: HttpClient) {}
 

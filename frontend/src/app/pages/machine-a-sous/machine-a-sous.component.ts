@@ -69,7 +69,7 @@ export class MachineASousComponent implements OnInit {
   getPlayerInfo(): void {
     this.http
       .get<{ user_id: number; username: string; email: string; solde: number }>(
-        'http://localhost:3000/get_id/info'
+        '/api/get_id/info'
       )
       .subscribe({
         next: (data) => {
@@ -123,7 +123,7 @@ export class MachineASousComponent implements OnInit {
     // Récupère le solde à jour depuis le backend AVANT d'envoyer à Firebase
     this.http
       .get<{ user_id: number; username: string; email: string; solde: number }>(
-        'http://localhost:3000/get_id/info'
+        '/api/get_id/info'
       )
       .subscribe({
         next: (data) => {
