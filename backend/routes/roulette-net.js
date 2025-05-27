@@ -32,10 +32,6 @@ function win(winningSpin, bets, solde) {// Calculer les gains
     };
 }
 
-function rulesWin(winningSpin, bets, solde) {
-
-}
-
 router.post('/spin', (req, res) => { //Renvoie un numéro aléatoire entre 0 et 36
     const number = Math.floor(Math.random() * 37); // 0-36
     const color = getNumberColor(number);
