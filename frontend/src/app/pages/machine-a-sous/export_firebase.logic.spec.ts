@@ -19,6 +19,10 @@ describe('FirebaseSendService', () => {
     service = new FirebaseSendService(dbMock as Database);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
@@ -45,9 +49,13 @@ describe('FirebaseSendService', () => {
     (ref as jest.Mock).mockReturnValue({});
 
     const serviceWithDb = new FirebaseSendService({} as any);
-    await expectAsync(serviceWithDb.sendPartie(1, 100)).toBeRejectedWith(
-      new Error('Firebase error')
-    );
+    try {
+      await serviceWithDb.sendPartie(1, 100);
+      // If no error is thrown, fail the test
+      fail('Expected sendPartie to throw an error');
+    } catch (error: any) {
+      expect(error.message).toBe('Firebase error');
+    }
   });
 
   it('sendPartie should call set with correct data', async () => {
