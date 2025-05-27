@@ -22,7 +22,7 @@ export class StatsComponent implements AfterViewInit, OnInit {
   gainChart!: Chart;
   winRateChart!: Chart;
 
-  stats: { stat_id?: number; user_id?: number; game?: string; num_games?: number; num_wins?: number; created_at: string; gain: number }[] = []; // Initialisé à un tableau vide
+  stats: { stat_id?: number; user_id?: number; game?: string; num_games?: number; num_wins?: number; timestamp: string; gain: number }[] = []; // Initialisé à un tableau vide
 
   games: string[] = [];
   selectedGame: string = '';
@@ -55,7 +55,7 @@ export class StatsComponent implements AfterViewInit, OnInit {
         if (data && data.length > 0) {
           this.stats = data.map((item) => ({
             ...item,
-            created_at: item.created_at || new Date().toISOString(), // Assurez-vous que chaque item a un created_at
+            timestamp: item.timestamp || new Date().toISOString(), // Assurez-vous que chaque item a un timestamp
           }));
         } else {
           console.warn('Aucune donnée de gains disponible pour cet utilisateur.');
@@ -206,12 +206,12 @@ export class StatsComponent implements AfterViewInit, OnInit {
     today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
 
     // Sort stats by date in ascending order
-    const sortedStats = this.stats.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    const sortedStats = this.stats.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     // Convert dates to French format once
     const formattedStats = sortedStats.map(s => ({
       ...s,
-      formattedDate: new Date(s.created_at).toLocaleDateString('fr-FR') // Format dd/mm/yyyy
+      formattedDate: new Date(s.timestamp).toLocaleDateString('fr-FR') // Format dd/mm/yyyy
     }));
 
     // Group stats by date
@@ -229,7 +229,7 @@ export class StatsComponent implements AfterViewInit, OnInit {
     if (this.selectedPeriod === 'jour') {
       return formattedStats
         .filter(s => {
-          const createdAtDate = new Date(s.created_at);
+          const createdAtDate = new Date(s.timestamp);
           return createdAtDate.toDateString() === today.toDateString(); // Compare uniquement la date
         })
         .map(s => ({
@@ -248,7 +248,7 @@ export class StatsComponent implements AfterViewInit, OnInit {
       endOfWeek.setHours(23, 59, 59, 999); // Include the entire last day of the week
 
       return formattedStats.filter(s => {
-        const createdAtDate = new Date(s.created_at);
+        const createdAtDate = new Date(s.timestamp);
         return createdAtDate >= startOfWeek && createdAtDate <= endOfWeek; // Only include dates within the current week
       }).map(s => ({
         label: s.formattedDate, // Use preformatted date

@@ -69,7 +69,7 @@ router.get("/bets/:userId", async (req, res) => {
 
   try {
     const query = `
-      SELECT amount, bet_status, combinaison, created_at 
+      SELECT amount, bet_status, combinaison, timestamp 
       FROM Bets 
       WHERE user_id = ?
     `;
