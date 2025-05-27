@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IRouletteWheelSection } from '../../interfaces/roulette-wheel.interface';
-import { BettingBoardCell } from './betting-board.model';
+import { IIBettingBoardCell } from '../../interfaces/betting-board.interface';
 import { RouletteNetLogic } from './roulette-net-logic';
 import { HttpClient } from '@angular/common/http';
 
@@ -15,16 +15,16 @@ import { HttpClient } from '@angular/common/http';
 export class RouletteNetComponent implements OnInit {
     // Données d'affichage (plateau, roue)
     wheelSections: IRouletteWheelSection[] = [];
-    outsideBets: BettingBoardCell[] = [];
-    numberBoardRows: BettingBoardCell[][] = [];
-    zeroCell!: BettingBoardCell;
-    columnBets: BettingBoardCell[] = [];
-    dozenBets: BettingBoardCell[] = [];
-    evenOddRedBlack: BettingBoardCell[] = [];
-    splitBets: BettingBoardCell[] = [];
-    cornerBets: BettingBoardCell[] = [];
-    streetBets: BettingBoardCell[] = [];
-    doubleStreetBets: BettingBoardCell[] = [];
+    outsideBets: IIBettingBoardCell[] = [];
+    numberBoardRows: IIBettingBoardCell[][] = [];
+    zeroCell!: IIBettingBoardCell;
+    columnBets: IIBettingBoardCell[] = [];
+    dozenBets: IIBettingBoardCell[] = [];
+    evenOddRedBlack: IIBettingBoardCell[] = [];
+    splitBets: IIBettingBoardCell[] = [];
+    cornerBets: IIBettingBoardCell[] = [];
+    streetBets: IIBettingBoardCell[] = [];
+    doubleStreetBets: IIBettingBoardCell[] = [];
     
     columnLabels = ['2 à 1', '2 à 1', '2 à 1'];
     dozenLabels = ['1 à 12', '13 à 24', '25 à 36'];
@@ -97,7 +97,7 @@ export class RouletteNetComponent implements OnInit {
     }
     
 
-    removeBet(event: Event, cell: BettingBoardCell) {// Supprimer une mise
+    removeBet(event: Event, cell: IIBettingBoardCell) {// Supprimer une mise
         event.preventDefault();
         if (this.isSpinning) return; // Prevent bet removal when spinning
         this.game.removeBet(cell);
@@ -185,7 +185,7 @@ export class RouletteNetComponent implements OnInit {
     }
 
     // Méthodes d'affichage qui délèguent au service
-    getBetForCell(cell: BettingBoardCell) {
+    getBetForCell(cell: IIBettingBoardCell) {
         return this.game.getBetForCell(cell);
     }
 
@@ -194,7 +194,7 @@ export class RouletteNetComponent implements OnInit {
     }
 
     // Méthodes UI qui délèguent au service
-    setBet(cell: BettingBoardCell) {
+    setBet(cell: IIBettingBoardCell) {
         if (this.isSpinning) return; // Prevent betting when spinning
         this.game.setBet(cell);
     }
