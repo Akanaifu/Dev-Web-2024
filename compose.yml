@@ -20,7 +20,7 @@ services:
       - secure
 
   backend:
-    image: backend
+    build: backend
     env_file:
       - .env
     depends_on:
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped  
     
   frontend:
-    image: frontend
+    build: frontend
     ports:
       - "80:80"
       - "443:443"

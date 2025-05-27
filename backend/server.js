@@ -64,17 +64,17 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes de l'API
-app.use("/sessions", sessionRoutes);
-app.use("/register", registerRoutes);
+app.use("/api/sessions", sessionRoutes);
+app.use("/api/register", registerRoutes);
 
-app.use("/users", userRoutes);
+app.use("/api/users", userRoutes);
 
-app.use("/stats", statsRoutes);
+app.use("/api/stats", statsRoutes);
 
-app.use("/bets", betRoutes);
-app.use("/new-game", newGameRoutes);
-app.use("/get_id", playerRoutes);
-app.use("/edit-compte", editCompteRoutes);
+app.use("/api/bets", betRoutes);
+app.use("/api/new-game", newGameRoutes);
+app.use("/api/get_id", playerRoutes);
+app.use("/api/edit-compte", editCompteRoutes);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {
