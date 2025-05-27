@@ -13,8 +13,8 @@ jest.mock('firebase/database', () => ({
 }));
 
 import * as database from 'firebase/database';
-import { MachineASousComponent } from './machine-a-sous.component';
-import { NewGameService } from '../../services/new-game.service';
+import { MachineASousComponent } from '../src/app/pages/machine-a-sous/machine-a-sous.component';
+import { NewGameService } from '../src/app/services/new-game.service';
 
 // Ajoute la définition de databaseMock ici
 const databaseMock = {

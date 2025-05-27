@@ -1,4 +1,4 @@
-import { MachineASousLogic } from './machine-a-sous.logic';
+import { MachineASousLogic } from '../src/app/pages/machine-a-sous/machine-a-sous.logic';
 jest.mock('@angular/fire/database', () => {
   return {
     get: jest.fn(),

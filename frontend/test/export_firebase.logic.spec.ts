@@ -6,7 +6,7 @@ jest.mock('@angular/fire/database', () => ({
   onValue: jest.fn(),
 }));
 
-import { FirebaseSendService } from './export_firebase.logic';
+import { FirebaseSendService } from '../src/app/pages/machine-a-sous/export_firebase.logic';
 import { Database, ref, get, set } from '@angular/fire/database';
 import { of, take } from 'rxjs';
 
