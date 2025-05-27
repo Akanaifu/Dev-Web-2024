@@ -7,6 +7,7 @@ CREATE TABLE `User` (
   `solde` FLOAT NOT NULL DEFAULT '0',
   `email` VARCHAR(50) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
+  `avatarUrl` VARCHAR(255) NULL,
   PRIMARY KEY (`user_id`)
 ) COLLATE='utf8mb4_uca1400_ai_ci';
 

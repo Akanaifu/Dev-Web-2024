@@ -86,6 +86,9 @@ app.get("/inject-data", (req, res) => {
   });
 });
 
+// Ajoute cette ligne pour servir le dossier avatar
+app.use('/avatar', express.static(path.join(__dirname, 'avatar')));
+
 // Démarrer le serveur
 server.listen(3000, () => {
   console.log("Serveur démarré sur le port 3000 (API et WebSocket)");
