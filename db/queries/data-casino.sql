@@ -4,16 +4,17 @@ INSERT INTO `User` (`user_id`, `username`, `name`, `firstname`, `birthdate`, `so
 (2, 'Smith1', 'Smith', 'Jane', '1985-05-15', 200.00, 'jane.smith@example.com', '$2a$10$gub9dZPyTSNKimd/a5F5B.a.uWfEoIlwYZZnt4UVZi.T5iqrKVXnq'),
 (3, 'Brown1', 'Brown', 'Charlie', '2000-12-25', 50.75, 'charlie.brown@example.com', '$2a$10$5Isw60iVnSgwH3td0eLbQu22fqP7B/W8DabAC/hR5z4uY/JUTQ7Ya'),
 (4, 'ben', 'arens', 'benjamin', '1999-02-04', 100000000, 'ben', '$2a$10$mMR.wjGoiYVAMwBx2PKNfe4XQZrhe.EZEYIUzwZHEnp0pmvRpH.zu'),
-(5, 'naifu', 'lemaire', 'nathan', '2003-07-30', 50, 'ntm@pd.tg', ' $2b$10$l/PYtX.Q.C1vdA04t.ieZOjgmN8P/8/Bgw09TKyF6wvWYSmvnbeK6');
+(5, 'naifu', 'lemaire', 'nathan', '2003-07-30', 50, 'ntm@pd.tg', '$2b$10$l/PYtX.Q.C1vdA04t.ieZOjgmN8P/8/Bgw09TKyF6wvWYSmvnbeK6');
 
 -- Insérer des sessions de jeu dans la table Games_session
-INSERT INTO `Games_session` (`game_session_id`, `name`, `bet_min`, `bet_max`) VALUES
-('PO01', 'Poker', '5', '500'),       -- PO pour Poker
-('RO01', 'Roulette', '2', '200'),    -- RO pour Roulette
-('BJ01', 'Blackjack', '10', '1000'), -- BJ pour Blackjack
-('BA01', 'Baccarat', '20', '2000'),  -- BA pour Baccarat
-('PO02', 'Poker', '10', '1000'),      -- Deuxième session de Poker
-('RO02', 'Roulette', '5', '300');     -- Deuxième session de Roulette
+INSERT INTO `Games_session` (`game_session_id`, `name`, `bet_min`, `bet_max`, `timestamp`) VALUES
+('PO01', 'Poker', '5', '500', '2025-04-20 10:00:00'),       -- PO pour Poker
+('RO01', 'Roulette', '2', '200', '2025-04-19 15:30:00'),    -- RO pour Roulette
+('BJ01', 'Blackjack', '10', '1000', '2025-04-18 20:45:00'), -- BJ pour Blackjack
+('BA01', 'Baccarat', '20', '2000', '2025-04-17 12:00:00'),  -- BA pour Baccarat
+('PO02', 'Poker', '10', '1000', '2025-04-16 18:00:00'),     -- Deuxième session de Poker
+('RO02', 'Roulette', '5', '300', '2025-04-15 14:00:00');    -- Deuxième session de Roulette
+
 
 -- Insérer des transactions bancaires dans la table Banking_transaction
 INSERT INTO `Banking_transaction` (`transaction_id`, `user_id`, `amount_banking`, `transaction_type`, `transaction_status`) VALUES
@@ -25,26 +26,21 @@ INSERT INTO `Banking_transaction` (`transaction_id`, `user_id`, `amount_banking`
 
 
 -- Insérer des paris dans la table Bets
-INSERT INTO `Bets` (`bet_id`,`user_id`, `game_session_id`, `amount`, `bet_status`, `combinaison`) VALUES
-(2,2, 'PO01', 20.00, 'lose', NULL),    -- Poker sans combinaison
-(3,3, 'RO01', 5.00, 'win', NULL),     -- Roulette sans combinaison
-(4,2, 'BJ01', 100.00, 'lose', NULL),   -- Blackjack sans combinaison
-(5,1, 'BA01', 200.00, 'win', NULL),  -- Baccarat sans combinaison
-(7,2, 'PO02', 50.00, 'lose', NULL),    -- Deuxième session de Poker sans combinaison
-(8,3, 'RO02', 10.00, 'win', NULL);    -- Deuxième session de Roulette sans combinaison
+INSERT INTO `Bets` (`bet_id`, `user_id`, `game_session_id`, `amount`, `bet_status`, `combinaison`) VALUES
+(2,2, 'PO01', 20.00, 'lose', NULL),       -- Poker sans combinaison
+(3,3, 'RO01', 5.00, 'win', NULL),         -- Roulette sans combinaison
+(4,2, 'BJ01', 100.00, 'lose', NULL),      -- Blackjack sans combinaison
+(5,1, 'BA01', 200.00, 'win', NULL),       -- Baccarat sans combinaison
+(7,2, 'PO02', 50.00, 'lose', NULL),       -- Deuxième session de Poker sans combinaison
+(8,3, 'RO02', 10.00, 'win', NULL);       -- Deuxième session de Roulette sans combinaison
 
-INSERT INTO `Bets` (`bet_id`,`user_id`, `game_session_id`, `amount`, `profit`, `bet_status`, `combinaison`) VALUES
-(2,2, 'PO01', 20.00, 0.00, 'lose', NULL),    -- Poker sans combinaison
-(3,3, 'RO01', 5.00, 15.00, 'win', NULL),     -- Roulette sans combinaison
-(4,2, 'BJ01', 100.00, 0.00, 'lose', NULL),   -- Blackjack sans combinaison
-(5,1, 'BA01', 200.00, 500.00, 'win', NULL),  -- Baccarat sans combinaison
-(7,2, 'PO02', 50.00, 0.00, 'lose', NULL),    -- Deuxième session de Poker sans combinaison
-(8,3, 'RO02', 10.00, 30.00, 'win', NULL);    -- Deuxième session de Roulette sans combinaison
+
 
 -- Insérer des statistiques dans la table Stats
 INSERT INTO `Stats` (`stat_id`,`user_id`, `num_games`, `num_wins`, `timestamp`) VALUES
-(1,1, 10, 5, '2025-04-20 10:00:00'),
+(1,1, 1, 1, '2025-04-20 10:00:00'),
 (2,2, 15, 7, '2025-04-19 15:30:00'),
-(3,3, 8, 3, '2025-04-18 20:45:00'),
-(4,1, 20, 10, '2025-04-17 12:00:00'),
-(5,2, 5, 2, '2025-04-16 18:00:00');
+(3,3, 2, 2, '2025-04-18 20:45:00'),
+(4,1, 2, 2, '2025-04-17 12:00:00'),
+(5,2, 5, 2, '2025-04-16 18:00:00'),
+(6,2, 5, 0, '2025-04-17 18:00:00');
