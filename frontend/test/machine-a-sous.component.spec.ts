@@ -13,8 +13,8 @@ jest.mock('firebase/database', () => ({
 }));
 
 import * as database from 'firebase/database';
-import { MachineASousComponent } from './machine-a-sous.component';
-import { NewGameService } from '../../services/new-game.service';
+import { MachineASousComponent } from '../src/app/pages/machine-a-sous/machine-a-sous.component';
+import { NewGameService } from '../src/app/services/new-game.service';
 
 // Ajoute la définition de databaseMock ici
 const databaseMock = {
@@ -75,5 +75,57 @@ describe('MachineASousComponent', () => {
 
   it('sendPartieToFirebase should be defined', () => {
     expect(component.sendPartieToFirebase).toBeDefined();
+  });
+
+  it('getPlayerInfo should update playerInfo on success', () => {
+    const mockData = { user_id: 1, username: 'u', email: 'e', solde: 10 };
+    const subscribe = jest.fn(({ next }: any) => next(mockData));
+    component['http'].get = jest.fn().mockReturnValue({ subscribe });
+    component.getPlayerInfo();
+    expect(component.playerInfo).toEqual(mockData);
+  });
+
+  it('getPlayerInfo should handle error', () => {
+    const subscribe = jest.fn(({ error }: any) => error('err'));
+    component['http'].get = jest.fn().mockReturnValue({ subscribe });
+    component.getPlayerInfo();
+    // Should not throw
+  });
+
+  it('checkIfSendButtonShouldBeDisabled should update sendButtonDisabled', async () => {
+    component.logic.showTable = false;
+    component.logic.fetchFirebaseData = jest.fn().mockResolvedValue(undefined);
+    await component.checkIfSendButtonShouldBeDisabled();
+    expect(typeof component.sendButtonDisabled).toBe('boolean');
+  });
+
+  it('sendPartieToFirebase should warn if button is disabled', () => {
+    component.sendButtonDisabled = true;
+    const warnSpy = jest.spyOn(console, 'warn');
+    component.sendPartieToFirebase();
+    expect(warnSpy).toHaveBeenCalled();
+    component.sendButtonDisabled = false;
+  });
+
+  it('sendPartieToFirebase should handle error from http', () => {
+    component.sendButtonDisabled = false;
+    component['http'].get = jest.fn().mockReturnValue({
+      subscribe: ({ error }: any) => error('err'),
+    });
+    component.sendPartieToFirebase();
+    // Should not throw
+  });
+
+  it('sendPartieToFirebase should call firebaseSendService.sendPartie', () => {
+    component.sendButtonDisabled = false;
+    const mockData = { user_id: 1, username: 'u', email: 'e', solde: 10 };
+    component['http'].get = jest.fn().mockReturnValue({
+      subscribe: ({ next }: any) => next(mockData),
+    });
+    const sendSpy = jest
+      .spyOn(component['firebaseSendService'], 'sendPartie')
+      .mockImplementation();
+    component.sendPartieToFirebase();
+    expect(sendSpy).toHaveBeenCalledWith(1, 10);
   });
 });
