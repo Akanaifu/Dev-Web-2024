@@ -79,8 +79,6 @@ router.get("/bets/:userId", async (req, res) => {
     const results = rows.map((row) => {
       const rouleaux = row.combinaison.split(",").map(Number); // Convertir la combinaison en tableau de nombres
       const gain = calculerGain(rouleaux, row.amount, row.bet_status); // Appel avec bet_status
-      console.log("🚀 ~ results ~ calculerGain:", calculerGain)
-
       return { ...row, gain };
     });
 
