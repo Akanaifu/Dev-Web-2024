@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouletteWheelSection } from './roulette-wheel.model';
+import { IRouletteWheelSection } from '../../interfaces/roulette-wheel.interface';
 import { BettingBoardCell } from './betting-board.model';
 import { RouletteNetLogic } from './roulette-net-logic';
 import { HttpClient } from '@angular/common/http';
@@ -14,7 +14,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class RouletteNetComponent implements OnInit {
     // Données d'affichage (plateau, roue)
-    wheelSections: RouletteWheelSection[] = [];
+    wheelSections: IRouletteWheelSection[] = [];
     outsideBets: BettingBoardCell[] = [];
     numberBoardRows: BettingBoardCell[][] = [];
     zeroCell!: BettingBoardCell;
