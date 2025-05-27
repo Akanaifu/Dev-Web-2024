@@ -25,13 +25,13 @@ INSERT INTO `Banking_transaction` (`transaction_id`, `user_id`, `amount_banking`
 
 
 -- Insérer des paris dans la table Bets
-INSERT INTO `Bets` (`bet_id`,`user_id`, `game_session_id`, `amount`, `bet_status`, `combinaison`) VALUES
-(2,2, 'PO01', 20.00, 'lose', NULL),    -- Poker sans combinaison
-(3,3, 'RO01', 5.00, 'win', NULL),     -- Roulette sans combinaison
-(4,2, 'BJ01', 100.00, 'lose', NULL),   -- Blackjack sans combinaison
-(5,1, 'BA01', 200.00, 'win', NULL),  -- Baccarat sans combinaison
-(7,2, 'PO02', 50.00, 'lose', NULL),    -- Deuxième session de Poker sans combinaison
-(8,3, 'RO02', 10.00, 'win', NULL);    -- Deuxième session de Roulette sans combinaison
+INSERT INTO `Bets` (`bet_id`,`user_id`, `game_session_id`, `amount`, `profit`, `bet_status`, `combinaison`) VALUES
+(2,2, 'PO01', 20.00, 0.00, 'lose', NULL),    -- Poker sans combinaison
+(3,3, 'RO01', 5.00, 15.00, 'win', NULL),     -- Roulette sans combinaison
+(4,2, 'BJ01', 100.00, 0.00, 'lose', NULL),   -- Blackjack sans combinaison
+(5,1, 'BA01', 200.00, 500.00, 'win', NULL),  -- Baccarat sans combinaison
+(7,2, 'PO02', 50.00, 0.00, 'lose', NULL),    -- Deuxième session de Poker sans combinaison
+(8,3, 'RO02', 10.00, 30.00, 'win', NULL);    -- Deuxième session de Roulette sans combinaison
 
 
 -- Insérer des statistiques dans la table Stats
