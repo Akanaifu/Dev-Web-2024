@@ -6,7 +6,7 @@ jest.mock('@angular/fire/database', () => ({
   onValue: jest.fn(),
 }));
 
-import { FirebaseSendService } from '../src/app/pages/machine-a-sous/export_firebase.logic';
+import { FirebaseSendService } from '../app/pages/machine-a-sous/export_firebase.logic';
 import { Database, ref, get, set } from '@angular/fire/database';
 import { of, take } from 'rxjs';
 
@@ -21,6 +21,19 @@ describe('FirebaseSendService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  // Suppress console.log and console.error for cleaner test output
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    (console.log as jest.Mock).mockRestore();
+    (console.warn as jest.Mock).mockRestore();
+    (console.error as jest.Mock).mockRestore();
   });
 
   it('should be created', () => {

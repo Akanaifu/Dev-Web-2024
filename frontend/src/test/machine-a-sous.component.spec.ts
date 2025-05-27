@@ -13,8 +13,8 @@ jest.mock('firebase/database', () => ({
 }));
 
 import * as database from 'firebase/database';
-import { MachineASousComponent } from '../src/app/pages/machine-a-sous/machine-a-sous.component';
-import { NewGameService } from '../src/app/services/new-game.service';
+import { MachineASousComponent } from '../app/pages/machine-a-sous/machine-a-sous.component';
+import { NewGameService } from '../app/services/new-game.service';
 
 // Ajoute la définition de databaseMock ici
 const databaseMock = {
@@ -24,10 +24,21 @@ const databaseMock = {
   })),
 };
 
-// Mock console et méthodes Firebase une seule fois, sans spyOn redondant
+// Suppress console.log and console.error for cleaner test output
+let logSpy: jest.SpyInstance;
+let warnSpy: jest.SpyInstance;
+let errorSpy: jest.SpyInstance;
+
 beforeAll(() => {
-  jest.spyOn(console, 'warn').mockImplementation(() => {});
-  jest.spyOn(console, 'error').mockImplementation(() => {});
+  logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  logSpy.mockRestore();
+  warnSpy.mockRestore();
+  errorSpy.mockRestore();
 });
 
 describe('MachineASousComponent', () => {
