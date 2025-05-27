@@ -63,7 +63,7 @@ export class MachineASousLogic {
       id: 'combo-5',
       title: '(Im)pair',
       combination: 'ace/bdf',
-      multiplier: 2,
+      multiplier: 1.5,
       example: '111 / 222',
       class: 'im-pair',
     },
@@ -118,7 +118,7 @@ export class MachineASousLogic {
   }
 
   // Utility Methods
-  private updateAfficheurs(combination: string): void {
+  updateAfficheurs(combination: string): void {
     this.afficheurs.forEach((afficheur, i) => {
       afficheur.currentChiffre = +combination[i] || 0;
     });
@@ -137,6 +137,10 @@ export class MachineASousLogic {
 
   // Core Logic
   computeQuadraticFunction(long_arr: number): (x: number) => number {
+    if (long_arr <= 0) {
+      // fallback: always return a positive delay
+      return () => 1000;
+    }
     const mid = long_arr / 2;
     const origine = 1000; // f(0) = 1000
     const ymin = 50; // f(mid) = 50
@@ -206,7 +210,10 @@ export class MachineASousLogic {
             data,
             this.playerInfo.user_id.toString()
           );
-          this.showTable = sortedParts.notPlayedParts.length > 0 ? true : false; // Example: Use this property to control the button state
+          this.showTable =
+            sortedParts.notPlayedParts.length == 0 && this.playerInfo.solde <= 0
+              ? false
+              : true; // Example: Use this property to control the button state
 
           let index = 0;
 
@@ -303,8 +310,15 @@ export class MachineASousLogic {
         setTimeout(displayCombinations, f(combinationIndex));
       } else {
         this.checkCombination();
-        this.updateGainDisplay(part.gain);
-
+        this.updateGainDisplay(part.gain - part.mise);
+        if (!part.partieAffichee) {
+          this.addNewGameToBackend(
+            part.joueurId[part.joueurId.length - 1] || 0,
+            part.mise || 0,
+            part.combinaison[part.combinaison.length - 1] || [],
+            part.timestamp || new Date().toISOString()
+          );
+        }
         part.partieAffichee = true;
         // Mettre à jour le flag dans Firebase
         set(ref(this.db, part.key ? `/${part.key}/partieAffichee` : '/'), true)
@@ -317,13 +331,7 @@ export class MachineASousLogic {
               err
             );
           });
-        this.addNewGameToBackend(
-          part.joueurId[part.joueurId.length - 1] || 0,
-          part.mise || 0,
-          part.combinaison[part.combinaison.length - 1] || [],
-          part.gain || 0,
-          part.timestamp || new Date().toISOString()
-        );
+
         callback();
       }
     };
@@ -336,18 +344,17 @@ export class MachineASousLogic {
     playerId: string,
     solde: number,
     combinaison: number[],
-    gain: number,
     timestamp: string
   ): void {
     const gameData = {
       partieId: 1,
-      partieJouee: true, // <-- Ajouté pour satisfaire le backend
+      partieJouee: true,
       solde: solde,
       combinaison: combinaison,
-      gain: gain,
       joueurId: playerId,
       timestamp: timestamp,
       partieAffichee: true,
+      mise: solde, // ou la variable qui correspond à la mise jouée
     };
 
     console.log('Données envoyées au backend :', gameData);
