@@ -85,8 +85,13 @@
     <!-- partie centrale avec tout les numeros -->
     <div class="wheel_board_bet">
       <div class="zero_arc_wrapper">
-        <div class="zero_arc">
+        <div class="zero_arc" (click)="setBet(zeroCell)" (contextmenu)="removeBet($event, zeroCell)" [ngClass]="{'disabled': isSpinning}">
           <span class="zero_arc_label">0</span>
+          <ng-container *ngIf="getBetForCell(zeroCell) as bet">
+            <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
+              <span class="chip_span">{{ bet.amt }}</span>
+            </div>
+          </ng-container>
         </div>
       </div>
       <div class="numbers_board">

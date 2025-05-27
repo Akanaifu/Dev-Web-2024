@@ -511,6 +511,7 @@ button:enabled {
 .space_2to1 {
 	width: 100%;
 	height: 8%;
+	
 }
 
 .table-column-right-first, 
@@ -556,6 +557,7 @@ button:enabled {
 	font-weight: bold;
 	background: transparent;
 	color: #fff;
+	cursor: pointer;
 }
 
 
@@ -617,6 +619,7 @@ button:enabled {
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
+	cursor: pointer;
 }
 
 .zero_arc_label {
@@ -649,26 +652,15 @@ button:enabled {
 	margin: 0 -0.2px;
 }
 
-/* Pour garder le texte lisible, on inverse la rotation sur les numéros */
-.number_block .nbn {
+.nbn{
 	transform: none;
 	display: flex;
 	width: 100%;
 	height: 100%;
 	align-items: center;
 	justify-content: center;
-}
-
-.nbn{
-	font-size: 20px;
+	cursor: pointer;
 	font-weight: bold;
-	letter-spacing: 2px;
-	transform: rotate(-90deg);
-	-webkit-transform: rotate(-90deg);
-	-moz-transform: rotate(-90deg);
-	-ms-transform: rotate(-90deg);
-	-o-transform: rotate(-90deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
 .number_block .chip{
@@ -694,6 +686,7 @@ button:enabled {
 	font-weight: bold;
 	color: #fff;
 	background: transparent;
+	cursor: pointer;
 }
 
 .table-column-right{
