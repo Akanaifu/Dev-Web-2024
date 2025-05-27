@@ -8,7 +8,7 @@ jest.mock('@angular/fire/database', () => ({
 
 import { FirebaseSendService } from './export_firebase.logic';
 import { Database, ref, get, set } from '@angular/fire/database';
-import { of } from 'rxjs';
+import { of, take } from 'rxjs';
 
 describe('FirebaseSendService', () => {
   let service: FirebaseSendService;
@@ -35,6 +35,54 @@ describe('FirebaseSendService', () => {
     const obs = service.listenToParties();
     expect(obs.subscribe).toBeDefined();
     done();
+  });
+
+  it('listenToParties should emit values and complete', (done) => {
+    // Arrange
+    const fakeSnapshot = { val: () => ({ foo: 'bar' }) };
+    // Mock onValue to call the callback immediately
+    (require('@angular/fire/database').onValue as jest.Mock).mockImplementation(
+      (refArg, cb) => {
+        cb(fakeSnapshot);
+        return () => {}; // unsubscribe
+      }
+    );
+    const serviceWithDb = new FirebaseSendService({} as any);
+    serviceWithDb
+      .listenToParties()
+      .pipe(take(1))
+      .subscribe({
+        next: (val) => {
+          expect(val).toEqual({ foo: 'bar' });
+          done();
+        },
+        error: () => {
+          fail('Should not error');
+        },
+      });
+  });
+
+  it('listenToParties should emit error', (done) => {
+    const fakeError = new Error('firebase error');
+    (require('@angular/fire/database').onValue as jest.Mock).mockImplementation(
+      (refArg, cb, errCb) => {
+        errCb(fakeError);
+        return () => {};
+      }
+    );
+    const serviceWithDb = new FirebaseSendService({} as any);
+    serviceWithDb
+      .listenToParties()
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          fail('Should not emit value');
+        },
+        error: (err) => {
+          expect(err).toBe(fakeError);
+          done();
+        },
+      });
   });
 
   // sendPartie is async and interacts with Firebase, so only test structure here
