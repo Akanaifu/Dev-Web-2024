@@ -1,25 +1,14 @@
 name: casino
 services:
-  frontend:
-    image: nginx:1.27.5
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./../frontend/dist/frontend/browser:/usr/share/nginx/html
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    networks:
-      - dmz
-
   db:
     image: mariadb:11.8.1-ubi9-rc
+    container_name: maria_db
     env_file:
-      - db.env
+      - .env
     ports:
       - "3310:3306"
     volumes:
-      - ./../db/queries/casino.sql:/docker-entrypoint-initdb.d/casino.sql
-      - ./../db/queries/data-casino.sql:/docker-entrypoint-initdb.d/data-casino.sql
+      - ./../db/queries/:/docker-entrypoint-initdb.d/
       - ./mariadb-custom.cnf:/etc/mysql/conf.d/custom.cnf
       - db_data:/var/lib/mysql
     healthcheck:  
@@ -31,25 +20,27 @@ services:
       - secure
 
   backend:
-    image: node:18
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./../backend:/app
-    working_dir: /app
-    
-    command: sh -c "npm install && npm start"
+    image: backend
     env_file:
-      - ../backend/.env
-      - db.env
+      - .env
     depends_on:
       db:
         condition: service_healthy 
     networks:
       - dmz
       - secure
-    restart: unless-stopped  # Redémarre automatiquement si ça plante
-
+    restart: unless-stopped  
+    
+  frontend:
+    image: frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - dmz
+      
 networks:
   dmz:
     ipam:

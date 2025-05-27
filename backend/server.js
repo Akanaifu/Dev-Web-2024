@@ -62,7 +62,6 @@ app.use((req, res, next) => {
 // Middlewares pour l'API
 app.use(express.json());
 app.use(cookieParser());
-app.use(bodyParser.json());
 
 // Routes de l'API
 app.use("/sessions", sessionRoutes);
