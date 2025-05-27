@@ -14,7 +14,7 @@ import { LoginService } from './services/login/login.service';
     NavigationBarComponent, 
     MatButtonModule, 
     MatTooltipModule, 
-    ChatComponent,
+    ChatComponent
 
   ],
   templateUrl: './app.component.html',
