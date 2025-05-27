@@ -3,7 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { RouletteNetLogic } from './roulette-net-logic';
 import { BettingBoardCell } from './betting-board.model';
 import { IUser } from '../../interfaces/User.interface';
-import { IRouletteResult } from '../../interfaces/Roulette-Net-Resultat.interface';
+import { IRouletteResult } from '../../interfaces/roulette-net-resultat.interface';
 
 "il faut que je regarde pourquoi ça ne fonctionne pas"
 describe('RouletteNetLogic', () => {

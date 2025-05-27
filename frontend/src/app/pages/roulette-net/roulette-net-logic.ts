@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { BettingBoardCell } from './betting-board.model';
 import { IUser } from '../../interfaces/User.interface';
-import { IRouletteResult } from '../../interfaces/Roulette-Net-Resultat.interface';
+import { IRouletteResult } from '../../interfaces/roulette-net-resultat.interface';
 import { HttpClient } from '@angular/common/http';
 
 
