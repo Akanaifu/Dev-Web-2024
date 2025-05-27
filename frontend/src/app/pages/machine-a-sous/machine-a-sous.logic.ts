@@ -137,6 +137,10 @@ export class MachineASousLogic {
 
   // Core Logic
   computeQuadraticFunction(long_arr: number): (x: number) => number {
+    if (long_arr <= 0) {
+      // fallback: always return a positive delay
+      return () => 1000;
+    }
     const mid = long_arr / 2;
     const origine = 1000; // f(0) = 1000
     const ymin = 50; // f(mid) = 50
