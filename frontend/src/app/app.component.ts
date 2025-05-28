@@ -21,10 +21,22 @@ import { LoginService } from './services/login/login.service';
 })
 
 export class AppComponent {
+
+  
   @ViewChild('chatComponent') chatComponent!: ChatComponent;
 
   constructor(public loginService: LoginService) {}
-
+  ngOnInit() {
+      // Récupérer l'utilisateur au démarrage
+      this.loginService.getUser().subscribe({
+        next: (user) => {
+          console.log('User récupéré:', user);
+        },
+        error: (error) => {
+          console.log('Pas d\'utilisateur connecté');
+        }
+      });
+    }
   toggleChat(): void {
     this.chatComponent.toggle();
   }

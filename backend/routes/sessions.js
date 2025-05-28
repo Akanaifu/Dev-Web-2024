@@ -71,7 +71,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', verifyToken, async (req, res) => {
   try {
     const [rows] = await db.query(
-      'SELECT user_id, email FROM User WHERE user_id = ?',
+      'SELECT user_id, username, email FROM User WHERE user_id = ?',
       [req.user.userId]
     );
     
@@ -81,7 +81,8 @@ router.get('/me', verifyToken, async (req, res) => {
     
     const user = rows[0];
     res.json({
-      username: user.email,
+      username: user.username,
+      email: user.email,
       id: user.user_id,
       // autres informations utilisateur si nécessaire
     });
