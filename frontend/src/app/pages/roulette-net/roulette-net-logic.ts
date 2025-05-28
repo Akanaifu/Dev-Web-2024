@@ -3,6 +3,7 @@ import { IBettingBoardCell } from '../../interfaces/betting-board.interface';
 import { IUser } from '../../interfaces/users.interface';
 import { IRouletteResult } from '../../interfaces/roulette-net-resultat.interface';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 
 @Injectable({ providedIn: 'root' })
@@ -21,7 +22,8 @@ export class RouletteNetLogic {
   currentBet = 0;
   wager = 5;
   lastWager = 0;
-  bet: { amt: number; type: string; odds: number; numbers: string }[] = [];
+
+  bet: { label: string; numbers: string; type: string; odds: number; amt: number }[] = [];
   numbersBet: number[] = [];
   previousNumbers: number[] = [];
 
@@ -109,38 +111,52 @@ export class RouletteNetLogic {
     }
   }
 
-  async win(winningSpin: number): Promise<{ winValue: number; betTotal: number; payout: number }> {
+  async win(winningSpin: number): Promise<{ winValue: number; payout: number; newsolde: number; betTotal: number }> {
     try {
       // Appel de l'API win du backend
-      const response = await this.http.post<{ 
+      const response = await firstValueFrom(this.http.post<{ 
         winValue: number; 
-        betTotal: number; 
         payout: number;
         newsolde: number;
+        betTotal: number;
       }>(
-        `${this.BASE_URL}/roulette/win`, 
+        `${this.BASE_URL}/api/roulette/win`, 
         { 
           winningSpin, 
           bets: this.bet,
-          solde: this.currentUser.solde
+          solde: this.currentUser.solde,
+          userId: this.currentUser?.user_id
         }
-      ).toPromise();
+      ));
       
       if (response) {
+        // Remplacer les valeurs nulles par des valeurs par défaut
+        const safeWinValue = response.winValue !== null ? response.winValue : 0;
+        const safePayout = response.payout !== null ? response.payout : 0;
+        const safeBetTotal = response.betTotal !== null ? response.betTotal : 0;
+        const safeNewsolde = response.newsolde !== null ? response.newsolde : this.currentUser.solde;
+        
         // Mettre à jour la valeur de la banque avec celle calculée par le backend
-        this.currentUser.solde = response.newsolde;
-        // Retourner juste les informations de gain sans la nouvelle valeur de la banque
+        this.currentUser.solde = safeNewsolde;
+        
+        // Retourner les valeurs sécurisées
         return { 
-          winValue: response.winValue, 
-          betTotal: response.betTotal, 
-          payout: response.payout 
+          winValue: safeWinValue, 
+          payout: safePayout,
+          newsolde: safeNewsolde,
+          betTotal: safeBetTotal
         };
       }
       
       throw new Error('Échec du calcul des gains');
     } catch (error) {
-        console.error('Erreur lors du calcul des gains:', error);
-      return { winValue: 0, betTotal: 0, payout: 0 };
+      console.error('Erreur lors du calcul des gains:', error);
+      return { 
+        winValue: 0, 
+        payout: 0, 
+        newsolde: this.currentUser.solde,
+        betTotal: 0
+      };
     }
   }
 
@@ -177,6 +193,7 @@ export class RouletteNetLogic {
     return this.currentUser;
   }
 
+
   setBet(cell: IBettingBoardCell) {// Vérifier si la mise est supérieure à 0
     this.lastWager = this.wager;
     this.wager = (this.currentUser.solde < this.wager) ? this.currentUser.solde : this.wager;
@@ -189,6 +206,7 @@ export class RouletteNetLogic {
       const n = cell.numbers.join(', ');
       const t = cell.type;
       const o = cell.odds; 
+      const l = cell.label;
       let found = false;
       for (let b of this.bet) {
         if (b.numbers === n && b.type === t) {
@@ -198,7 +216,7 @@ export class RouletteNetLogic {
         }
       }
       if (!found) {
-        this.bet.push({ amt: this.wager, type: t, odds: o, numbers: n });
+        this.bet.push({ label: l, numbers: n, type: t, odds: o, amt: this.wager });
       }
       // Ajouter les numéros à numbersBet
       for (let num of cell.numbers) {

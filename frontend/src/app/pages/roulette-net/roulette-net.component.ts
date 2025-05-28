@@ -152,12 +152,16 @@ export class RouletteNetComponent implements OnInit {
                     
                     // Afficher les gains
                     winResult.then(result => {
-                        if (result.winValue > 0) {
+                        if (result.payout > 0) {
                             this.resultMessage += ` - Vous avez gagné ${result.payout}!`;
-                        } else {
-                            this.resultMessage += ` - Vous avez perdu ${this.game.currentBet}`;
+                        } 
+                        else if (result.payout == 0) {
+                            this.resultMessage += ` - Vous avez ni gagné ni perdu ${(result.payout)}`;
                         }
-                        console.error('Error during spin:', winResult);
+                        else {
+                            this.resultMessage += ` - Vous avez perdu ${Math.abs(result.payout)}`;
+                        }
+                        console.log('Error during spin:', winResult);
                     this.game.currentBet = 0;
                     this.game.bet = [];
                     this.game.numbersBet = [];
@@ -197,4 +201,9 @@ export class RouletteNetComponent implements OnInit {
 }
 
 
+
+
+function elseif(arg0: boolean) {
+    throw new Error('Function not implemented.');
+}
 
