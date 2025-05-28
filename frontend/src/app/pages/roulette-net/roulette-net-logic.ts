@@ -12,6 +12,11 @@ export class RouletteNetLogic {
   
   currentUser!: IUser;
   
+  // Les valeurs des jetons et leurs couleurs
+  chipValues = [1, 5, 10, 100, 'clear'];
+  chipColors = ['red', 'blue', 'orange', 'gold', 'clearBet'];
+  selectedChipIndex = 1; // Par défaut, 5 est actif
+  isSpinning = false; // Ajout de l'état de rotation
 
   currentBet = 0;
   wager = 5;
@@ -183,7 +188,7 @@ export class RouletteNetLogic {
       // Vérifier si la mise existe déjà
       const n = cell.numbers.join(', ');
       const t = cell.type;
-      const o = cell.odds;
+      const o = cell.odds; 
       let found = false;
       for (let b of this.bet) {
         if (b.numbers === n && b.type === t) {
@@ -202,5 +207,28 @@ export class RouletteNetLogic {
         }
       }
     }
+  }
+
+  /**
+   * Sélectionne une puce avec une valeur spécifique pour les mises
+   * @param index Index dans le tableau des valeurs du  jeton
+   * @returns true si la sélection a réussi, false sinon
+   */
+  selectChip(index: number): boolean {
+    if (this.isSpinning) return false; // Empêcher la sélection de puce pendant la rotation
+    
+    if (index === this.chipValues.length - 1) {
+        // Clear bet
+        if (this.currentUser && this.currentUser.solde !== undefined) {
+            this.currentUser.solde += this.currentBet;
+        }
+        this.currentBet = 0;
+        this.clearBet();
+    } else {
+        this.selectedChipIndex = index;
+        this.wager = index === 0 ? 1 : index === 1 ? 5 : index === 2 ? 10 : 100;
+    }
+    
+    return true;
   }
 } 

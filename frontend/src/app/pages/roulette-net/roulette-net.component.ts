@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IRouletteWheelSection } from '../../interfaces/roulette-wheel.interface';
-import { IIBettingBoardCell } from '../../interfaces/betting-board.interface';
+import { IBettingBoardCell } from '../../interfaces/betting-board.interface';
 import { RouletteNetLogic } from './roulette-net-logic';
 import { HttpClient } from '@angular/common/http';
 
@@ -15,28 +15,34 @@ import { HttpClient } from '@angular/common/http';
 export class RouletteNetComponent implements OnInit {
     // Données d'affichage (plateau, roue)
     wheelSections: IRouletteWheelSection[] = [];
-    outsideBets: IIBettingBoardCell[] = [];
-    numberBoardRows: IIBettingBoardCell[][] = [];
-    zeroCell!: IIBettingBoardCell;
-    columnBets: IIBettingBoardCell[] = [];
-    dozenBets: IIBettingBoardCell[] = [];
-    evenOddRedBlack: IIBettingBoardCell[] = [];
-    splitBets: IIBettingBoardCell[] = [];
-    cornerBets: IIBettingBoardCell[] = [];
-    streetBets: IIBettingBoardCell[] = [];
-    doubleStreetBets: IIBettingBoardCell[] = [];
+    outsideBets: IBettingBoardCell[] = [];
+    numberBoardRows: IBettingBoardCell[][] = [];
+    zeroCell!: IBettingBoardCell;
+    columnBets: IBettingBoardCell[] = [];
+    dozenBets: IBettingBoardCell[] = [];
+    evenOddRedBlack: IBettingBoardCell[] = [];
+    splitBets: IBettingBoardCell[] = [];
+    cornerBets: IBettingBoardCell[] = [];
+    streetBets: IBettingBoardCell[] = [];
+    doubleStreetBets: IBettingBoardCell[] = [];
     
     columnLabels = ['2 à 1', '2 à 1', '2 à 1'];
     dozenLabels = ['1 à 12', '13 à 24', '25 à 36'];
     evenOddLabels = ['EVEN', 'RED', 'BLACK', 'ODD'];
     topLabels = ['1 à 18', '19 à 36'];
-    chipValues = [1, 5, 10, 100, 'clear'];
-    chipColors = ['red', 'blue', 'orange', 'gold', 'clearBet'];
-    selectedChipIndex = 1; // Par défaut, 5 est actif
+
+    // Utiliser les propriétés du service pour les jetons
+    get chipValues() { return this.game.chipValues; }
+    get chipColors() { return this.game.chipColors; }
+    get selectedChipIndex() { return this.game.selectedChipIndex; }
 
     // Animation de la roue et de la bille
     ballRotation : number = 0;
-    isSpinning : boolean = false;
+    
+    // Utiliser la propriété isSpinning du service
+    get isSpinning() { return this.game.isSpinning; }
+    set isSpinning(value: boolean) { this.game.isSpinning = value; }
+    
     resultMessage: string | null = null;
     
     private BASE_URL = 'http://localhost:3000';
@@ -47,7 +53,6 @@ export class RouletteNetComponent implements OnInit {
     ) { }
 
     // Accès à l'état du jeu via le service
-    get solde() { return this.game.solde; }
     get currentBet() { return this.game.currentBet; }
     get wager() { return this.game.wager; }
     get bet() { return this.game.bet; }
@@ -97,7 +102,7 @@ export class RouletteNetComponent implements OnInit {
     }
     
 
-    removeBet(event: Event, cell: IIBettingBoardCell) {// Supprimer une mise
+    removeBet(event: Event, cell: IBettingBoardCell) {// Supprimer une mise
         event.preventDefault();
         if (this.isSpinning) return; // Prevent bet removal when spinning
         this.game.removeBet(cell);
@@ -172,20 +177,11 @@ export class RouletteNetComponent implements OnInit {
     }
 
     selectChip(index: number) {// Sélectionner une mise
-        if (this.isSpinning) return; // Prevent chip selection when spinning
-        if (index === this.chipValues.length - 1) {
-            // Clear bet
-            this.game.solde += this.game.currentBet;
-            this.game.currentBet = 0;
-            this.game.clearBet();
-        } else {
-            this.selectedChipIndex = index;
-            this.game.wager = index === 0 ? 1 : index === 1 ? 5 : index === 2 ? 10 : 100;
-        }
+        this.game.selectChip(index);
     }
 
     // Méthodes d'affichage qui délèguent au service
-    getBetForCell(cell: IIBettingBoardCell) {
+    getBetForCell(cell: IBettingBoardCell) {
         return this.game.getBetForCell(cell);
     }
 
@@ -194,7 +190,7 @@ export class RouletteNetComponent implements OnInit {
     }
 
     // Méthodes UI qui délèguent au service
-    setBet(cell: IIBettingBoardCell) {
+    setBet(cell: IBettingBoardCell) {
         if (this.isSpinning) return; // Prevent betting when spinning
         this.game.setBet(cell);
     }
