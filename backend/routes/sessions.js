@@ -22,6 +22,7 @@ router.post('/login', async (req, res) => {
       ? 'SELECT user_id, username, email, password FROM User WHERE email = ?' 
       : 'SELECT user_id, username, email, password FROM User WHERE username = ?';
     
+    const [rows] = await db.query(query, [username]);
     
     if (rows.length === 0) {
       return res.status(401).json({ message: 'Identifiants incorrects' });
