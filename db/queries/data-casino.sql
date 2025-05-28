@@ -8,12 +8,45 @@ INSERT INTO `User` (`user_id`, `username`, `name`, `firstname`, `birthdate`, `so
 
 -- Insérer des sessions de jeu dans la table Games_session
 INSERT INTO `Games_session` (`game_session_id`, `name`, `bet_min`, `bet_max`, `timestamp`) VALUES
-('PO01', 'Poker', '5', '500', '2025-04-20 10:00:00'),       -- PO pour Poker
-('RO01', 'Roulette', '2', '200', '2025-04-19 15:30:00'),    -- RO pour Roulette
-('BJ01', 'Blackjack', '10', '1000', '2025-04-18 20:45:00'), -- BJ pour Blackjack
-('BA01', 'Baccarat', '20', '2000', '2025-04-17 12:00:00'),  -- BA pour Baccarat
-('PO02', 'Poker', '10', '1000', '2025-04-16 18:00:00'),     -- Deuxième session de Poker
-('RO02', 'Roulette', '5', '300', '2025-04-15 14:00:00');    -- Deuxième session de Roulette
+('MA01', 'Slot Machine', '1', '100', '2025-05-21 15:00:00'),
+('MA02', 'Slot Machine', '1', '100', '2025-05-22 15:00:00'),
+('MA03', 'Slot Machine', '1', '100', '2025-04-22 15:00:00'),
+('MA04', 'Slot Machine', '1', '100', '2025-04-22 15:05:00'),
+('MA05', 'Slot Machine', '1', '100', '2025-02-22 15:05:00'),
+('MA06', 'Slot Machine', '1', '100', '2025-01-22 15:05:00'),
+('MA07', 'Slot Machine', '1', '100', '2025-01-22 15:06:00'),
+
+('PO01', 'Poker', '10', '1000', '2025-05-21 14:00:00'),
+('PO02', 'Poker', '10', '1000', '2025-05-22 14:00:00'),
+('PO03', 'Poker', '10', '1000', '2025-04-22 15:00:00'),
+('PO04', 'Poker', '10', '1000', '2025-02-22 15:00:00'),
+('PO05', 'Poker', '10', '1000', '2025-02-22 15:01:00'),
+('PO06', 'Poker', '10', '1000', '2025-01-22 15:01:00'),
+('PO07', 'Poker', '10', '1000', '2025-01-22 15:02:00'),
+
+('RO01', 'Roulette', '2', '200', '2025-05-21 14:05:00'),
+('RO02', 'Roulette', '2', '200', '2025-05-22 14:05:00'),
+('RO03', 'Roulette', '2', '200', '2025-04-22 15:01:00'),
+('RO04', 'Roulette', '2', '200', '2025-02-22 15:02:00'),
+('RO05', 'Roulette', '2', '200', '2025-02-22 15:03:00'),
+('RO06', 'Roulette', '2', '200', '2025-01-22 15:03:00'),
+
+('BJ01', 'Blackjack', '10', '1000', '2025-05-21 14:10:00'),
+('BJ02', 'Blackjack', '10', '1000', '2025-04-22 15:04:00'),
+('BJ03', 'Blackjack', '10', '1000', '2025-02-22 15:05:00'),
+('BJ04', 'Blackjack', '10', '1000', '2025-02-22 15:06:00'),
+('BJ05', 'Blackjack', '10', '1000', '2025-01-22 15:06:00'),
+
+('BA01', 'Baccarat', '20', '2000', '2025-05-22 14:15:00'),
+('BA02', 'Baccarat', '20', '2000', '2025-04-22 15:04:00'),
+('BA03', 'Baccarat', '20', '2000', '2025-02-22 15:07:00'),
+('BA04', 'Baccarat', '20', '2000', '2025-01-22 15:07:00'),
+('BA05', 'Baccarat', '20', '2000', '2025-01-22 15:08:00');
+
+
+
+
+
 
 -- Insérer des transactions bancaires dans la table Banking_transaction
 INSERT INTO `Banking_transaction` (`transaction_id`, `user_id`, `amount_banking`, `transaction_type`, `transaction_status`) VALUES
@@ -25,37 +58,37 @@ INSERT INTO `Banking_transaction` (`transaction_id`, `user_id`, `amount_banking`
 
 
 -- Insérer des paris dans la table Bets
-INSERT INTO `Bets` (`bet_id`, `user_id`, `game_session_id`, `amount`, `bet_status`, `combinaison`) VALUES
-(1,1, 'MA01', 10.00, 'win', '7,7,7'),     -- Machine à sous avec combinaison
-(2,2, 'PO01', 20.00, 'lose', NULL),       -- Poker sans combinaison
-(3,3, 'RO01', 5.00, 'win', NULL),         -- Roulette sans combinaison
-(4,2, 'BJ01', 100.00, 'lose', NULL),      -- Blackjack sans combinaison
-(5,1, 'BA01', 200.00, 'win', NULL),       -- Baccarat sans combinaison
-(6,1, 'MA02', 15.00, 'win', '8,8,8'),     -- Deuxième session de Machine à sous avec combinaison
-(7,2, 'PO02', 50.00, 'lose', NULL),       -- Deuxième session de Poker sans combinaison
-(8,3, 'RO02', 10.00, 'win', NULL),        -- Deuxième session de Roulette sans combinaison
-(9,2, 'MA03', 5.00, 'lose', NULL),        -- Machine à sous sans combinaison
-(10,2, 'PO03', 25.00, 'lose', NULL),      -- Poker sans combinaison
-(11,2, 'RO03', 2.00, 'lose', NULL),       -- Roulette sans combinaison
-(12,2, 'BJ02', 10.00, 'lose', NULL),      -- Blackjack sans combinaison
-(13,2, 'BA02', 20.00, 'lose', NULL),      -- Baccarat sans combinaison
-(14,2, 'MA04', 30.00, 'lose', NULL),      -- Deuxième session de Machine à sous sans combinaison
-(15,2, 'PO04', 40.00, 'win', NULL),       -- Deuxième session
-(16,2, 'RO04', 15.00, 'lose', NULL),      -- Deuxième session de Roulette sans combinaison
-(17,2, 'BJ03', 5.00, 'lose', NULL),       -- Deuxième session
-(18,2, 'BA03', 10.00, 'win', NULL),       -- Deuxième session
-(19,2, 'MA05', 50.00, 'lose', NULL),      -- Machine à sous sans combinaison
-(20,2, 'PO05', 100.00, 'lose', NULL),     -- Poker sans combinaison
-(21,2, 'RO05', 25.00, 'win', NULL),       -- Roulette sans combinaison
-(22,2, 'BJ04', 15.00, 'lose', NULL),      -- Blackjack sans combinaison
-(23,2, 'BA04', 5.00, 'lose', NULL),       -- Baccarat sans combinaison
-(24,2, 'MA06', 10.00, 'win', NULL),       -- Deuxième session de Machine à sous sans combinaison
-(25,2, 'PO06', 20.00, 'lose', NULL),      -- Deuxième session de Poker sans combinaison
-(26,2, 'RO06', 50.00, 'lose', NULL),      -- Deuxième session de Roulette sans combinaison
-(27,2, 'BJ05', 30.00, 'lose', NULL),      -- Deuxième session
-(28,2, 'BA05', 15.00, 'win', NULL),       -- Deuxième session
-(29,2, 'MA07', 100.00, 'win', NULL),      -- Machine à sous sans combinaison
-(30,2, 'PO07', 200.00, 'win', NULL);      -- Poker sans combinaison
+INSERT INTO `Bets` (`bet_id`, `user_id`, `game_session_id`, `amount`, `bet_status`, `combinaison`, `timestamp`) VALUES
+(1,1, 'MA01', 10.00, 'win', '7,7,7', '2025-05-21 15:06:03'),     -- Machine à sous avec combinaison
+(2,2, 'PO01', 20.00, 'lose', NULL, '2025-05-21 15:06:03'),       -- Poker sans combinaison
+(3,3, 'RO01', 5.00, 'win', NULL, '2025-05-21 15:06:03'),         -- Roulette sans combinaison
+(4,2, 'BJ01', 100.00, 'lose', NULL, '2025-05-21 15:06:03'),      -- Blackjack sans combinaison
+(5,1, 'BA01', 200.00, 'win', NULL, '2025-05-22 15:06:03'),       -- Baccarat sans combinaison
+(6,1, 'MA02', 15.00, 'win', '8,8,8', '2025-05-22 15:06:03'),     -- Deuxième session de Machine à sous avec combinaison
+(7,2, 'PO02', 50.00, 'lose', NULL, '2025-05-22 15:06:03'),       -- Deuxième session de Poker sans combinaison
+(8,3, 'RO02', 10.00, 'win', NULL, '2025-04-22 15:06:03'),        -- Deuxième session de Roulette sans combinaison
+(9,2, 'MA03', 5.00, 'lose', NULL, '2025-04-22 15:06:03'),        -- Machine à sous sans combinaison
+(10,2, 'PO03', 25.00, 'lose', NULL, '2025-04-22 15:06:03'),      -- Poker sans combinaison
+(11,2, 'RO03', 2.00, 'lose', NULL, '2025-04-22 15:06:03'),       -- Roulette sans combinaison
+(12,2, 'BJ02', 10.00, 'lose', NULL, '2025-04-22 15:06:03'),      -- Blackjack sans combinaison
+(13,2, 'BA02', 20.00, 'lose', NULL, '2025-04-22 15:06:03'),      -- Baccarat sans combinaison
+(14,2, 'MA04', 30.00, 'lose', NULL, '2025-04-22 15:06:03'),      -- Deuxième session de Machine à sous sans combinaison
+(15,2, 'PO04', 40.00, 'win', NULL, '2025-02-22 15:06:03'),       -- Deuxième session
+(16,2, 'RO04', 15.00, 'lose', NULL, '2025-02-22 15:06:03'),      -- Deuxième session de Roulette sans combinaison
+(17,2, 'BJ03', 5.00, 'lose', NULL, '2025-02-22 15:06:03'),       -- Deuxième session
+(18,2, 'BA03', 10.00, 'win', NULL, '2025-02-22 15:06:03'),       -- Deuxième session
+(19,2, 'MA05', 50.00, 'lose', NULL, '2025-02-22 15:06:03'),      -- Machine à sous sans combinaison
+(20,2, 'PO05', 100.00, 'lose', NULL, '2025-02-22 15:06:03'),     -- Poker sans combinaison
+(21,2, 'RO05', 25.00, 'win', NULL, '2025-02-22 15:06:03'),       -- Roulette sans combinaison
+(22,2, 'BJ04', 15.00, 'lose', NULL, '2025-02-22 15:06:03'),      -- Blackjack sans combinaison
+(23,2, 'BA04', 5.00, 'lose', NULL, '2025-01-22 15:06:03'),       -- Baccarat sans combinaison
+(24,2, 'MA06', 10.00, 'win', NULL, '2025-01-22 15:06:03'),       -- Deuxième session de Machine à sous sans combinaison
+(25,2, 'PO06', 20.00, 'lose', NULL, '2025-01-22 15:06:03'),      -- Deuxième session de Poker sans combinaison
+(26,2, 'RO06', 50.00, 'lose', NULL, '2025-01-22 15:06:03'),      -- Deuxième session de Roulette sans combinaison
+(27,2, 'BJ05', 30.00, 'lose', NULL, '2025-01-22 15:06:03'),      -- Deuxième session
+(28,2, 'BA05', 15.00, 'win', NULL, '2025-01-22 15:06:03'),       -- Deuxième session
+(29,2, 'MA07', 100.00, 'win', NULL, '2025-01-22 15:06:03'),      -- Machine à sous sans combinaison
+(30,2, 'PO07', 200.00, 'win', NULL, '2025-01-22 15:06:03');      -- Poker sans combinaison
 
 
 -- Insérer des statistiques dans la table Stats
