@@ -46,6 +46,8 @@ describe('MachineASousLogic', () => {
     expect(logic).toBeTruthy();
   });
 
+  // ####################### US Perso #######################
+
   it('computeQuadraticFunction should return a function', () => {
     const f = logic.computeQuadraticFunction(10);
     expect(typeof f).toBe('function');
@@ -87,6 +89,8 @@ describe('MachineASousLogic', () => {
     logic.checkCombination();
     expect(logic.highlightCombination).toContain('combo-1');
   });
+
+  // ####################### US Perso #######################
 
   it('addNewGameToBackend should call newGameService.addNewGame', () => {
     logic.addNewGameToBackend('1', 100, [1, 2, 3], '2024-01-01');

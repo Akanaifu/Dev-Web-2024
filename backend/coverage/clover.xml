@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1748334423276" clover="3.2.0">
-  <project timestamp="1748334423276" name="All files">
+<coverage generated="1748424244977" clover="3.2.0">
+  <project timestamp="1748424244977" name="All files">
     <metrics statements="77" coveredstatements="73" conditionals="62" coveredconditionals="57" methods="10" coveredmethods="10" elements="149" coveredelements="140" complexity="0" loc="77" ncloc="77" packages="1" files="1" classes="1"/>
     <file name="new_game.js" path="C:\Users\lemai\OneDrive\Documents\Cours\Cours Ephec\2024 - 2025\Q2\dev 3\Dev-Web-2024\backend\routes\new_game.js">
       <metrics statements="77" coveredstatements="73" conditionals="62" coveredconditionals="57" methods="10" coveredmethods="10"/>

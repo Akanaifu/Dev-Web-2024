@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node websocket.js",
-    "dev": "nodemon websocket.js"
+    "dev": "nodemon websocket.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
