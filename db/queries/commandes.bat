@@ -27,12 +27,6 @@ echo Importer les donnees depuis %SQL_DATA%...
 mysql -u %MYSQL_USER% -p%MYSQL_PASSWORD% --port=3306 %DB_NAME% < %SQL_DATA%
 
 :: lancer le serveur
-<<<<<<< Updated upstream
-echo Lancer le serveur MySQL...
-node ../../backend/server.js
-pause
-=======
 :: echo Lancer le serveur MySQL...
 :: node ../../backend/server.js
 pause
->>>>>>> Stashed changes

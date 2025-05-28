@@ -8,11 +8,12 @@
   @if (loginService.user()) {
   <p class="gambler-login">
     <img 
-      [src]="loginService.user()?.avatarUrl || 'http://localhost:3000/avatar/default.png'" 
+      [src]="getAvatarUrl()" 
       class="avatar-image"
-      style="width:32px; height:32px; border-radius:50%; margin-right:8px;background-color: w;"
+      style="width:32px; height:32px; border-radius:50%; margin-right:8px;"
     />
     {{ loginService.user()?.username }}
+    <!-- {{ loginService.user()?.avatarUrl }} -->
   </p>
   <div class="gambler">
     <button mat-button (click)="logout()">

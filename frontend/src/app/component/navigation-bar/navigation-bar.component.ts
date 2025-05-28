@@ -42,4 +42,12 @@ export class NavigationBarComponent implements OnInit {
       }
     });
   }
+
+  getAvatarUrl(): string {
+    const user = this.loginService.user();
+    if (user && user.userId) {
+      return `http://localhost:3000/avatar/${user.userId}.png`;
+    }
+    return 'http://localhost:3000/avatar/default.png';
+  }
 }

@@ -86,7 +86,7 @@ app.get("/inject-data", (req, res) => {
   });
 });
 
-// Ajoute cette ligne pour servir le dossier avatar
+// Sert le dossier avatar en statique
 app.use('/avatar', express.static(path.join(__dirname, 'avatar')));
 
 // Démarrer le serveur

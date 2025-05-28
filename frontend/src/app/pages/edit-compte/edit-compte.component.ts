@@ -24,6 +24,8 @@ export class EditCompteComponent implements OnInit {
   } = {
     user_id: 0,
   };
+  selectedFile: File | null = null;
+
   constructor(
     private fb: FormBuilder,
     http: HttpClient,
@@ -93,6 +95,35 @@ export class EditCompteComponent implements OnInit {
             'Erreur lors de la récupération des informations :',
             err
           );
+        },
+      });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
+  uploadAvatar(): void {
+    if (!this.selectedFile || !this.playerInfo.user_id) {
+      console.error('Aucun fichier sélectionné ou user_id manquant');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+    formData.append('userId', this.playerInfo.user_id.toString());
+
+    this.http
+      .post('http://localhost:3000/edit-compte/avatar', formData)
+      .subscribe({
+        next: (res) => {
+          console.log('Avatar uploadé avec succès', res);
+          this.selectedFile = null;
+        },
+        error: (err) => {
+          console.error('Erreur lors de l\'upload de l\'avatar', err);
         },
       });
   }
