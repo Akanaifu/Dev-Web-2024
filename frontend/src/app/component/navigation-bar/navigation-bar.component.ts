@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoginService } from '../../services/login/login.service';
 import { UserService } from '../../services/user/user.service';
+import { User } from '../../models/user.models'; // Import the User model
 
 @Component({
   selector: 'navigation-bar',
@@ -27,8 +28,8 @@ export class NavigationBarComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       if (localStorage.getItem('token') && this.loginService.user() === undefined) {
         this.loginService.getUser().subscribe({
-          next: (user) => {
-            this.userId = (user as any)?.id || null; // Dynamically set userId
+          next: (user: User | null | undefined) => {
+            this.userId = user?.userId || null; // Use userId instead of id
             if (this.userId) {
               this.fetchBalance(); // Fetch balance only if userId is available
             }
@@ -39,12 +40,25 @@ export class NavigationBarComponent implements OnInit {
         });
       } else {
         const user = this.loginService.user();
-        this.userId = (user as any)?.id || null; // Set userId if already available
+        this.userId = user?.userId || null; // Use userId instead of id
         if (this.userId) {
           this.fetchBalance();
         }
       }
     }
+
+    // Subscribe to login events to update the balance dynamically
+    this.loginService.loginEvent.subscribe({
+      next: (user: User | null | undefined) => {
+        this.userId = user?.userId || null; // Use userId instead of id
+        if (this.userId) {
+          this.fetchBalance(); // Fetch balance immediately after login
+        }
+      },
+      error: (err: any) => {
+        console.error('Erreur lors de la gestion de l\'événement de connexion:', err);
+      },
+    });
   }
 
   fetchBalance(): void {
