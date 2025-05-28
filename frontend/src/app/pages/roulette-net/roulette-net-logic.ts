@@ -69,6 +69,8 @@ export class RouletteNetLogic {
   }
 
   removeBet(cell: IBettingBoardCell) {// Supprimer la mise
+    if (!this.currentUser) return; // Vérification de sécurité
+    
     this.wager = (this.wager === 0) ? 100 : this.wager;
     const n = cell.numbers.join(', ');
     const t = cell.type;
@@ -112,6 +114,10 @@ export class RouletteNetLogic {
   }
 
   async win(winningSpin: number): Promise<{ winValue: number; payout: number; newsolde: number; betTotal: number }> {
+    if (!this.currentUser) {
+      throw new Error('Utilisateur non connecté');
+    }
+    
     try {
       // Appel de l'API win du backend
       const response = await firstValueFrom(this.http.post<{ 
@@ -125,7 +131,7 @@ export class RouletteNetLogic {
           winningSpin, 
           bets: this.bet,
           solde: this.currentUser.solde,
-          userId: this.currentUser?.user_id
+          userId: this.currentUser.user_id
         }
       ));
       
@@ -139,6 +145,9 @@ export class RouletteNetLogic {
         // Mettre à jour la valeur de la banque avec celle calculée par le backend
         this.currentUser.solde = safeNewsolde;
         
+        // Rafraîchir le solde depuis le serveur pour garantir la cohérence
+        await this.fetchIUser();
+        
         // Retourner les valeurs sécurisées
         return { 
           winValue: safeWinValue, 
@@ -151,12 +160,7 @@ export class RouletteNetLogic {
       throw new Error('Échec du calcul des gains');
     } catch (error) {
       console.error('Erreur lors du calcul des gains:', error);
-      return { 
-        winValue: 0, 
-        payout: 0, 
-        newsolde: this.currentUser.solde,
-        betTotal: 0
-      };
+      throw error;
     }
   }
 
@@ -195,6 +199,8 @@ export class RouletteNetLogic {
 
 
   setBet(cell: IBettingBoardCell) {// Vérifier si la mise est supérieure à 0
+    if (!this.currentUser) return; // Vérification de sécurité
+    
     this.lastWager = this.wager;
     this.wager = (this.currentUser.solde < this.wager) ? this.currentUser.solde : this.wager;
 

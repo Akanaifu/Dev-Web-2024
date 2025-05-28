@@ -23,10 +23,14 @@ const statsRoutes = require("./routes/stats");
 
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
-const rouletteRoutes = require("./routes/roulette-net");
 const registerRoutes = require("./routes/register");
 const playerRoutes = require("./routes/get_id");
 const editCompteRoutes = require("./routes/edit-compte");
+
+const soldeRoutes = require("./routes/update_solde");
+
+//Roulette 
+const rouletteRoutes = require("./routes/roulette-net");
 const rouletteNetPrepareBettingBoard = require("./routes/roulette-net-prepareBettingBoard");
 // Services
 const SocketService = require("./services/socketService");
