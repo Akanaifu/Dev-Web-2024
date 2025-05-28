@@ -1,5 +1,17 @@
 <div class="balance-page">
   <h1>Gérer votre solde</h1>
-  <button mat-button (click)="handleDeposit()">Faire un dépôt</button>
-  <button mat-button (click)="handleWithdrawal()">Faire un retrait</button>
+  <div class="amount-container">
+    <button mat-button class="adjust-button" (click)="decreaseAmount()">-</button>
+    <span class="amount-display">{{ amount }} €</span>
+    <button mat-button class="adjust-button" (click)="increaseAmount()">+</button>
+  </div>
+  <div class="increment-buttons">
+    <button mat-button (click)="setIncrement(10)">+/- 10</button>
+    <button mat-button (click)="setIncrement(50)">+/- 50</button>
+    <button mat-button (click)="setIncrement(100)">+/- 100</button>
+  </div>
+  <div class="action-buttons">
+    <button mat-button (click)="handleDeposit()">Faire un dépôt</button>
+    <button mat-button (click)="handleWithdrawal()">Faire un retrait</button>
+  </div>
 </div>
