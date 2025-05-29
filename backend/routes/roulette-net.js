@@ -22,16 +22,16 @@ function getNumberColor(number) {
 async function win(winningSpin, bets, solde, userId, winValue = 0, payout = 0, betTotal = 0) {
     // Logs d'initialisation pour tracer le début de chaque calcul de gains
     // Ces console.log permettent de suivre précisément chaque session de jeu et d'identifier les problèmes
-    console.log(`[WIN CALCULATION] 🎰 Début du calcul des gains pour l'utilisateur ${userId}`);
-    console.log(`[WIN CALCULATION] Numéro gagnant: ${winningSpin}, Solde initial: ${solde}`);
-    console.log(`[WIN CALCULATION] Nombre de mises: ${bets.length}`);
+    // console.log(`[WIN CALCULATION] 🎰 Début du calcul des gains pour l'utilisateur ${userId}`);
+    // console.log(`[WIN CALCULATION] Numéro gagnant: ${winningSpin}, Solde initial: ${solde}`);
+    // console.log(`[WIN CALCULATION] Nombre de mises: ${bets.length}`);
     
     let newsolde = solde;
     let betLose = 0;
     const winColor = getNumberColor(winningSpin);
     const isEven = winningSpin !== 0 && winningSpin % 2 === 0;
     
-    // Définition des colonnes pour les paris "2 à 1" selon la disposition du plateau
+    // Définition des colonnes pour les paris '2 à 1' selon la disposition du plateau
     // Ces tableaux permettent de vérifier si un numéro appartient à une colonne spécifique
     const firstColumn = [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34];
     const secondColumn = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35];
@@ -51,15 +51,15 @@ async function win(winningSpin, bets, solde, userId, winValue = 0, payout = 0, b
         // Évaluation des paris spéciaux basés sur les propriétés du numéro (couleur, parité, plage)
         // Ces conditions gèrent tous les paris externes comme rouge/noir, pair/impair, douzaines, etc.
         else if (b.label) {
-            if (b.label === 'RED' && winColor === 'red') isWin = true;
-            else if (b.label === 'BLACK' && winColor === 'black') isWin = true;
-            else if (b.label === 'EVEN' && isEven) isWin = true;
-            else if (b.label === 'ODD' && !isEven && winningSpin !== 0) isWin = true;
-            else if (b.label === '1 à 18' && winningSpin >= 1 && winningSpin <= 18) isWin = true;
-            else if (b.label === '19 à 36' && winningSpin >= 19 && winningSpin <= 36) isWin = true;
-            else if (b.label === '1 à 12' && winningSpin >= 1 && winningSpin <= 12) isWin = true;
-            else if (b.label === '13 à 24' && winningSpin >= 13 && winningSpin <= 24) isWin = true;
-            else if (b.label === '25 à 36' && winningSpin >= 25 && winningSpin <= 36) isWin = true;
+            if (b.label === 'RED' && winColor === 'red') {isWin = true;}
+            else if (b.label === 'BLACK' && winColor === 'black') {isWin = true;}
+            else if (b.label === 'EVEN' && isEven) {isWin = true;}
+            else if (b.label === 'ODD' && !isEven && winningSpin !== 0) {isWin = true;}
+            else if (b.label === '1 à 18' && winningSpin >= 1 && winningSpin <= 18) {isWin = true;}
+            else if (b.label === '19 à 36' && winningSpin >= 19 && winningSpin <= 36) {isWin = true;}
+            else if (b.label === '1 à 12' && winningSpin >= 1 && winningSpin <= 12) {isWin = true;}
+            else if (b.label === '13 à 24' && winningSpin >= 13 && winningSpin <= 24) {isWin = true;}
+            else if (b.label === '25 à 36' && winningSpin >= 25 && winningSpin <= 36) {isWin = true;}
             // Traitement spécial des colonnes qui nécessite une vérification d'appartenance
             // Les colonnes sont plus complexes car elles ne suivent pas une séquence numérique simple
             else if (b.label === '2 à 1' && b.type === 'outside_column') {
@@ -68,9 +68,15 @@ async function win(winningSpin, bets, solde, userId, winValue = 0, payout = 0, b
                 // 2. numArray.every(n => firstColumn.includes(n)) : Le pari porte-t-il vraiment sur cette colonne ?
                 // Note: Logiquement, si (1) est false, (2) ne sera pas évalué grâce au court-circuit (&&)
                 // Cette double vérification protège contre les données corrompues et valide l'intégrité du pari
-                if (firstColumn.includes(winningSpin) && numArray.every(n => firstColumn.includes(n))) isWin = true;
-                else if (secondColumn.includes(winningSpin) && numArray.every(n => secondColumn.includes(n))) isWin = true; 
-                else if (thirdColumn.includes(winningSpin) && numArray.every(n => thirdColumn.includes(n))) isWin = true;
+                if (firstColumn.includes(winningSpin) && numArray.every(n => firstColumn.includes(n))) {isWin = true;
+                    console.log(`firstColumn : [ROULETTE WIN] 💰 Mise gagnante: ${b.label} - Mise: ${b.amt}, Gain: ${b.odds * b.amt}`);
+                }
+                else if (secondColumn.includes(winningSpin) && numArray.every(n => secondColumn.includes(n))) {isWin = true;
+                    console.log(`secondColumn : [ROULETTE WIN] 💰 Mise gagnante: ${b.label} - Mise: ${b.amt}, Gain: ${b.odds * b.amt}`);
+                } 
+                else if (thirdColumn.includes(winningSpin) && numArray.every(n => thirdColumn.includes(n))) {isWin = true;
+                    console.log(`thirdColumn : [ROULETTE WIN] 💰 Mise gagnante: ${b.label} - Mise: ${b.amt}, Gain: ${b.odds * b.amt}`);
+                }
             }
         }
         
@@ -79,10 +85,10 @@ async function win(winningSpin, bets, solde, userId, winValue = 0, payout = 0, b
         if (isWin) {
             const gain = b.odds * b.amt;
             winValue += gain;
-            console.log(`[WIN CALCULATION] ✅ Mise gagnante: ${b.label || b.numbers} - Mise: ${b.amt}, Gain: ${gain}`);
+            // console.log(`[WIN CALCULATION] ✅ Mise gagnante: ${b.label || b.numbers} - Mise: ${b.amt}, Gain: ${gain}`);
         }else{
             betLose += b.amt;
-            console.log(`[WIN CALCULATION] ❌ Mise perdante: ${b.label || b.numbers} - Mise perdue: ${b.amt}`);
+            // console.log(`[WIN CALCULATION] ❌ Mise perdante: ${b.label || b.numbers} - Mise perdue: ${b.amt}`);
         }
         betTotal += b.amt;
     }
@@ -94,12 +100,12 @@ async function win(winningSpin, bets, solde, userId, winValue = 0, payout = 0, b
     
     // Logs de résumé pour vérifier la cohérence des calculs
     // Ces informations permettent de valider que tous les montants sont corrects
-    console.log(`[WIN CALCULATION] 📊 Résumé des gains:`);
-    console.log(`[WIN CALCULATION] - Total des gains: ${winValue}`);
-    console.log(`[WIN CALCULATION] - Total des pertes: ${betLose}`);
-    console.log(`[WIN CALCULATION] - Total des mises: ${betTotal}`);
-    console.log(`[WIN CALCULATION] - Payout net: ${payout}`);
-    console.log(`[WIN CALCULATION] - Nouveau solde calculé: ${solde} → ${newsolde}`);
+    // console.log(`[WIN CALCULATION] 📊 Résumé des gains:`);
+    // console.log(`[WIN CALCULATION] - Total des gains: ${winValue}`);
+    // console.log(`[WIN CALCULATION] - Total des pertes: ${betLose}`);
+    // console.log(`[WIN CALCULATION] - Total des mises: ${betTotal}`);
+    // console.log(`[WIN CALCULATION] - Payout net: ${payout}`);
+    // console.log(`[WIN CALCULATION] - Nouveau solde calculé: ${solde} → ${newsolde}`);
     
     // Mise à jour immédiate du solde en base de données pour persistance
     // Cette opération garantit que le nouveau solde est sauvegardé même en cas de déconnexion
@@ -113,6 +119,7 @@ async function win(winningSpin, bets, solde, userId, winValue = 0, payout = 0, b
             console.log(`[WIN CALCULATION] ✅ Solde mis à jour en base de données pour l'utilisateur ${userId}: ${newsolde}`);
         } catch (err) {
             console.error(`[WIN CALCULATION] ❌ Erreur lors de la mise à jour du solde en base:`, err);
+            throw err; // Re-throw the error so it can be caught by the calling route
         }
     }
     
@@ -147,8 +154,8 @@ router.post('/win', async (req, res) => {
     
     // Logs d'entrée pour tracer chaque demande de calcul de gains
     // Ces informations permettent de diagnostiquer les problèmes de communication frontend/backend
-    console.log(`[ROULETTE WIN] 🎯 Nouvelle demande de calcul de gains`);
-    console.log(`[ROULETTE WIN] UserId: ${userId}, Numéro gagnant: ${winningSpin}, Solde reçu du frontend: ${solde}`);
+    // console.log(`[ROULETTE WIN] 🎯 Nouvelle demande de calcul de gains`);
+    // console.log(`[ROULETTE WIN] UserId: ${userId}, Numéro gagnant: ${winningSpin}, Solde reçu du frontend: ${solde}`);
     
     // Vérification de cohérence entre le solde frontend et la base de données
     // Cette double vérification permet de détecter les désynchronisations et problèmes de cache
@@ -158,7 +165,7 @@ router.post('/win', async (req, res) => {
             if (rows.length > 0) {
                 const soldeReel = rows[0].solde;
                 console.log(`[ROULETTE WIN] 💰 Solde réel en base de données: ${soldeReel}`);
-                console.log(`[ROULETTE WIN] ⚠️ Différence: Frontend(${solde}) vs Base(${soldeReel}) = ${solde - soldeReel}`);
+                console.log(`[ROULETTE WIN] ⚠️ Différence: Frontend(${solde}) vs Base(${soldeReel}) = ${solde - soldeReel}`);    
             }
         } catch (err) {
             console.log(`[ROULETTE WIN] ❌ Erreur lors de la vérification du solde en base:`, err);
@@ -168,7 +175,7 @@ router.post('/win', async (req, res) => {
     // Validation des données d'entrée pour éviter les erreurs de calcul
     // Ces vérifications garantissent que tous les paramètres nécessaires sont présents et valides
     if (winningSpin === undefined || !Array.isArray(bets) || solde === undefined) {
-        console.log(`[ROULETTE WIN] ❌ Données invalides reçues`);
+        // console.log(`[ROULETTE WIN] ❌ Données invalides reçues`);
         return res.status(400).json({ 
             message: "Données invalides. Veuillez fournir un numéro gagnant, des mises et la valeur de la banque." 
         });
@@ -179,7 +186,7 @@ router.post('/win', async (req, res) => {
         // Cette étape centralise toute la logique de jeu et retourne les résultats structurés
         const result = await win(winningSpin, bets, solde, userId, 0, 0, 0);
         
-        console.log(`[ROULETTE WIN] ✅ Calcul terminé, envoi de la réponse:`, result);
+        // console.log(`[ROULETTE WIN] ✅ Calcul terminé, envoi de la réponse:`, result);
         res.json(result);
     } catch (error) {
         // Gestion d'erreur avec logging détaillé pour faciliter le débogage

@@ -464,6 +464,278 @@ describe("Tests des routes Roulette-Net", () => {
         message: "Erreur lors du calcul des gains"
       });
     });
+
+    // Test sans userId : vérification que le calcul fonctionne sans mise à jour de base
+    it("doit calculer les gains sans userId (pas de mise à jour en base)", async () => {
+      const bets = [
+        {
+          label: "Rouge",
+          numbers: "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36",
+          type: "outside_color",
+          odds: 2,
+          amt: 50
+        }
+      ];
+
+      const res = await request(app)
+        .post("/api/roulette/win")
+        .send({
+          winningSpin: 1, // Rouge
+          bets: bets,
+          solde: 500
+          // Pas de userId
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.winValue).toBe(100); // 2 * 50
+      expect(res.body.payout).toBe(100); // 100 - 0
+      expect(res.body.newsolde).toBe(600); // 500 + 100
+      expect(res.body.betTotal).toBe(50);
+      
+      // Vérifier qu'aucune requête DB n'a été faite
+      expect(db.query).not.toHaveBeenCalled();
+    });
+
+    // Test avec userId : vérification du solde en base retourne des données
+    it("doit vérifier le solde en base quand userId est fourni", async () => {
+      // Mock des appels DB : vérification du solde puis mise à jour
+      db.query
+        .mockResolvedValueOnce([[{ solde: 750 }]]) // SELECT du solde réussit avec des données
+        .mockResolvedValueOnce([{ affectedRows: 1 }]); // UPDATE réussit
+
+      const bets = [
+        {
+          label: "Noir",
+          numbers: "2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35",
+          type: "outside_color",
+          odds: 2,
+          amt: 25
+        }
+      ];
+
+      const res = await request(app)
+        .post("/api/roulette/win")
+        .send({
+          winningSpin: 2, // Noir
+          bets: bets,
+          solde: 700,
+          userId: 1
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.winValue).toBe(50); // 2 * 25
+      expect(res.body.payout).toBe(50); // 50 - 0
+      expect(res.body.newsolde).toBe(750); // 700 + 50
+
+      // Vérifier que les requêtes DB ont été appelées
+      expect(db.query).toHaveBeenCalledTimes(2);
+      expect(db.query).toHaveBeenNthCalledWith(1, "SELECT solde FROM user WHERE user_id = ?", [1]);
+      expect(db.query).toHaveBeenNthCalledWith(2, "UPDATE user SET solde = ? WHERE user_id = ?", [750, 1]);
+    });
+
+    // Test avec userId : vérification du solde en base retourne un tableau vide
+    it("doit gérer le cas où l'utilisateur n'existe pas en base", async () => {
+      // Mock des appels DB : vérification du solde ne trouve rien, mais mise à jour continue
+      db.query
+        .mockResolvedValueOnce([[]]) // SELECT du solde ne trouve aucun utilisateur
+        .mockResolvedValueOnce([{ affectedRows: 0 }]); // UPDATE n'affecte aucune ligne
+
+      const bets = [
+        {
+          label: "0",
+          numbers: "0",
+          type: "inside_whole",
+          odds: 36,
+          amt: 10
+        }
+      ];
+
+      const res = await request(app)
+        .post("/api/roulette/win")
+        .send({
+          winningSpin: 0, // Le zéro gagne
+          bets: bets,
+          solde: 300,
+          userId: 999 // Utilisateur qui n'existe pas
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.winValue).toBe(360); // 36 * 10
+      expect(res.body.payout).toBe(360); // 360 - 0
+      expect(res.body.newsolde).toBe(660); // 300 + 360
+
+      // Vérifier que les requêtes DB ont été appelées malgré l'utilisateur inexistant
+      expect(db.query).toHaveBeenCalledTimes(2);
+      expect(db.query).toHaveBeenNthCalledWith(1, "SELECT solde FROM user WHERE user_id = ?", [999]);
+      expect(db.query).toHaveBeenNthCalledWith(2, "UPDATE user SET solde = ? WHERE user_id = ?", [660, 999]);
+    });
+
+    // Test avec erreur lors de la vérification du solde (première requête DB échoue)
+    it("doit continuer le calcul même si la vérification du solde échoue", async () => {
+      // Mock des appels DB : première requête échoue, mais on continue quand même
+      db.query
+        .mockRejectedValueOnce(new Error("SELECT error")) // SELECT du solde échoue
+        .mockResolvedValueOnce([{ affectedRows: 1 }]); // UPDATE réussit quand même
+
+      const bets = [
+        {
+          label: "Rouge",
+          numbers: "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36",
+          type: "outside_color",
+          odds: 2,
+          amt: 100
+        }
+      ];
+
+      const res = await request(app)
+        .post("/api/roulette/win")
+        .send({
+          winningSpin: 5, // Rouge
+          bets: bets,
+          solde: 1000,
+          userId: 1
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.winValue).toBe(200); // 2 * 100
+      expect(res.body.payout).toBe(200); // 200 - 0
+      expect(res.body.newsolde).toBe(1200); // 1000 + 200
+
+      // Vérifier que les deux requêtes ont été tentées
+      expect(db.query).toHaveBeenCalledTimes(2);
+      expect(db.query).toHaveBeenNthCalledWith(1, "SELECT solde FROM user WHERE user_id = ?", [1]);
+      expect(db.query).toHaveBeenNthCalledWith(2, "UPDATE user SET solde = ? WHERE user_id = ?", [1200, 1]);
+    });
+
+    // Test explicite pour forcer la couverture des lignes 71-73 (vérification du solde)
+    it("doit afficher les informations de solde lors de la vérification en base", async () => {
+      // Mock spécifique pour s'assurer que la vérification du solde passe par le chemin complet
+      db.query
+        .mockResolvedValueOnce([[{ solde: 500 }]]) // SELECT retourne exactement un utilisateur avec solde
+        .mockResolvedValueOnce([{ affectedRows: 1 }]); // UPDATE réussit
+
+      const bets = [
+        {
+          label: "12",
+          numbers: "12",
+          type: "inside_whole",
+          odds: 36,
+          amt: 5
+        }
+      ];
+
+      const res = await request(app)
+        .post("/api/roulette/win")
+        .send({
+          winningSpin: 12, // Le numéro 12 gagne
+          bets: bets,
+          solde: 600, // Solde frontend différent du solde base pour tester la différence
+          userId: 123
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.winValue).toBe(180); // 36 * 5
+      expect(res.body.payout).toBe(180); // 180 - 0  
+      expect(res.body.newsolde).toBe(780); // 600 + 180
+
+      // Vérifier les appels DB avec les bons paramètres
+      expect(db.query).toHaveBeenCalledTimes(2);
+      expect(db.query).toHaveBeenNthCalledWith(1, "SELECT solde FROM user WHERE user_id = ?", [123]);
+      expect(db.query).toHaveBeenNthCalledWith(2, "UPDATE user SET solde = ? WHERE user_id = ?", [780, 123]);
+    });
+
+    // Test des paris sur colonne - première colonne (lignes 71-73)
+    it("doit calculer correctement les gains sur la première colonne", async () => {
+      db.query
+        .mockResolvedValueOnce([[{ solde: 1000 }]]) // SELECT du solde
+        .mockResolvedValueOnce([{ affectedRows: 1 }]); // UPDATE réussit
+
+      const bets = [
+        {
+          label: '2 à 1',
+          numbers: "1,4,7,10,13,16,19,22,25,28,31,34", // Première colonne
+          type: "outside_column",
+          odds: 3,
+          amt: 50
+        }
+      ];
+
+      const res = await request(app)
+        .post("/api/roulette/win")
+        .send({
+          winningSpin: 1, // Le numéro 1 est dans la première colonne
+          bets: bets,
+          solde: 1000,
+          userId: 1
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.winValue).toBe(150); // 3 * 50
+      expect(res.body.payout).toBe(150); // 150 - 0
+      expect(res.body.newsolde).toBe(1150); // 1000 + 150
+    });
+
+    // Test des paris sur colonne - deuxième colonne (ligne 72)
+    it("doit calculer correctement les gains sur la deuxième colonne", async () => {
+      db.query
+        .mockResolvedValueOnce([[{ solde: 800 }]]) // SELECT du solde
+        .mockResolvedValueOnce([{ affectedRows: 1 }]); // UPDATE réussit
+
+      const bets = [
+        {
+          label: '2 à 1',
+          numbers: "2,5,8,11,14,17,20,23,26,29,32,35", // Deuxième colonne
+          type: "outside_column",
+          odds: 3,
+          amt: 30
+        }
+      ];
+
+      const res = await request(app)
+        .post("/api/roulette/win")
+        .send({
+          winningSpin: 5, // Le numéro 5 est dans la deuxième colonne
+          bets: bets,
+          solde: 800,
+          userId: 1
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.winValue).toBe(90); // 3 * 30
+      expect(res.body.payout).toBe(90); // 90 - 0
+      expect(res.body.newsolde).toBe(890); // 800 + 90
+    });
+
+    // Test des paris sur colonne - troisième colonne (ligne 73)
+    it("doit calculer correctement les gains sur la troisième colonne", async () => {
+      db.query
+        .mockResolvedValueOnce([[{ solde: 600 }]]) // SELECT du solde
+        .mockResolvedValueOnce([{ affectedRows: 1 }]); // UPDATE réussit
+
+      const bets = [
+        {
+          label: '2 à 1',
+          numbers: "3,6,9,12,15,18,21,24,27,30,33,36", // Troisième colonne
+          type: "outside_column",
+          odds: 3,
+          amt: 20
+        }
+      ];
+
+      const res = await request(app)
+        .post("/api/roulette/win")
+        .send({
+          winningSpin: 9, // Le numéro 9 est dans la troisième colonne
+          bets: bets,
+          solde: 600,
+          userId: 1
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.winValue).toBe(60); // 3 * 20
+      expect(res.body.payout).toBe(60); // 60 - 0
+      expect(res.body.newsolde).toBe(660); // 600 + 60
+    });
   });
 
   // ===== TESTS DE LA ROUTE /betting-board =====
