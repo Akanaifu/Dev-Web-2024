@@ -11,7 +11,7 @@ export class RouletteNetLogic {
   private http = inject(HttpClient);
   private BASE_URL = 'http://localhost:3000';
   
-  currentUser!: IUser;
+  currentUser?: IUser;
   
   // Les valeurs des jetons et leurs couleurs
   chipValues = [1, 5, 10, 100, 'clear'];
@@ -39,16 +39,18 @@ export class RouletteNetLogic {
 
   // Méthode pour récupérer les informations de l'utilisateur
   fetchIUser() {
+    console.log('🔄 Récupération des données utilisateur depuis l\'API...');
     this.http.get<IUser>(`${this.BASE_URL}/get_id/info`, { withCredentials: true })
       .subscribe({
         next: (userData) => {
           this.currentUser = userData;
-          console.log('Utilisateur connecté:', this.currentUser);
+          console.log('✅ Données utilisateur récupérées:', this.currentUser);
+          console.log('💰 Solde récupéré depuis l\'API:', this.currentUser?.solde);
           
           // Si l'utilisateur a un solde, on peut l'utiliser comme valeur initiale de la banque
         },
         error: (error) => {
-          console.error('Erreur lors de la récupération des informations utilisateur:', error);
+          console.error('❌ Erreur lors de la récupération des informations utilisateur:', error);
           
         }
       });
@@ -70,6 +72,7 @@ export class RouletteNetLogic {
 
   removeBet(cell: IBettingBoardCell) {// Supprimer la mise
     if (!this.currentUser) return; // Vérification de sécurité
+    if (!cell || !cell.numbers) return; // Vérification de sécurité pour cell
     
     this.wager = (this.wager === 0) ? 100 : this.wager;
     const n = cell.numbers.join(', ');
@@ -79,6 +82,7 @@ export class RouletteNetLogic {
         if (b.amt !== 0) {
           this.wager = (b.amt > this.wager) ? this.wager : b.amt;
           b.amt -= this.wager;
+          // Créditer localement pour l'affichage en temps réel (sans toucher la base de données)
           this.currentUser.solde += this.wager;
           this.currentBet -= this.wager;
         }
@@ -119,7 +123,13 @@ export class RouletteNetLogic {
     }
     
     try {
-      // Appel de l'API win du backend
+      // Récupérer le vrai solde depuis la base de données
+      console.log('💰 Récupération du solde réel depuis la base de données...');
+      const userData = await firstValueFrom(this.http.get<IUser>(`${this.BASE_URL}/get_id/info`, { withCredentials: true }));
+      const soldeReel = userData.solde;
+      console.log(`💰 Solde réel récupéré: ${soldeReel}`);
+      
+      // Appel de l'API win du backend avec le vrai solde de la base de données
       const response = await firstValueFrom(this.http.post<{ 
         winValue: number; 
         payout: number;
@@ -130,7 +140,7 @@ export class RouletteNetLogic {
         { 
           winningSpin, 
           bets: this.bet,
-          solde: this.currentUser.solde,
+          solde: soldeReel,  // Utiliser le solde réel de la base de données
           userId: this.currentUser.user_id
         }
       ));
@@ -144,9 +154,10 @@ export class RouletteNetLogic {
         
         // Mettre à jour la valeur de la banque avec celle calculée par le backend
         this.currentUser.solde = safeNewsolde;
+        console.log(`💰 Solde frontend mis à jour: ${safeNewsolde}`);
         
-        // Rafraîchir le solde depuis le serveur pour garantir la cohérence
-        await this.fetchIUser();
+        // Actualiser les données utilisateur depuis la base de données pour garantir la cohérence
+        this.fetchIUser();
         
         // Retourner les valeurs sécurisées
         return { 
@@ -180,6 +191,7 @@ export class RouletteNetLogic {
   }
 
   getBetForCell(cell: IBettingBoardCell) {// Obtenir la mise pour une cellule
+    if (!cell || !cell.numbers) return null; // Vérification de sécurité
     const n = cell.numbers.join(', ');
     const t = cell.type;
     return this.bet.find(b => b.numbers === n && b.type === t) || null;
@@ -193,21 +205,23 @@ export class RouletteNetLogic {
   }
   
   // Méthode pour obtenir les informations de l'utilisateur connecté
-  getCurrentIUser(): IUser | null {// Obtenir l'utilisateur connecté
+  getCurrentIUser(): IUser | undefined {// Obtenir l'utilisateur connecté
     return this.currentUser;
   }
 
 
   setBet(cell: IBettingBoardCell) {// Vérifier si la mise est supérieure à 0
     if (!this.currentUser) return; // Vérification de sécurité
+    if (!cell || !cell.numbers) return; // Vérification de sécurité pour cell
     
     this.lastWager = this.wager;
     this.wager = (this.currentUser.solde < this.wager) ? this.currentUser.solde : this.wager;
 
     if (this.wager > 0) {
-
+      // Débiter localement pour l'affichage en temps réel (sans toucher la base de données)
       this.currentUser.solde -= this.wager;
       this.currentBet += this.wager;
+      
       // Vérifier si la mise existe déjà
       const n = cell.numbers.join(', ');
       const t = cell.type;
@@ -242,9 +256,9 @@ export class RouletteNetLogic {
     if (this.isSpinning) return false; // Empêcher la sélection de puce pendant la rotation
     
     if (index === this.chipValues.length - 1) {
-        // Clear bet
+        // Clear bet - remettre le solde affiché à l'état initial
         if (this.currentUser && this.currentUser.solde !== undefined) {
-            this.currentUser.solde += this.currentBet;
+            this.currentUser.solde += this.currentBet;  // Remettre les mises dans le solde affiché
         }
         this.currentBet = 0;
         this.clearBet();

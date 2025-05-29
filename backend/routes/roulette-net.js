@@ -72,27 +72,21 @@ async function win(winningSpin, bets, solde, userId, winValue = 0, payout = 0, b
     console.log(`[WIN CALCULATION] - Total des mises: ${betTotal}`);
     console.log(`[WIN CALCULATION] - Payout net: ${payout}`);
     console.log(`[WIN CALCULATION] - Nouveau solde calculé: ${solde} → ${newsolde}`);
-    console.log(`[WIN CALCULATION] 🔧 DEBUG: Après calculs, avant mise à jour en base`);
     
     // Mettre à jour le solde en base de données
-    console.log(`[WIN CALCULATION] 🔍 Vérification userId pour mise à jour en base: ${userId} (type: ${typeof userId})`);
     if (userId) {
         try {
             console.log(`[WIN CALCULATION] 🔄 Mise à jour du solde en base de données...`);
-            const [result] = await db.query(
+            await db.query(
                 "UPDATE user SET solde = ? WHERE user_id = ?",
                 [newsolde, userId]
             );
-            console.log(`[WIN CALCULATION] 📊 Résultat de la requête UPDATE:`, result);
             console.log(`[WIN CALCULATION] ✅ Solde mis à jour en base de données pour l'utilisateur ${userId}: ${newsolde}`);
         } catch (err) {
             console.error(`[WIN CALCULATION] ❌ Erreur lors de la mise à jour du solde en base:`, err);
         }
-    } else {
-        console.log(`[WIN CALCULATION] ⚠️ Pas de userId fourni, pas de mise à jour en base de données`);
     }
     
-    console.log(`[WIN CALCULATION] 🏁 Fin de la fonction win, return des résultats`);
     return { 
         winValue: winValue, 
         payout: payout,
@@ -114,7 +108,21 @@ router.post('/win', async (req, res) => {
     const userId = req.body.userId;
     
     console.log(`[ROULETTE WIN] 🎯 Nouvelle demande de calcul de gains`);
-    console.log(`[ROULETTE WIN] UserId: ${userId}, Numéro gagnant: ${winningSpin}, Solde: ${solde}`);
+    console.log(`[ROULETTE WIN] UserId: ${userId}, Numéro gagnant: ${winningSpin}, Solde reçu du frontend: ${solde}`);
+    
+    // Vérifier le solde réel en base de données
+    if (userId) {
+        try {
+            const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+            if (rows.length > 0) {
+                const soldeReel = rows[0].solde;
+                console.log(`[ROULETTE WIN] 💰 Solde réel en base de données: ${soldeReel}`);
+                console.log(`[ROULETTE WIN] ⚠️ Différence: Frontend(${solde}) vs Base(${soldeReel}) = ${solde - soldeReel}`);
+            }
+        } catch (err) {
+            console.log(`[ROULETTE WIN] ❌ Erreur lors de la vérification du solde en base:`, err);
+        }
+    }
     
     if (winningSpin === undefined || !Array.isArray(bets) || solde === undefined) {
         console.log(`[ROULETTE WIN] ❌ Données invalides reçues`);

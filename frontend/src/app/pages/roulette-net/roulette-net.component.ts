@@ -130,7 +130,7 @@ export class RouletteNetComponent implements OnInit {
             const initialBall = this.ballRotation;
             const start = performance.now();
             
-            const animate = (now: number) => {
+            const animate = async (now: number) => {
                 const elapsed = now - start;
                 const progress = Math.min(elapsed / duration, 1);
                 this.ballRotation = initialBall + (targetBall - initialBall) * progress;
@@ -147,28 +147,33 @@ export class RouletteNetComponent implements OnInit {
                         this.game.previousNumbers.pop();
                     }
                     
-                    // Calculer les gains
-                    const winResult = this.game.win(result.number);
-                    
-                    // Afficher les gains
-                    winResult.then(result => {
-                        if (result.payout > 0) {
-                            this.resultMessage += ` - Vous avez gagné ${result.payout}!`;
+                    try {
+                        // Calculer les gains et ATTENDRE le résultat
+                        const winResult = await this.game.win(result.number);
+                        
+                        // Afficher les gains
+                        if (winResult.payout > 0) {
+                            this.resultMessage += ` - Vous avez gagné ${winResult.payout}!`;
                         } 
-                        else if (result.payout == 0) {
-                            this.resultMessage += ` - Vous avez ni gagné ni perdu ${(result.payout)}`;
+                        else if (winResult.payout == 0) {
+                            this.resultMessage += ` - Vous avez ni gagné ni perdu ${(winResult.payout)}`;
                         }
                         else {
-                            this.resultMessage += ` - Vous avez perdu ${Math.abs(result.payout)}`;
+                            this.resultMessage += ` - Vous avez perdu ${Math.abs(winResult.payout)}`;
                         }
-                        console.log('Error during spin:', winResult);
-                    this.game.currentBet = 0;
-                    this.game.bet = [];
-                    this.game.numbersBet = [];
+                        
+                        console.log('Win result:', winResult);
+                        this.game.currentBet = 0;
+                        this.game.bet = [];
+                        this.game.numbersBet = [];
+                        
+                    } catch (winError) {
+                        console.error('Error calculating wins:', winError);
+                        this.resultMessage += ' - Erreur lors du calcul des gains';
+                    }
                     
                     // Reset spinning state à allow new bets
                     this.isSpinning = false;
-                    });  
                 }
             };
             

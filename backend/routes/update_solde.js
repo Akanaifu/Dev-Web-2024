@@ -12,13 +12,13 @@ router.post("/update", verifyToken, async (req, res) => {
     console.log(`[SOLDE UPDATE] Demande de mise à jour du solde pour l'utilisateur ${userId}`);
     console.log(`[SOLDE UPDATE] Nouveau solde demandé: ${newSolde}`);
 
-    if (!userId) {
+        if (!userId) {
       console.log(`[SOLDE UPDATE] Erreur: Utilisateur non trouvé`);
       return res.status(404).json({ error: "Utilisateur non trouvé" });
-    }
+        }
 
-    // Validation: s'assurer que newSolde est un nombre valide
-    if (isNaN(newSolde) || !isFinite(newSolde)) {
+        // Validation: s'assurer que newSolde est un nombre valide
+        if (isNaN(newSolde) || !isFinite(newSolde)) {
       console.log(`[SOLDE UPDATE] Erreur: Valeur de solde invalide - ${newSolde}`);
       return res.status(400).json({ error: "Valeur de solde invalide" });
     }
@@ -34,7 +34,7 @@ router.post("/update", verifyToken, async (req, res) => {
 
     // Mettre à jour le solde
     const [result] = await db.query(
-      "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE user SET solde = ? WHERE user_id = ?",
       [newSolde, userId]
     );
 
@@ -45,7 +45,7 @@ router.post("/update", verifyToken, async (req, res) => {
   } catch (err) {
     console.error(`[SOLDE UPDATE] ❌ Erreur lors de la mise à jour du solde:`, err);
     res.status(500).json({ error: "Erreur serveur" });
-  }
+}
 });
 
 module.exports = router;
