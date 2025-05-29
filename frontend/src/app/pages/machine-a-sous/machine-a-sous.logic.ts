@@ -1,6 +1,6 @@
 import { Database, ref, get, child, set } from '@angular/fire/database';
 import { HttpClient } from '@angular/common/http';
-import { NewGameService } from './new-game.service';
+import { NewGameService } from '../../services/new-game.service';
 
 interface Combination {
   id: string;
