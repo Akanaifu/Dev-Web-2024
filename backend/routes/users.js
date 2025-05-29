@@ -106,7 +106,8 @@ router.put("/:id/balance", async (req, res) => {
       return res.status(404).json({ error: "Utilisateur non trouvé" });
     }
     let newBalance = rows[0].solde;
-    let transactionType, transactionStatus = 1;
+    let transactionType,
+      transactionStatus = 1;
 
     if (action === "add") {
       newBalance += value;

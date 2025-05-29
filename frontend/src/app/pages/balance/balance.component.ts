@@ -57,7 +57,14 @@ export class BalanceComponent implements OnInit {
   }
 
   handleDeposit(): void {
-    if (this.userId == null) return;
+    if (this.userId == null) {
+      console.warn('Aucun utilisateur connecté pour le dépôt.');
+      return;
+    }
+    if (this.amount <= 0) {
+      console.warn('Le montant doit être supérieur à zéro pour le dépôt.');
+      return;
+    }
     this.userService
       .updateUserBalance(this.userId, this.amount, 'add')
       .subscribe({
@@ -75,9 +82,17 @@ export class BalanceComponent implements OnInit {
   }
 
   handleWithdrawal(): void {
-    if (this.userId == null) return;
+    if (this.userId == null) {
+      console.warn('Aucun utilisateur connecté pour le retrait.');
+      return;
+    }
+    if (this.amount <= 0) {
+      console.warn('Le montant doit être supérieur à zéro pour le retrait.');
+      return;
+    }
     if (this.amount > this.maxAmount) {
       this.showOverdraftModal = true;
+      this.amount = this.maxAmount; // Set amount to maxAmount if it exceeds
       return;
     }
     this.proceedWithdrawal();
