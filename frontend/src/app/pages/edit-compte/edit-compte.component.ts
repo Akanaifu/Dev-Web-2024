@@ -27,6 +27,7 @@ export class EditCompteComponent implements OnInit {
     user_id: 0,
   };
   selectedFile: File | null = null;
+  avatarPreviewUrl: string = 'assets/default.png';
 
   constructor(
     private fb: FormBuilder,
@@ -100,10 +101,18 @@ export class EditCompteComponent implements OnInit {
       });
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.avatarPreviewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.selectedFile = null;
+      this.avatarPreviewUrl = 'assets/default.png';
     }
   }
 

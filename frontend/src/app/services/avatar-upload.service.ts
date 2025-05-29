@@ -11,7 +11,7 @@ export class AvatarUploadService {
     const formData = new FormData();
     formData.append('avatar', file);
     formData.append('userId', userId.toString());
-    return this.http.post('http://localhost:3000/upload-avatar', formData);
+    return this.http.post('http://localhost:3000/avatar/upload-avatar', formData);
   }
 
   getAvatarUrl(userId: number | undefined | null): string {
