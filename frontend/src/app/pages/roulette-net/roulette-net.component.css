@@ -1,0 +1,814 @@
+/*
+  STYLES CSS POUR LA ROULETTE EN LIGNE
+  
+  ORGANISATION DU FICHIER :
+  1. Styles globaux et conteneur principal
+  2. Roue de roulette (animation, sections, bille)
+  3. Interface de contrôle (solde, jetons, boutons)
+  4. Plateau de mise (grille de numéros, zones externes)
+  5. États interactifs (hover, disabled, sélections)
+  6. Responsive design pour mobiles
+  
+  ARCHITECTURE VISUELLE :
+  - Layout flexbox : colonnes gauche (roue) et droite (plateau)
+  - Animations CSS : rotation de la bille, transitions hover
+  - Système de couleurs : vert casino, rouge/noir roulette, jetons colorés
+  - États d'interface : isSpinning désactive visuellement les interactions
+  
+  CLASSES IMPORTANTES :
+  - .disabled : État pendant le spin (pointer-events: none)
+  - .chip : Affichage des mises sur le plateau
+  - .sect : Sections de la roue avec rotations précises
+  - .redNum/.blackNum : Couleurs des numéros selon les règles de roulette
+*/
+
+html, body {
+	font-family: arial;
+	cursor: default;
+	/* Désactivation de la sélection de texte pour une interface de jeu propre */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	--background : #016D29; /* Couleur verte traditionnelle du casino */
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+#container {
+	display: flex;
+	flex-direction: row;
+	width: 100vw;
+	height: 100vh;
+	padding: 1%;
+	color: #fff;
+}
+
+/* la partie roulette */
+.first-column {
+	width: 310px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-right: 5%;
+	margin-left: 3%;
+}
+/* la partie de la roulette */
+.wheel {
+	height: 350px;
+	width: 100%;
+	position: relative;
+}
+
+.wheel_rotating {
+	width: 290px;
+	height: 290px;
+	position: relative;
+	margin: 0 auto;
+	display: block;
+}
+
+.outer_rim {
+	width: 290px;
+	height: 290px;
+	border-radius: 100%;
+	box-shadow: 0px 0px 8px rgba(0,0,0,0.5);
+	border: 10px solid #F3c620;
+	position: relative;
+	z-index: 1;
+}
+
+.sect {
+	position: absolute;
+	width: 290px;
+	height: 290px;
+	border-radius: 100%;
+	clip: rect(0px, 290px, 290px, 145px);
+}
+#sect1 .block {
+	transform:rotate(9.73deg);
+}
+    
+#sect2 .block, #sect4 .block, #sect6 .block,
+#sect8 .block, #sect10 .block, #sect12 .block,
+#sect14 .block, #sect16 .block, #sect18 .block,
+#sect20 .block, #sect22 .block, #sect24 .block,
+#sect26 .block, #sect28 .block, #sect30 .block,
+#sect32 .block, #sect34 .block, #sect36 .block {
+	background-color: #E0080B;
+	transform: rotate(9.73deg);
+}
+
+#sect3 .block, #sect5 .block,
+#sect7 .block, #sect9 .block, #sect11 .block,
+#sect13 .block, #sect15 .block, #sect17 .block, 
+#sect19 .block, #sect21 .block, #sect23 .block, #sect25 .block, 
+#sect27 .block, #sect29 .block, #sect31 .block, #sect33 .block,
+#sect35 .block, #sect37 .block {
+	background-color: #000;
+	transform: rotate(9.73deg);
+}
+
+#sect2 {
+	transform: rotate(9.73deg);
+}
+
+#sect3 {
+	transform: rotate(19.46deg);
+}
+
+#sect4 {
+	transform: rotate(29.19deg);
+}
+
+#sect5 {
+	transform: rotate(38.92deg);
+}
+
+#sect6 {
+	transform: rotate(48.65deg);
+}
+
+#sect7 {
+	transform: rotate(58.38deg);
+}
+
+#sect8 {
+	transform: rotate(68.11deg);
+}
+
+#sect9 {
+	transform: rotate(77.84deg);
+}
+
+#sect10 {
+	transform: rotate(87.57deg);
+}
+
+#sect11 {
+	transform: rotate(97.3deg);
+}
+
+#sect12 {
+	transform: rotate(107.03deg);
+}
+
+#sect13 {
+	transform: rotate(116.76deg);
+}
+
+#sect14 {
+	transform: rotate(126.49deg);
+}
+
+#sect15 {
+	transform: rotate(136.22deg);
+}
+
+#sect16 {
+	transform: rotate(145.95deg);
+}
+
+#sect17 {
+	transform: rotate(155.68deg);
+}
+
+#sect18 {
+	transform: rotate(165.41deg);
+}
+
+#sect19 {
+	transform: rotate(175.14deg);
+}
+
+#sect20 {
+	transform: rotate(184.87deg);
+}
+
+#sect21 {
+	transform: rotate(194.6deg);
+}
+
+#sect22 {
+	transform: rotate(204.33deg);
+}
+
+#sect23 {
+	transform: rotate(214.06deg);
+}
+
+#sect24 {
+	transform: rotate(223.79deg);
+}
+
+#sect25 {
+	transform: rotate(233.52deg);
+}
+
+#sect26 {
+	transform: rotate(243.25deg);
+}
+
+#sect27 {
+	transform: rotate(252.98deg);
+}
+
+#sect28 {
+	transform: rotate(262.71deg);
+}
+
+#sect29 {
+	transform: rotate(272.44deg);
+}
+
+#sect30 {
+	transform: rotate(282.17deg);
+}
+
+#sect31 {
+	transform: rotate(291.9deg);
+}
+
+#sect32 {
+	transform: rotate(301.63deg);
+}
+
+#sect33 {
+	transform: rotate(311.36deg);
+}
+
+#sect34 {
+	transform: rotate(321.09deg);
+}
+
+#sect35 {
+	transform: rotate(330.82deg);
+}
+
+#sect36 {
+	transform: rotate(340.55deg);
+}
+
+#sect37 {
+	transform: rotate(350.28deg);
+}
+
+.single,.double{
+	position: absolute;
+	z-index: 1;
+	color: #fff;
+	font-size: 14px;
+	transform: rotate(3deg);
+}
+
+.single{
+	left: 152px;
+	margin-top: 4.5px;
+}
+
+.double{
+	left: 148px;
+	margin-top: 4.5px;
+}
+
+.block {
+	transition: all 1s;
+	position: absolute;
+	width: 290px;
+	height: 290px;
+	border-radius: 100%;
+	clip: rect(0px, 145px, 290px, 0px);
+}
+
+
+
+.pockets_rim {
+	position: absolute;
+	top: 24px;
+	left: 24px;
+	width: 235px;
+	height: 235px;
+	border-radius: 100%;
+	border: 3px solid silver;
+	background: transparent;
+	position: absolute;
+	z-index: 2;
+}
+
+.ball_track{
+	width: 212px;
+	height: 207px;
+	position: absolute;
+	left: 46.5px;
+	top: 40px;
+	border-radius: 100%;
+	z-index:2;
+}
+.ball{
+	background-color: #fff;
+	width: 16px;
+	height: 16px;
+	border-radius: 100%;
+	position: relative;
+	left: 109px;
+	top: -8px;
+}
+
+.pockets {
+	position: absolute;
+	top: 27px;
+	left: 27px;
+	width: 235px;
+	height: 235px;
+	background-color: #000;
+	border-radius: 100%;
+	opacity: .5;
+}
+
+.cone {
+	position: absolute;
+	top: 52px;
+	left: 51px;
+	height: 180px;
+	width: 180px;
+	border: 3px solid #9f9a9a;
+	border-radius: 100%;
+	background: radial-gradient(circle at 100px 100px, #892c10, #000);
+}
+
+.turret{
+	border-radius: 100%;
+	background: radial-gradient( circle at 30% 30%, #f3c620, #1a1608 );
+	width: 35px;
+	height: 35px;
+	position: absolute;
+	top: 133px;
+	left: 134px;
+	z-index: 1;
+}
+	
+.turret_handle{
+	background: radial-gradient( circle at 44%, #f3c620, #6a570f);
+	width: 87px;
+	height: 14px;
+	position: absolute;
+	left: 103px;
+	top: 138px;
+}
+
+.thend_one, .thend_two{
+	border-radius: 100%;
+	background: radial-gradient( circle at 30% 30%, #f3c620, #1a1608 );
+	width: 25px;
+	height: 25px;
+	position: absolute;
+	top: -6px;
+}
+
+.thend_one{
+	left: -20px;
+}
+
+.thend_two{
+	left: 83px;
+}
+/* la fin de la partie de la roulette */
+
+.roulette_result_message {
+	margin: 16px auto 8px auto;
+	padding: 12px 24px;
+	background: #222b;
+	color: #fff;
+	font-size: 1.3em;
+	font-weight: bold;
+	border-radius: 10px;
+	text-align: center;
+	max-width: 350px;
+	box-shadow: 0 2px 8px #0005;
+	z-index: 20;
+}
+/* la partie du solde */
+.money_container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+.bankContainer {
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 10%;
+	padding: 2% 0;
+	margin-bottom: 4%;
+	border: 1px solid;
+	border-radius: 10px;
+	box-shadow: inset -2px -4px rgb(0 0 0 / 20%);
+}
+
+.bank, .bet {
+	display: inline-block;
+	width: calc(50% - 28px);
+    background-color: #000;
+    font-size: 18px;
+    margin-left: 7px;
+    padding: 5px;
+    border: 4px solid silver;
+    border-radius: 7px;
+    text-align: right;
+}
+
+.chip_container {
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 10%;
+	padding: 2% 0;
+	margin-bottom: 4%;
+	border: 1px solid;
+	border-radius: 10px;
+	box-shadow: inset -2px -4px rgb(0 0 0 / 20%);
+}
+
+.color_chip {
+	width: 20%;
+	height: 80%;
+	background-color: #fff;
+	border: 5px solid;
+	border-radius: 100%;
+	display: inline-block;
+	margin-left: 9px;
+	color: #000;
+	cursor: pointer;
+}
+
+.color_chip_span {
+	display: flex;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	font-weight: bold;
+	font-size: 14px;
+	text-align: center;
+}
+
+
+
+.color_chip_on {
+	position: relative;
+	top: -4px;
+	box-shadow: 0 4px rgb(0 0 0 / 20%);
+}
+
+.clearBet {
+	border-color:red;
+	background-color:red;
+	color:#fff;
+	margin-left:22px;
+}
+
+.clearBet .color_chip_span {
+	margin-left:-2px;
+}
+
+
+
+.buttom_launch{
+	width: 100%;
+	height:10%;
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-end;
+	justify-content: center;
+}
+
+button {
+	background: linear-gradient(135deg, rgba(58, 12, 187, 0.8), rgba(58, 12, 187, 0.6));
+	color: white;
+	border: none;
+	border-radius: 50px;
+	padding: 3%;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 16px;
+	transition: all 0.05s ease;
+}
+
+button:enabled {
+	background: linear-gradient(135deg, rgba(58, 12, 187, 0.9), rgba(58, 12, 187, 0.7));
+	transform: translateY(-2px);
+	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+	border: 2px solid rgba(255, 215, 0, 0.5);
+	cursor: pointer;
+}
+
+
+/* fin de la partie roulette */
+.second_column {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	height: auto;
+	width: 50%;
+}
+.space_zero {
+	width: 100%;
+	height: 4%;
+}
+.space_2to1 {
+	width: 100%;
+	height: 8%;
+	
+}
+
+.table-column-right-first, 
+.table-column-right-second {
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+}
+
+.table_column_left {
+	display: flex;
+	flex-direction: column;
+	width: 25%;
+	height: 100%;
+}
+
+.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.number_block.disabled, 
+.table_column_left_cell_top.disabled, 
+.table_column_left_cell_bottom.disabled,
+.side_cell.disabled,
+.table-column-right-first-cell.disabled,
+.table-column-right-second-cell.disabled {
+	pointer-events: none;
+	opacity: 0.7;
+}
+
+.table_column_left_cell_top,
+.table_column_left_cell_bottom,
+.table-column-right-first-cell,
+ .table-column-right-second-cell {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #fff;
+	font-size: 18px;
+	font-weight: bold;
+	background: transparent;
+	color: #fff;
+	cursor: pointer;
+}
+
+
+.table_column_left_cell_top,
+.table_column_left_cell_bottom {
+	height: 44%;
+}
+
+.chip{
+    width: 21px;
+	height: 21px;
+	background-color:#fff;
+	border: 3px solid;
+	border-radius: 100%;
+    position:absolute;
+	min-width: unset;
+	min-height: unset;
+	max-width: unset;
+	max-height: unset;
+}
+
+.chip_span{
+	position: relative;
+	display: block;
+	text-align: center;
+	color: #000;
+	font-weight: bold;
+	font-size: 11px;
+	top: 4px;
+}
+
+.wheel_board_bet {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+} 
+
+.zero_arc_wrapper {
+	position: relative;
+	width: 100%;
+	height: 4%;
+	margin-bottom: 0;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+}
+
+.zero_arc {
+	position: relative;
+	width: 100%;
+	height:100%;
+	background: #0a5;
+	border-top-left-radius: 120px 40px;
+	border-top-right-radius: 120px 40px;
+	border: 2px solid #fff;
+	border-bottom: none;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.zero_arc_label {
+	color: #fff;
+	font-size: 20px;
+	font-weight: bold;
+	letter-spacing: 2px;
+}
+
+.numbers_board {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+}
+
+.number_row {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+}
+
+.number_block{
+	width: 100%;
+	height: 100%;
+	border: 1px solid;
+	text-align: center;
+	display: inline-block;
+	margin: 0 -0.2px;
+}
+
+.nbn{
+	transform: none;
+	display: flex;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.number_block .chip{
+	margin-left: 7px;
+	margin-top: -24px;
+}
+
+.roulette_table_side {
+	display: flex;
+	flex-direction: row;
+	height: 8%;
+}
+
+.side_cell {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #fff;
+	font-size: 16px;
+	font-weight: bold;
+	color: #fff;
+	background: transparent;
+	cursor: pointer;
+}
+
+.table-column-right{
+	width: 50%;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.table-column-right-first-cell{
+	height: 33.3%;
+} 
+
+.table-column-right-bet{
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+}
+
+.table-column-right-second-cell{
+	height: 29%;
+
+}
+
+.redNum {
+	background: #E0080B !important;
+	color: #fff !important;
+	width: 100%;
+}
+
+.blackNum {
+	background: #000 !important;
+	color: #fff !important;
+	width: 100%;
+}
+
+/* sinon les couleurs des jetons s'affichent en noirs */
+.gold{
+	border-color:gold;
+}
+
+.red{
+	border-color:red;
+}
+
+.orange{
+	border-color:orange;
+}
+
+.blue{
+	border-color:blue;
+}
+
+@media (max-width: 700px) {
+
+	html, body {
+		height: 100%;
+		width: 100%;
+	}
+
+	#container{
+		flex-direction: column;
+		height: 100%;
+		width: 100%;		
+	}
+
+	.wheel {
+		height: 312px;
+		width: 312px;
+		min-width: unset;
+		min-height: unset;
+	}
+	.numbers_board {
+		min-width: unset;
+		max-width: unset;
+	}
+	.number_block {
+		font-size: 20px;
+		min-height: unset;
+		max-height: unset;
+		height: auto;
+		
+	}
+	.chip {
+		min-width: unset;
+		min-height: unset;
+		max-width: unset;
+		max-height: unset;
+	}
+	.first-column {
+		width: 100%;
+		height: 100%;
+		margin-right: 0;
+		margin-left: 0;
+	}
+	.second_column {
+		width: 75%;
+		height: 75%;
+	}	
+}

@@ -15,6 +15,7 @@ CREATE TABLE `Games_session` (
   `name` VARCHAR(50) NOT NULL DEFAULT '',
   `bet_min` VARCHAR(50) NOT NULL DEFAULT '',
   `bet_max` VARCHAR(50) NOT NULL DEFAULT '',
+  `timestamp` DATETIME NULL,
   PRIMARY KEY (`game_session_id`)
 ) COLLATE='utf8mb4_uca1400_ai_ci';
 
@@ -33,7 +34,6 @@ CREATE TABLE `Bets` (
   `user_id` int NOT NULL DEFAULT 0,
   `game_session_id` varchar(15) NOT NULL DEFAULT '0',
   `amount` FLOAT NOT NULL DEFAULT 0,
-  `profit` FLOAT NOT NULL DEFAULT 0,
   `bet_status` VARCHAR(50) NOT NULL DEFAULT '0',
   `combinaison` VARCHAR(11) NULL DEFAULT '000',
   PRIMARY KEY (`bet_id`),

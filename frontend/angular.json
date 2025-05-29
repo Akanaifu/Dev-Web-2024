@@ -53,7 +53,7 @@
                   "maximumWarning": "1MB",
                   "maximumError": "2MB"
                 },
-                { 
+                {
                   "type": "anyComponentStyle",
                   "maximumWarning": "1MB",
                   "maximumError": "2MB"
@@ -76,7 +76,8 @@
               "buildTarget": "frontend:build:production"
             },
             "development": {
-              "buildTarget": "frontend:build:development"
+              "buildTarget": "frontend:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

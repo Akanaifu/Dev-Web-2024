@@ -63,7 +63,7 @@ export class MachineASousLogic {
       id: 'combo-5',
       title: '(Im)pair',
       combination: 'ace/bdf',
-      multiplier: 2,
+      multiplier: 1.5,
       example: '111 / 222',
       class: 'im-pair',
     },
@@ -98,6 +98,17 @@ export class MachineASousLogic {
     { id: 'afficheur2', currentChiffre: 0 },
     { id: 'afficheur3', currentChiffre: 0 },
   ];
+  playerInfo: {
+    user_id: number;
+    username: string;
+    email: string;
+    solde: number;
+  } = {
+    user_id: 0,
+    username: '',
+    email: '',
+    solde: 0,
+  };
   private http: HttpClient;
 
   constructor(db: Database, newGameService: NewGameService, http: HttpClient) {
@@ -107,7 +118,7 @@ export class MachineASousLogic {
   }
 
   // Utility Methods
-  private updateAfficheurs(combination: string): void {
+  updateAfficheurs(combination: string): void {
     this.afficheurs.forEach((afficheur, i) => {
       afficheur.currentChiffre = +combination[i] || 0;
     });
@@ -126,6 +137,10 @@ export class MachineASousLogic {
 
   // Core Logic
   computeQuadraticFunction(long_arr: number): (x: number) => number {
+    if (long_arr <= 0) {
+      // fallback: always return a positive delay
+      return () => 1000;
+    }
     const mid = long_arr / 2;
     const origine = 1000; // f(0) = 1000
     const ymin = 50; // f(mid) = 50
@@ -178,44 +193,58 @@ export class MachineASousLogic {
   }
 
   // Firebase Data Handling
-  fetchFirebaseData(): void {
-    const userId = this.getCurrentUserId(); // Assurez-vous d'avoir une méthode pour obtenir l'ID de l'utilisateur connecté
+  fetchFirebaseData(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.getCurrentUserId();
 
-    get(child(ref(this.db), '/'))
-      .then((snapshot) => {
-        if (!snapshot.exists()) return console.log('No data available');
-
-        const data = snapshot.val();
-        const sortedParts = this.sortAndFilterParts(data, userId);
-
-        let index = 0;
-
-        const iterate = () => {
-          if (index < sortedParts.unshownParts.length) {
-            const part = sortedParts.unshownParts[index];
-            this.processPart(part, () => {
-              index++;
-              setTimeout(iterate, 5000);
-            });
-          } else {
-            console.log('All unshown parts have been displayed');
+      get(child(ref(this.db), '/'))
+        .then((snapshot) => {
+          if (!snapshot.exists()) {
+            console.log('No data available');
+            resolve();
+            return;
           }
-        };
 
-        iterate();
-      })
-      .catch((error: any) =>
-        console.error('Error fetching Firebase data:', error)
-      );
+          const data = snapshot.val();
+          const sortedParts = this.sortAndFilterParts(
+            data,
+            this.playerInfo.user_id.toString()
+          );
+          this.showTable =
+            sortedParts.notPlayedParts.length == 0 && this.playerInfo.solde <= 0
+              ? false
+              : true; // Example: Use this property to control the button state
+
+          let index = 0;
+
+          const iterate = () => {
+            if (index < sortedParts.unshownParts.length) {
+              const part = sortedParts.unshownParts[index];
+              this.processPart(part, () => {
+                index++;
+                setTimeout(iterate, 5000);
+              });
+            } else {
+              console.log('All unshown parts have been displayed');
+              resolve();
+            }
+          };
+
+          iterate();
+        })
+        .catch((error: any) => {
+          console.error('Error fetching Firebase data:', error);
+          reject(error);
+        });
+    });
   }
 
   private sortAndFilterParts(data: any, userId: string) {
     const sortedParts = Object.keys(data)
-      .filter((key) => key.startsWith('partie'))
+      .filter((key) => key.startsWith('MA'))
       .sort(
         (a, b) =>
-          parseInt(a.replace('partie', ''), 10) -
-          parseInt(b.replace('partie', ''), 10)
+          parseInt(a.replace('MA', ''), 10) - parseInt(b.replace('MA', ''), 10)
       )
       .map((key) => ({ key, ...data[key] }));
 
@@ -231,32 +260,32 @@ export class MachineASousLogic {
         part.partieJouee &&
         part.joueurId.includes(userId) // Filtrer par l'utilisateur connecté
     );
+    const notPlayedParts = sortedParts.filter(
+      (part) => !part.partieJouee && part.joueurId.includes(userId) // Filtrer par l'utilisateur connecté
+    );
 
     if (unshownParts.length === 0 && shownParts.length > 0) {
       unshownParts.push(shownParts[shownParts.length - 1]);
     }
 
-    return { unshownParts, shownParts };
+    return { unshownParts, shownParts, notPlayedParts };
   }
 
-  getCurrentUserId(): any {
-    const token = localStorage.getItem('token'); // Récupérer le token
-    if (!token) {
-      console.error('Token not found in localStorage');
-      return;
-    }
-
-    const headers = { Authorization: `Bearer ${token}` }; // Ajouter l'en-tête Authorization
-
+  getCurrentUserId(): void {
     this.http
-      .get<{ user_id: string }>('http://localhost:3000/get_id', { headers })
+      .get<{ user_id: number; username: string; email: string; solde: number }>(
+        'http://localhost:3000/get_id/info'
+      )
       .subscribe({
         next: (data) => {
-          console.log('User ID fetched successfully:', data.user_id);
-          // Vous pouvez stocker l'ID utilisateur dans une propriété ou l'utiliser directement
+          this.playerInfo = data;
+          console.log('Informations du joueur :', this.playerInfo);
         },
         error: (err) => {
-          console.error('Error fetching user ID:', err);
+          console.error(
+            'Erreur lors de la récupération des informations :',
+            err
+          );
         },
       });
   }
@@ -281,16 +310,28 @@ export class MachineASousLogic {
         setTimeout(displayCombinations, f(combinationIndex));
       } else {
         this.checkCombination();
-        this.updateGainDisplay(part.gain);
-
+        this.updateGainDisplay(part.gain - part.mise);
+        if (!part.partieAffichee) {
+          this.addNewGameToBackend(
+            part.joueurId[part.joueurId.length - 1] || 0,
+            part.mise || 0,
+            part.combinaison[part.combinaison.length - 1] || [],
+            part.timestamp || new Date().toISOString()
+          );
+        }
         part.partieAffichee = true;
-        this.addNewGameToBackend(
-          part.joueurId[part.joueurId.length - 1] || 0,
-          part.mise || 0,
-          part.combinaison[part.combinaison.length - 1] || [],
-          part.gain || 0,
-          part.timestamp || new Date().toISOString()
-        );
+        // Mettre à jour le flag dans Firebase
+        set(ref(this.db, part.key ? `/${part.key}/partieAffichee` : '/'), true)
+          .then(() => {
+            console.log(`partieAffichee mis à jour pour ${part.key}`);
+          })
+          .catch((err) => {
+            console.error(
+              `Erreur lors de la mise à jour de partieAffichee pour ${part.key}:`,
+              err
+            );
+          });
+
         callback();
       }
     };
@@ -303,18 +344,17 @@ export class MachineASousLogic {
     playerId: string,
     solde: number,
     combinaison: number[],
-    gain: number,
     timestamp: string
   ): void {
     const gameData = {
       partieId: 1,
-      partieJouee: gain > 0,
+      partieJouee: true,
       solde: solde,
       combinaison: combinaison,
-      gain: gain,
       joueurId: playerId,
       timestamp: timestamp,
       partieAffichee: true,
+      mise: solde, // ou la variable qui correspond à la mise jouée
     };
 
     console.log('Données envoyées au backend :', gameData);

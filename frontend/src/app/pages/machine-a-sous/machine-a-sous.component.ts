@@ -5,6 +5,7 @@ import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
 import { NewGameService } from '../../services/new-game.service';
 import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-machine-a-sous',
@@ -15,6 +16,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
+  private partiesSubscription?: Subscription;
   logic: MachineASousLogic;
   playerInfo: {
     user_id: number;
@@ -27,22 +29,41 @@ export class MachineASousComponent implements OnInit {
     email: '',
     solde: 0,
   };
+  sendButtonDisabled: boolean = false;
 
   constructor(
     private newGameService: NewGameService,
-    private http: HttpClient
+    private http: HttpClient,
+    public db: Database
   ) {
-    const db = inject(Database);
     this.logic = new MachineASousLogic(db, newGameService, this.http);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }
 
   ngOnInit(): void {
     this.getPlayerInfo();
+    this.checkIfSendButtonShouldBeDisabled();
+    // S'abonner aux changements en temps réel de Firebase
+    this.partiesSubscription = this.firebaseSendService
+      .listenToParties()
+      .subscribe({
+        next: (data) => {
+          console.log('Mise à jour des parties en temps réel :', data);
+          // Met à jour l'affichage à chaque changement
+          this.logic.fetchFirebaseData().then(() => {
+            this.sendButtonDisabled = this.logic.showTable;
+          });
+        },
+        error: (err) => {
+          console.error("Erreur lors de l'écoute des parties Firebase :", err);
+        },
+      });
   }
 
   ngOnDestroy(): void {
     clearInterval(this.logic.intervalId);
+    // Désabonnement pour éviter les fuites de mémoire
+    this.partiesSubscription?.unsubscribe();
   }
 
   getPlayerInfo(): void {
@@ -53,7 +74,6 @@ export class MachineASousComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.playerInfo = data;
-          console.log('Informations du joueur :', this.playerInfo);
         },
         error: (err) => {
           console.error(
@@ -62,6 +82,13 @@ export class MachineASousComponent implements OnInit {
           );
         },
       });
+  }
+
+  checkIfSendButtonShouldBeDisabled(): void {
+    this.logic.fetchFirebaseData().then(() => {
+      // Update the button state after fetchFirebaseData completes
+      this.sendButtonDisabled = this.logic.showTable; // Use the updated property from logic
+    });
   }
 
   // Getter pour accéder aux propriétés de MachineASousLogic
@@ -88,23 +115,32 @@ export class MachineASousComponent implements OnInit {
   }
   // Méthode pour envoyer les données à Firebase
   sendPartieToFirebase(): void {
-    if (!this.playerInfo || this.playerInfo.solde === undefined) {
-      console.error(
-        "Impossible d'envoyer les données : informations du joueur non disponibles."
-      );
+    if (this.sendButtonDisabled) {
+      console.warn("Le bouton d'envoi est désactivé.");
       return;
     }
 
-    const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
-    const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
+    // Récupère le solde à jour depuis le backend AVANT d'envoyer à Firebase
+    this.http
+      .get<{ user_id: number; username: string; email: string; solde: number }>(
+        'http://localhost:3000/get_id/info'
+      )
+      .subscribe({
+        next: (data) => {
+          this.playerInfo = data;
+          const solde = this.playerInfo.solde;
+          const playerId = this.playerInfo.user_id;
 
-    this.firebaseSendService
-      .sendPartie(playerId, solde)
-      .then(() => {
-        console.log('Données envoyées avec succès à Firebase.');
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi des données à Firebase :", error);
+          // Désactive le bouton après récupération du solde à jou
+          this.sendButtonDisabled = true;
+          this.firebaseSendService.sendPartie(playerId, solde);
+        },
+        error: (err) => {
+          console.error(
+            "Impossible d'envoyer les données : informations du joueur non disponibles.",
+            err
+          );
+        },
       });
   }
 }

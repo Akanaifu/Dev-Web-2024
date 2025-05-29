@@ -3,6 +3,8 @@ const path = require("path");
 const http = require("http");
 const socketIo = require("socket.io");
 const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 // Configuration
 const db = require("./config/dbConfig");
@@ -14,15 +16,22 @@ const socketConfig = require("./config/socketConfig");
 
 // Routes
 const sessionRoutes = require("./routes/sessions");
-const dataRoutes = require("./routes/data");
+
 const userRoutes = require("./routes/users");
-const transactionRoutes = require("./routes/transactions");
+
 const statsRoutes = require("./routes/stats");
-const gameRoutes = require("./routes/games");
+
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
 const registerRoutes = require("./routes/register");
 const playerRoutes = require("./routes/get_id");
+const editCompteRoutes = require("./routes/edit-compte");
+
+const soldeRoutes = require("./routes/update_solde");
+
+//Roulette 
+const rouletteRoutes = require("./routes/roulette-net");
+const rouletteNetPrepareBettingBoard = require("./routes/roulette-net-prepareBettingBoard");
 // Services
 const SocketService = require("./services/socketService");
 
@@ -50,22 +59,25 @@ app.use((req, res, next) => {
   }
   next();
 });
-
 // Middlewares pour l'API
 app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 // Routes de l'API
 app.use("/sessions", sessionRoutes);
 app.use("/register", registerRoutes);
-app.use("/data", dataRoutes);
+
 app.use("/users", userRoutes);
-app.use("/transactions", transactionRoutes);
+
 app.use("/stats", statsRoutes);
-app.use("/games", gameRoutes);
+
 app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
 app.use("/get_id", playerRoutes);
+app.use("/edit-compte", editCompteRoutes);
+app.use("/api/roulette", rouletteRoutes);
+app.use("/api/roulette-odds", rouletteNetPrepareBettingBoard.router);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {

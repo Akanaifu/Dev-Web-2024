@@ -1,7 +1,12 @@
-import urequests
+"""
+Module pour gérer les interactions avec Firebase.
+Il inclut des fonctions pour générer des nombres aléatoires, calculer les gains
+mettre à jour la base de données Firebase et récupérer les données.
+"""
+
 import time
-from id_counter import increment_counter
 import random
+import urequests
 from connexion_wifi import connect_to_wifi
 
 NUMBER_TO_GENERATE = 15  # nombres à générer
@@ -21,12 +26,14 @@ def update_first_unplayed_game(updated_data):
     try:
         # Récupérer toutes les données de Firebase
         data = fetch_from_firebase()
+        print("Données récupérées depuis Firebase :", data)
+        key_data = sorted(data.keys(), key=lambda key: int(key.replace("MA", "")))
         if data is None:
             print("Aucune donnée récupérée depuis Firebase.")
             return
-
         # Trouver la première partie où 'partieJouee' est False
-        for key, value in data.items():
+        for key in key_data:
+            value = data[key]
             if not value.get(
                 "partieJouee", True
             ):  # Par défaut, considère True si la clé est absente
@@ -65,7 +72,7 @@ def calculer_gain(rouleaux: list[int], mise: int) -> int:
     presence_event = False
 
     if r1 == r2 == r3:
-        return 100 if r1 == 7 else 10  # (Méga) Jackpot ou Jackpot
+        return mise * 100 if r1 == 7 else mise * 10  # (Méga) Jackpot ou Jackpot
     if (r1 + 1 == r3 and r2 + 1 == r1) or (r1 - 1 == r3 and r2 - 1 == r1):
         multiplicateur = 5  # Suite
         presence_event = True
@@ -88,9 +95,9 @@ def calculer_gain(rouleaux: list[int], mise: int) -> int:
     return gain
 
 
-def number_to_DIGITS(number):
+def number_to_digits(number):
     """
-    Convert a number to an array of its DIGITS.
+    Convertit un nombre en tableau de ses chiffres.
     """
     # Convert number to string, extract DIGITS and convert back to integers
     list_digits = [int(digit) for digit in str(number)]
@@ -103,16 +110,16 @@ def generate_random():
     Fonction appelée par le timer pour générer un chiffre aléatoire.
     """
     global DIGITS, SCORE, RUN_CODE, COMBINAISONS
-    for GENERATED_COUNT in range(NUMBER_TO_GENERATE):
+    for generated_count in range(NUMBER_TO_GENERATE):
         random_num = random.randrange(
             10 ** (NUMBER_OF_DIGITS - 1), 10**NUMBER_OF_DIGITS
         )
-        DIGITS = number_to_DIGITS(random_num)
+        DIGITS = number_to_digits(random_num)
 
         # Mettre à jour COMBINAISONS avec le bon format
-        COMBINAISONS[GENERATED_COUNT] = {i: DIGITS[i] for i in range(len(DIGITS))}
+        COMBINAISONS[generated_count] = {i: DIGITS[i] for i in range(len(DIGITS))}
 
-        GENERATED_COUNT += 1
+        generated_count += 1
 
     SCORE = calculer_gain(DIGITS, BET_AMOUNT)
 
@@ -122,9 +129,10 @@ def generate_random():
         "partieJouee": True,
         "timestamp": time.time(),
         "mise": BET_AMOUNT,
+        "partieAffichee": False,
     }
     update_first_unplayed_game(updated_data)
-    GENERATED_COUNT = 0
+    generated_count = 0
     COMBINAISONS.clear()  # Réinitialiser pour la prochaine partie
     RUN_CODE = False
     return 0  # Indiquer que la fonction s'est terminée avec succès
@@ -140,6 +148,7 @@ def fetch_from_firebase():
         response = urequests.get(f"{URL_FIREBASE}/.json", headers=headers, timeout=5)
         if response.status_code != 200:
             raise RuntimeError(f"Erreur HTTP : {response.status_code}")
+        print(response)
         data = response.json()
         print("Données récupérées depuis Firebase")
         return data
@@ -158,8 +167,30 @@ def fetch_from_firebase():
     return None
 
 
+def get_balance_from_firebase(fetch_from_firebase_func, user_balance):
+    """
+    Récupère le solde de l'utilisateur depuis Firebase.
+    """
+    try:
+        data = fetch_from_firebase_func()
+        print("Données récupérées de Firebase:", data)
+        if data:
+            last_key = max(data, key=lambda k: int(k.replace("MA", "")))
+            game = data[last_key]
+            if "solde" in game and not game["partieJouee"]:
+                user_balance = float(game["solde"])
+            else:
+                user_balance = -1
+        else:
+            user_balance = -1
+    except OSError as e:
+        print("Erreur réseau ou problème de connexion :", e)
+        user_balance = -1
+    return user_balance
+
+
 if __name__ == "__main__":
     # Exemple d'utilisation
     connect_to_wifi()
-    generate_random()
+    # generate_random()
     # fetch_from_firebase()  # Uncomment to fetch data from Firebase
