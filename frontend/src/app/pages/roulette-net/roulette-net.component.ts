@@ -186,9 +186,13 @@ export class RouletteNetComponent implements OnInit {
                         }
                         
                         console.log('Win result:', winResult);
-                        this.game.currentBet = 0;  // Utilisation du setter avec validation
-                        this.game.bet = [];
-                        this.game.numbersBet = [];
+                        this.game.currentBet = 0;  // Réinitialiser le compteur de mises
+                        this.game.bet = [];        // Vider le tableau des mises
+                        this.game.numbersBet = []; // Vider les numéros misés
+                        
+                        // NOUVEAU : Synchroniser le solde original après le spin
+                        // Cela garantit que le prochain pari utilisera le bon solde de référence
+                        this.game.resetBettingState();
                         
                     } catch (winError) {
                         console.error('Error calculating wins:', winError);
