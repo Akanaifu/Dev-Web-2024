@@ -1,0 +1,180 @@
+<!--
+  TEMPLATE DE LA ROULETTE EN LIGNE
+  
+  ARCHITECTURE DU TEMPLATE :
+  - Utilise les getters du composant pour accéder aux données du service (ex: {{ currentBet }})
+  - Structure en 2 colonnes : roue de roulette (gauche) + plateau de mise (droite)
+  - Délégation des événements aux méthodes du composant qui délèguent au service
+  - Gestion d'état : isSpinning désactive les interactions pendant la rotation
+  
+  AVANTAGES DES GETTERS DANS LE TEMPLATE :
+  - Syntaxe simplifiée : {{ currentBet }} au lieu de {{ game.currentBet }}
+  - Abstraction : le template ne connaît pas l'implémentation du service
+  - Maintenance : changements dans le service transparents pour le template
+-->
+
+<!-- Conteneur principal de l'interface de roulette -->
+<div id="container">
+  <!-- Colonne de gauche : Roue de roulette et contrôles de jeu -->
+  <div class="first-column">
+  
+    <!-- Section de la roue de roulette avec animation de la bille -->
+    <div class="wheel">
+      <div class="wheel_rotating">
+        <div class="outer_rim">
+          <!-- Génération dynamique des sections de la roue  -->
+          <div *ngFor="let section of wheelSections; let i = index" class="sect" [id]="'sect' + (i+1)"
+          [ngStyle]="{'transform': 'rotate(' + section.angle + 'deg)'}">
+            <span [class]="section.number < 10 ? 'single' : 'double'">{{ section.number }}</span>
+            <div class="block" [ngStyle]="{'background-color': section.backgroundColor}"></div>
+          </div>
+          <div class="pockets_rim"></div>
+          <!-- Bille animée qui tourne selon ballRotation -->
+          <div class="ball_track" [ngStyle]="{'transform': 'rotate(' + ballRotation + 'deg)'}">
+            <div class="ball"></div>
+          </div>
+          <div class="pockets"></div>
+          <div class="cone"></div>
+          <!-- Mécanisme central de la roulette -->
+          <div class="turret"></div>
+          <div class="turret_handle">
+            <div class="thend_one"></div>
+            <div class="thend_two"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Affichage conditionnel du résultat du spin -->
+    <div *ngIf="resultMessage" class="roulette_result_message">
+      {{ resultMessage }}
+    </div>
+    
+  <!-- Interface de gestion du solde et des mises -->
+  <div class="money_container">
+    <div class="bankContainer">
+      <!-- Affichage du solde via le nouveau getter userBalance (architecture améliorée) -->
+      <div class="bank">Solde : <span id="bankSpan">{{ userBalance }}</span></div>
+      <!-- Affichage de la mise totale via le getter currentBet -->
+      <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
+    </div>
+    
+    <!-- Sélecteur de jetons  -->
+      <div class="chip_container">
+        <div
+          *ngFor="let value of chipValues; let i = index"
+          class="color_chip"
+          [ngClass]="[chipColors[i], selectedChipIndex === i ? 'color_chip_on' : '', isSpinning ? 'disabled' : '']"
+          (click)="selectChip(i)"
+          [style.pointer-events]="isSpinning ? 'none' : 'auto'">
+          <span class="color_chip_span">{{ value }}</span>
+        </div>
+      </div>
+      
+      <!-- Bouton de lancement  -->
+      <div class="buttom_launch">
+        <button mat-menu-item (click)="spin()" [disabled]="currentBet === 0 || isSpinning">Lancer la roue</button>
+      </div>
+    </div>
+  </div>
+      <!-- Fin roue -->
+
+  <!-- Plateau de roulette  --> 
+  <div class="second_column">
+    <!-- premier colonne -->
+    <div class="table_column_left">
+      <div class="space_zero"></div>
+      <div class="table_column_left_cell_top" (click)="outsideBets && outsideBets[0] && setBet(outsideBets[0])" 
+      (contextmenu)="outsideBets && outsideBets[0] && removeBet($event, outsideBets[0])" [ngClass]="{'disabled': isSpinning}">{{ topLabels[0] }}
+        <ng-container *ngIf="outsideBets && outsideBets[0] && getBetForCell(outsideBets[0]) as bet">
+          <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
+            <span class="chip_span">{{ bet.amt }}</span>
+          </div>
+        </ng-container>
+      </div>
+      <div class="table_column_left_cell_bottom"
+      (click)="outsideBets && outsideBets[1] && setBet(outsideBets[1])" (contextmenu)="outsideBets && outsideBets[1] && removeBet($event, outsideBets[1])" [ngClass]="{'disabled': isSpinning}">
+      {{ topLabels[1] }}
+      <ng-container *ngIf="outsideBets && outsideBets[1] && getBetForCell(outsideBets[1]) as bet">
+        <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
+          <span class="chip_span">{{ bet.amt }}</span>
+        </div>
+      </ng-container>
+      </div> 
+      <div class="space_2to1"></div>
+    </div>
+    <!-- partie centrale avec tout les numeros -->
+    <div class="wheel_board_bet">
+      <div class="zero_arc_wrapper">
+        <div class="zero_arc" (click)="zeroCell && setBet(zeroCell)" (contextmenu)="zeroCell && removeBet($event, zeroCell)" [ngClass]="{'disabled': isSpinning}">
+          <span class="zero_arc_label">0</span>
+          <ng-container *ngIf="zeroCell && getBetForCell(zeroCell) as bet">
+            <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
+              <span class="chip_span">{{ bet.amt }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="numbers_board">
+        <div *ngFor="let row of numberBoardRows" class="number_row">
+          <div *ngFor="let cell of row" class="number_block"
+              [class.redNum]="cell && cell.numbers && cell.numbers[0] && numRed.includes(cell.numbers[0])"
+              [class.blackNum]="cell && cell.numbers && cell.numbers[0] && !numRed.includes(cell.numbers[0]) && cell.numbers[0] !== 0"
+              [class.disabled]="isSpinning"
+              (click)="cell && setBet(cell)" (contextmenu)="cell && removeBet($event, cell)">
+            <div class="nbn">{{ cell?.label }}</div>
+            <ng-container *ngIf="cell && getBetForCell(cell) as bet">
+              <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
+                <span class="chip_span">{{ bet.amt }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <!-- Colonne '2 à 1' à droite -->
+      <div class="roulette_table_side" id="row2to1">
+        <div class="side_cell" *ngFor="let label of columnLabels; let i = index"
+          [ngClass]="{'disabled': isSpinning}"
+          (click)="columnBets && columnBets[i] && setBet(columnBets[i])" (contextmenu)="columnBets && columnBets[i] && removeBet($event, columnBets[i])">
+          {{ label }}
+          <ng-container *ngIf="columnBets && columnBets[i] && getBetForCell(columnBets[i]) as bet">
+            <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
+              <span class="chip_span">{{ bet.amt }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <!-- la partie de droite du tableau -->
+    <div class="table-column-right">
+      <div class="space_zero"></div>
+        <div class="table-column-right-bet">
+        <div class="table-column-right-first">
+          <div class="table-column-right-first-cell" *ngFor="let label of dozenLabels; let i = index"
+            [ngClass]="{'disabled': isSpinning}"
+            (click)="dozenBets && dozenBets[i] && setBet(dozenBets[i])" (contextmenu)="dozenBets && dozenBets[i] && removeBet($event, dozenBets[i])">
+            {{ label }}
+            <ng-container *ngIf="dozenBets && dozenBets[i] && getBetForCell(dozenBets[i]) as bet">
+              <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
+                <span class="chip_span">{{ bet.amt }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <!-- Ligne EVEN, RED, BLACK, ODD -->
+        <div class="table-column-right-second">
+          <div class="table-column-right-second-cell" *ngFor="let label of evenOddLabels; let i = index"
+              [ngClass]="{'redNum': label === 'RED', 'blackNum': label === 'BLACK', 'disabled': isSpinning}"
+              (click)="evenOddRedBlack && evenOddRedBlack[i] && setBet(evenOddRedBlack[i])" (contextmenu)="evenOddRedBlack && evenOddRedBlack[i] && removeBet($event, evenOddRedBlack[i])">
+            {{ label }}
+            <ng-container *ngIf="evenOddRedBlack && evenOddRedBlack[i] && getBetForCell(evenOddRedBlack[i]) as bet">
+              <div class="chip" [ngClass]="getChipColorClass(bet.amt)">
+                <span class="chip_span">{{ bet.amt }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="space_2to1"></div>
+    </div>
+</div>

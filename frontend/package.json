@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "jest",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs"
   },
   "private": true,

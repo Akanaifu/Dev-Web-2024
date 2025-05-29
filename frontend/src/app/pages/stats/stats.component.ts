@@ -3,15 +3,14 @@ import { WinRateService } from '../../services/stats/winrate.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import Chart from 'chart.js/auto';
-
-// Ajoute l'import de ton service d'authentification si besoin
 import { LoginService } from '../../services/login/login.service';
+import { StatsService } from '../../services/stats/stats.service';
 
 @Component({
   selector: 'app-stats',
   standalone: true,
   imports: [FormsModule, CommonModule],
-  providers: [WinRateService],
+  providers: [WinRateService, StatsService],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
 })
@@ -21,34 +20,54 @@ export class StatsComponent implements AfterViewInit, OnInit {
   gainChart!: Chart;
   winRateChart!: Chart;
 
-  stats = [
-    { stat_id: 1, user_id: 3, game: 'Poker', num_games: 5, num_wins: 2, timestamp: "2025-04-01", gain: 50 },
-    { stat_id: 2, user_id: 3, game: 'Blackjack', num_games: 7, num_wins: 4, timestamp: "2025-04-02", gain: -30 },
-    { stat_id: 3, user_id: 3, game: 'Roulette', num_games: 3, num_wins: 1, timestamp: "2025-04-03", gain: 20 },
-    { stat_id: 4, user_id: 3, game: 'Poker', num_games: 6, num_wins: 3, timestamp: "2025-04-04", gain: -15 },
-    { stat_id: 5, user_id: 3, game: 'Blackjack', num_games: 2, num_wins: 2, timestamp: "2025-04-05", gain: 5 },
-    { stat_id: 6, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-24", gain: 12 },
-    { stat_id: 7, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-24", gain: 5 },
-    { stat_id: 8, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-02-05", gain: 15 },
-    { stat_id: 9, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-01-05", gain: -30 },
-    { stat_id: 10, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-22", gain: -13 },
-    { stat_id: 11, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-21", gain: 40 },
-    { stat_id: 12, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-18", gain: 0 },
-    { stat_id: 13, user_id: 3, num_games: 2, num_wins: 2, timestamp: "2025-04-17", gain: 36 }
-  ];
+  stats: { stat_id?: number; user_id?: number; game?: string; num_games?: number; num_wins?: number; created_at: string; gain: number }[] = []; // Initialisé à un tableau vide
 
   games: string[] = [];
   selectedGame: string = '';
   selectedPeriod: string = 'jour';
   selectedMonth: number = new Date().getMonth();
-  selectedYear: number = 2025;
+  selectedYear: number = new Date().getFullYear();
+  selectedDate: Date = new Date();
   userId: number | null = null; // Initialisé à null
+  totalPartiesJouees: number = 0;
+  totalPartiesGagnees: number = 0;
+  numberBaccarat: number = 0;
+  numberBlackjack: number = 0;
+  numberPoker: number = 0;
+  numberRoulette: number = 0;
+  numberMachinesASous: number = 0;
 
   constructor(
     private winRateService: WinRateService,
+    private statsService: StatsService, // Injection du StatsService
     private loginService: LoginService, // Injection du service d'auth
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
+
+  fetchUserGains(): void {
+    if (!this.userId) return;
+
+    this.statsService.getUserBets(this.userId).subscribe(
+      (data) => {
+        console.log('Gains reçus depuis le backend :', data); // Ajout du console.log
+        if (data && data.length > 0) {
+          this.stats = data.map((item) => ({
+            ...item,
+            created_at: item.created_at || new Date().toISOString(), // Assurez-vous que chaque item a un created_at
+          }));
+        } else {
+          console.warn('Aucune donnée de gains disponible pour cet utilisateur.');
+          this.stats = []; // Réinitialise les stats si aucune donnée
+        }
+        this.updateChart(); // Met à jour le graphique avec les nouvelles données
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération des gains :', error);
+        this.stats = []; // Réinitialise les stats en cas d'erreur
+        this.updateChart(); // Met à jour le graphique avec un état vide
+      }
+    );
+  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -56,9 +75,13 @@ export class StatsComponent implements AfterViewInit, OnInit {
       if (localStorage.getItem('token') && this.loginService.user() === undefined) {
         this.loginService.getUser().subscribe({
           next: (user) => {
-            this.userId = user?.userId ?? null; // <-- ici
+            this.userId = user?.userId ?? null;
+            console.log('ID de l\'utilisateur connecté (via API) :', this.userId); // Ajout du console.log
             if (this.userId) {
               this.fetchWinRateData();
+              this.fetchUserGains(); // Récupère les données dynamiques
+              this.loadNombreParties(); // Ajoute cet appel
+              this.loadNombrePartiesParJeu(); // Ajoute cet appel
             }
           },
           error: (err) => {
@@ -66,15 +89,19 @@ export class StatsComponent implements AfterViewInit, OnInit {
           },
         });
       } else {
-        // Sinon, on utilise directement la valeur du signal
         const user = this.loginService.user();
-        this.userId = user?.userId ?? null; // <-- ici aussi
+        this.userId = user?.userId ?? null;
+        console.log('ID de l\'utilisateur connecté (via signal) :', this.userId); // Ajout du console.log
         if (this.userId) {
           this.fetchWinRateData();
+          this.fetchUserGains(); // Récupère les données dynamiques
+          this.loadNombreParties(); // Ajoute cet appel
+          this.loadNombrePartiesParJeu(); // Ajoute cet appel
         }
       }
     }
   }
+  
 
   get totalGain(): number {
     return this.stats.reduce((total, stat) => total + stat.gain, 0);
@@ -174,89 +201,86 @@ export class StatsComponent implements AfterViewInit, OnInit {
   // --- NE PAS MODIFIER LA PARTIE SUIVANTE (graph gain/perte) ---
   getFilteredStats(): { label: string; gain: number }[] {
     const today = new Date();
-    if(this.selectedPeriod === 'jour') {
-      return this.stats
+    today.setHours(0, 0, 0, 0); // Réinitialise l'heure pour comparer uniquement la date
+
+    // Sort stats by date in ascending order
+    const sortedStats = this.stats.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+    // Convert dates to French format once
+    const formattedStats = sortedStats.map(s => ({
+      ...s,
+      formattedDate: new Date(s.created_at).toLocaleDateString('fr-FR') // Format dd/mm/yyyy
+    }));
+
+    if (this.selectedPeriod === 'jour') {
+      return formattedStats
         .filter(s => {
-          const d = new Date(s.timestamp);
-          return d.getFullYear() === today.getFullYear() &&
-                 d.getMonth() === today.getMonth() &&
-                 d.getDate() === today.getDate();
+          const createdAtDate = new Date(s.created_at);
+          return createdAtDate.toDateString() === today.toDateString(); // Compare uniquement la date
         })
-        .map(s => ({ label: s.timestamp, gain: s.gain }));
-    } else if(this.selectedPeriod === 'semaine') {
+        .map(s => ({
+          label: s.formattedDate, // Use preformatted date
+          gain: s.gain
+        }));
+    } else if (this.selectedPeriod === 'semaine') {
       const startDate = new Date(today);
-      startDate.setDate(today.getDate() - 7);
-      return this.stats
+      startDate.setDate(today.getDate() - 6);
+      return formattedStats
         .filter(s => {
-          const d = new Date(s.timestamp);
+          const d = new Date(s.created_at);
           return d >= startDate && d <= today;
         })
-        .map(s => ({ label: s.timestamp, gain: s.gain }));
-    } else if(this.selectedPeriod === 'mois') { 
+        .map(s => ({ label: s.formattedDate, gain: s.gain })); // Use preformatted date
+    } else if (this.selectedPeriod === 'mois') {
       const year = today.getFullYear();
       const month = this.selectedMonth;
-      const currentMonth = today.getMonth();
-      const isLeapYear = (yr: number): boolean => {
-        return (yr % 4 === 0 && (yr % 100 !== 0 || yr % 400 === 0));
-      };
-      const daysInMonthDict: { [key: number]: number } = {
-        0: 31,
-        1: isLeapYear(year) ? 29 : 28,
-        2: 31,
-        3: 30,
-        4: 31,
-        5: 30,
-        6: 31,
-        7: 31,
-        8: 30,
-        9: 31,
-        10: 30,
-        11: 31
-      };
-      const daysCount = (month === today.getMonth())
-                          ? today.getDate()
-                          : daysInMonthDict[month];
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
       const daysArray: { label: string; gain: number }[] = [];
-      for (let day = 1; day <= daysCount; day++) {
-        const currentDate = new Date(Date.UTC(year, month, day));
-        const dayGain = this.stats
+      for (let day = 1; day <= daysInMonth; day++) {
+        const currentDate = new Date(year, month, day);
+        const dayGain = formattedStats
           .filter(s => {
-            const d = new Date(s.timestamp);
-            d.setHours(0,0,0,0);
-            return d.getUTCFullYear() === currentDate.getUTCFullYear() &&
-                   d.getUTCMonth() === currentDate.getUTCMonth() &&
-                   d.getUTCDate() === currentDate.getUTCDate();
+            const d = new Date(s.created_at);
+            return d.getFullYear() === currentDate.getFullYear() &&
+                   d.getMonth() === currentDate.getMonth() &&
+                   d.getDate() === currentDate.getDate();
           })
           .reduce((sum, s) => sum + s.gain, 0);
-        const label = currentDate.toISOString().split('T')[0];
-        daysArray.push({ label: label, gain: dayGain });
+        daysArray.push({ label: currentDate.toLocaleDateString('fr-FR'), gain: dayGain }); // Format dd/mm/yyyy
       }
       return daysArray;
-    } else if(this.selectedPeriod === 'année') {
-      const currentYear = today.getFullYear();
+    } else if (this.selectedPeriod === 'année') {
       const yearToDisplay = this.selectedYear;
-      const lastMonth = (yearToDisplay === currentYear) ? today.getMonth() : 11;
       const monthsArray: { label: string; gain: number }[] = [];
-      for (let m = 0; m <= lastMonth; m++) {
-        const monthGain = this.stats
+      for (let m = 0; m <= 11; m++) {
+        const monthGain = formattedStats
           .filter(s => {
-            const d = new Date(s.timestamp);
+            const d = new Date(s.created_at);
             return d.getFullYear() === yearToDisplay && d.getMonth() === m;
           })
           .reduce((sum, s) => sum + s.gain, 0);
-        const label = `${yearToDisplay}-${("0" + (m + 1)).slice(-2)}`;
+        const label = `${yearToDisplay}-${("0" + (m + 1)).slice(-2)}`; // Format: YYYY-MM
         monthsArray.push({ label: label, gain: monthGain });
       }
       return monthsArray;
     }
-    return this.stats.map(s => ({ label: s.timestamp, gain: s.gain }));
+    return formattedStats.map(s => ({ label: s.formattedDate, gain: s.gain })); // Use preformatted date
   }
 
   updateChart(): void {
     const filtered = this.getFilteredStats();
-    this.gainChart.data.labels = filtered.map(item => item.label);
-    this.gainChart.data.datasets[0].data = filtered.map(item => item.gain);
-    this.gainChart.update();
+    this.gainChart.data.labels = filtered.map(item => {
+      const date = new Date(item.label);
+      if (isNaN(date.getTime())) {
+        return item.label; // Use the label directly if it's already a valid string
+      }
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Les mois commencent à 0
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`; // Format dd-mm-yyyy
+    });
+    this.gainChart.data.datasets[0].data = filtered.map(item => item.gain); // Met à jour les données dynamiques
+    this.gainChart.update(); // Rafraîchit le graphique
   }
 
   onPeriodChange(): void {
@@ -265,5 +289,65 @@ export class StatsComponent implements AfterViewInit, OnInit {
 
   onGameChange(): void {
     this.fetchWinRateData();
+  }
+
+  loadNombreParties(): void {
+    if (this.userId) {
+      this.winRateService.getWinRateByUser(this.userId).subscribe({
+        next: (data: any[]) => {
+          if (data && data.length > 0) {
+            this.totalPartiesJouees = data.reduce((sum, item) => sum + Number(item.total_games || 0), 0);
+            this.totalPartiesGagnees = data.reduce((sum, item) => sum + Number(item.total_wins || 0), 0);
+          } else {
+            this.totalPartiesJouees = 0;
+            this.totalPartiesGagnees = 0;
+          }
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du nombre de parties :', err);
+          this.totalPartiesJouees = 0;
+          this.totalPartiesGagnees = 0;
+        }
+      });
+    }
+  }
+
+
+  loadNombrePartiesParJeu(): void {
+    if (this.userId) {
+      this.winRateService.getWinRateByUser(this.userId).subscribe({
+        next: (data: any[]) => {
+          // Remet à zéro avant de remplir
+          this.numberBaccarat = 0;
+          this.numberBlackjack = 0;
+          this.numberPoker = 0;
+          this.numberRoulette = 0;
+          this.numberMachinesASous = 0;
+
+          data.forEach(item => {
+            switch (item.game_name) {
+              case 'Baccarat':
+                this.numberBaccarat = item.total_games || 0;
+                break;
+              case 'Blackjack':
+                this.numberBlackjack = item.total_games || 0;
+                break;
+              case 'Poker':
+                this.numberPoker = item.total_games || 0;
+                break;
+              case 'Roulette':
+                this.numberRoulette = item.total_games || 0;
+                break;
+              case 'Slot Machine':
+                this.numberMachinesASous = item.total_games || 0;
+                break;
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération du nombre de parties par jeu :', err);
+        }
+      });
+    }
   }
 }

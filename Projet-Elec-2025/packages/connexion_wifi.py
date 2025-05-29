@@ -24,75 +24,43 @@ def connect_to_wifi():
     try:
         wlan = network.WLAN(network.STA_IF)
         wlan.active(True)
-    except OSError as e:
-        print(f"Erreur lors de l'initialisation du Wi-Fi : {e}")
-        return
-
-    # Scanner les réseaux disponibles
-    try:
         available_networks = wlan.scan()
     except OSError as e:
-        print(f"Erreur lors du scan des réseaux : {e}")
+        print(f"Erreur Wi-Fi : {e}")
         return
 
-    # Extraire les SSID disponibles
+    def try_connect(ssid, password):
+        wlan.connect(ssid, password)
+        print(f"Tentative de connexion à {ssid} ...")
+        for _ in range(10):
+            if wlan.isconnected():
+                print(f"Connecté à {ssid} ! Adresse IP : {wlan.ifconfig()[0]}")
+                return True
+            time.sleep(1)
+        print(f"Impossible de se connecter à {ssid}.")
+        return False
+
     ssids_available = []
     for net in available_networks:
         try:
-            ssid = net[0].decode("utf-8")
-            ssids_available.append(ssid)
-        except Exception:
+            ssids_available.append(net[0].decode("utf-8"))
+        except (OSError, UnicodeDecodeError) as e:
+            print(f"Erreur lors de l'ajout d'un SSID : {e}")
             continue
 
-    # Chercher un SSID connu parmi les réseaux disponibles
-    known_ssid = None
     for ssid in ssids_available:
-        if ssid in SSID_PASSWORDS:
-            known_ssid = ssid
-            break
-
-    if known_ssid:
-        # Tenter de se connecter au réseau connu
-        password = SSID_PASSWORDS[known_ssid]
-        print(f"Réseau connu trouvé : {known_ssid}. Tentative de connexion...")
-        try:
-            wlan.connect(known_ssid, password)
-            print(
-                f"Tentative de connexion à {known_ssid} avec le mot de passe enregistré."
-            )
-        except Exception as e:
-            print(f"Erreur lors de la tentative de connexion à {known_ssid} : {e}")
+        password = SSID_PASSWORDS.get(ssid)
+        if password and try_connect(ssid, password):
             return
 
-        for _ in range(10):
-            if wlan.isconnected():
-                print(f"Connecté à {known_ssid} avec succès !")
-                print("Adresse IP :", wlan.ifconfig()[0])
-                return
-            time.sleep(1)
-        print(f"Impossible de se connecter à {known_ssid}.")
-    else:
-        # Aucun réseau connu, demander le mot de passe pour chaque réseau disponible
-        print("Aucun réseau connu trouvé. Réseaux disponibles :")
-        for ssid in ssids_available:
-            print(f"- {ssid}")
-            password = input(f"Entrez le mot de passe pour {ssid} : ")
-            SSID_PASSWORDS[ssid] = password
-            print(f"Connexion à {ssid}...")
-            try:
-                wlan.connect(ssid, password)
-                print(f"Tentative de connexion à {ssid} avec le mot de passe fourni.")
-            except Exception as e:
-                print(f"Erreur lors de la tentative de connexion à {ssid} : {e}")
-                continue
+    print("Aucun réseau connu trouvé. Réseaux disponibles :")
+    for ssid in ssids_available:
+        print(f"- {ssid}")
+        password = input(f"Entrez le mot de passe pour {ssid} : ")
+        SSID_PASSWORDS[ssid] = password
+        if try_connect(ssid, password):
+            return
 
-            for _ in range(10):
-                if wlan.isconnected():
-                    print(f"Connecté à {ssid} avec succès !")
-                    print("Adresse IP :", wlan.ifconfig()[0])
-                    return
-                time.sleep(1)
-            print(f"Impossible de se connecter à {ssid}.")
     print("Aucun réseau disponible ou connexion échouée.")
 
 

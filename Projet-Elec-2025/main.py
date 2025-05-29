@@ -12,6 +12,7 @@ from firebase import (
 )
 from sept_seg import SevenSegmentDisplay
 from joystick import update_bet_amount
+from buzzer import SlotMachineSoundPlayer
 
 ########## LCD SCREEN CONFIGURATION ##########
 I2C_ADDR = (
@@ -24,7 +25,7 @@ lcd = I2cLcd(i2c, I2C_ADDR, 2, 16)  # Écran LCD 2 lignes, 16 colonnes
 
 ########## Global variables ##########
 NUM_DIGITS = 3  # Nombre de chiffres à afficher
-NUMBERS_TO_GENERATE = random.randint(5, 15)  # Nombres à générer
+NUMBERS_TO_GENERATE = random.randint(10, 15)  # Nombres à générer
 NUMBER_GENERATED_COUNT = 0  # Compteur pour suivre combien de chiffres ont été générés
 random_timer = Timer()  # Timer pour générer les chiffres successivement
 SCORE = 0  # Variable pour stocker le SCORE
@@ -52,6 +53,13 @@ GAME_COUNT = 0  # Compteur d’identifiants personnalisés
 combinations = []  # Liste de toutes les combinaisons générées
 FIREBASE_URL = "https://machine-a-sous-default-rtdb.europe-west1.firebasedatabase.app"
 
+buzzer_timer = Timer(-1)  # Timer dédié à la musique
+slot_sound = SlotMachineSoundPlayer()  # Instanciation du SlotMachineSoundPlayer
+
+
+def buzzer_timer_callback(timer):
+    play_slot_machine_sound()
+
 
 def button_callback(pin):
     """
@@ -72,7 +80,7 @@ def generate_random(timer):
     """
     Fonction appelée par le timer pour générer un chiffre aléatoire.
     """
-    global digits, NUMBER_GENERATED_COUNT, random_timer, SCORE, RUN_CODE, combinations, NUMBERS_TO_GENERATE, BET_AMOUNT
+    global digits, NUMBER_GENERATED_COUNT, random_timer, SCORE, RUN_CODE, combinations, NUMBERS_TO_GENERATE, BET_AMOUNT, buzzer_timer, slot_sound
 
     if NUMBER_GENERATED_COUNT < NUMBERS_TO_GENERATE:
         random_num = random.randrange(10 ** (NUM_DIGITS - 1), 10**NUM_DIGITS)
@@ -83,6 +91,8 @@ def generate_random(timer):
 
     else:
         random_timer.deinit()
+        buzzer_timer.deinit()  # Arrête la musique
+        slot_sound.stop()  # Arrête le son slot machine
         stop_led_blinking()  # Arrête le clignotement des LEDs
         SCORE = calculer_gain(digits, BET_AMOUNT)
         updated_data = {
@@ -122,15 +132,17 @@ while 1:
             RUN_CODE = True  # bloque l'affichage de la mise
             BUTTON_PRESSED = False  # Réinitialise le flag
             NUMBER_GENERATED_COUNT = 0  # Réinitialise le compteur
-            NUMBERS_TO_GENERATE = random.randint(5, 15)
+            NUMBERS_TO_GENERATE = random.randint(10, 15)
             print(NUMBERS_TO_GENERATE)
             lcd.clear()
             lcd.putstr("Generating...")  # Affiche un message sur l'écran LCD
             start_led_blinking()  # Démarre le clignotement des LEDs
+            slot_sound.start()  # Lance la musique slot machine non bloquante
             random_timer.init(period=500, mode=Timer.PERIODIC, callback=generate_random)
             USER_BALANCE = get_balance_from_firebase(
                 fetch_from_firebase, USER_BALANCE
             )  # Récupère le solde avant la boucle principale
+        slot_sound.tick()  # Appelle tick à chaque boucle pour jouer la musique
         time.sleep(0.1)  # Petite pause pour éviter une utilisation excessive du CPU
     except KeyboardInterrupt:
         print("Goodbye")

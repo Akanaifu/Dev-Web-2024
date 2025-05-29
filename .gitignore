@@ -43,6 +43,10 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# dbConfig
+# Ignorer la configuration de la base de données
 backend/config/dbConfig.js
+dbConfig.js
+
+# Ignorer les scripts batch
+Commandes.bat
 db/queries/commandes.bat

@@ -168,6 +168,9 @@ def fetch_from_firebase():
 
 
 def get_balance_from_firebase(fetch_from_firebase_func, user_balance):
+    """
+    Récupère le solde de l'utilisateur depuis Firebase.
+    """
     try:
         data = fetch_from_firebase_func()
         print("Données récupérées de Firebase:", data)
@@ -180,8 +183,8 @@ def get_balance_from_firebase(fetch_from_firebase_func, user_balance):
                 user_balance = -1
         else:
             user_balance = -1
-    except Exception as e:
-        print("Erreur lors de la récupération du solde:", e)
+    except OSError as e:
+        print("Erreur réseau ou problème de connexion :", e)
         user_balance = -1
     return user_balance
 
