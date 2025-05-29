@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoginService } from '../../services/login/login.service';
+import { AvatarUploadService } from '../../services/avatar-upload.service';
 import { UserService } from '../../services/user/user.service';
 import { User } from '../../models/user.models'; // Import the User model
 
@@ -21,6 +22,10 @@ export class NavigationBarComponent implements OnInit {
   balance: number | null = null;
   userId: number | null = null; // Initialize as null
 
+  constructor(
+    public loginService: LoginService,
+    public avatarUploadService: AvatarUploadService // Injection du service
+  ) {}
   constructor(
     public loginService: LoginService,
     private userService: UserService
@@ -105,5 +110,10 @@ export class NavigationBarComponent implements OnInit {
         console.error('Erreur lors de la déconnexion', err);
       },
     });
+  }
+
+  getAvatarUrl(): string {
+    const user = this.loginService.user();
+    return this.avatarUploadService.getAvatarUrl(user?.userId);
   }
 }
