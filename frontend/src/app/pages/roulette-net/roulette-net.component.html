@@ -1,26 +1,41 @@
-<!-- page entiere -->
+<!--
+  TEMPLATE DE LA ROULETTE EN LIGNE
+  
+  ARCHITECTURE DU TEMPLATE :
+  - Utilise les getters du composant pour accéder aux données du service (ex: {{ currentBet }})
+  - Structure en 2 colonnes : roue de roulette (gauche) + plateau de mise (droite)
+  - Délégation des événements aux méthodes du composant qui délèguent au service
+  - Gestion d'état : isSpinning désactive les interactions pendant la rotation
+  
+  AVANTAGES DES GETTERS DANS LE TEMPLATE :
+  - Syntaxe simplifiée : {{ currentBet }} au lieu de {{ game.currentBet }}
+  - Abstraction : le template ne connaît pas l'implémentation du service
+  - Maintenance : changements dans le service transparents pour le template
+-->
+
+<!-- Conteneur principal de l'interface de roulette -->
 <div id="container">
-  <!-- la partie de gauche-->
+  <!-- Colonne de gauche : Roue de roulette et contrôles de jeu -->
   <div class="first-column">
   
-
-    <!-- Affichage de la roue de roulette -->
+    <!-- Section de la roue de roulette avec animation de la bille -->
     <div class="wheel">
       <div class="wheel_rotating">
         <div class="outer_rim">
+          <!-- Génération dynamique des sections de la roue  -->
           <div *ngFor="let section of wheelSections; let i = index" class="sect" [id]="'sect' + (i+1)"
           [ngStyle]="{'transform': 'rotate(' + section.angle + 'deg)'}">
             <span [class]="section.number < 10 ? 'single' : 'double'">{{ section.number }}</span>
             <div class="block" [ngStyle]="{'background-color': section.backgroundColor}"></div>
           </div>
           <div class="pockets_rim"></div>
-          <!-- Affichage de la balle -->
+          <!-- Bille animée qui tourne selon ballRotation -->
           <div class="ball_track" [ngStyle]="{'transform': 'rotate(' + ballRotation + 'deg)'}">
             <div class="ball"></div>
           </div>
           <div class="pockets"></div>
           <div class="cone"></div>
-          <!-- La barre jaune de la roulette -->
+          <!-- Mécanisme central de la roulette -->
           <div class="turret"></div>
           <div class="turret_handle">
             <div class="thend_one"></div>
@@ -29,17 +44,22 @@
         </div>
       </div>
     </div>
-    <!-- Affichage du résultat de la roulette -->
+    
+    <!-- Affichage conditionnel du résultat du spin -->
     <div *ngIf="resultMessage" class="roulette_result_message">
       {{ resultMessage }}
     </div>
-  <!-- contenaire solde et mise -->
+    
+  <!-- Interface de gestion du solde et des mises -->
   <div class="money_container">
     <div class="bankContainer">
-      <div class="bank">Solde : <span id="bankSpan">{{ (game.currentUser?.solde) || 0 }}</span></div>
+      <!-- Affichage du solde via le nouveau getter userBalance (architecture améliorée) -->
+      <div class="bank">Solde : <span id="bankSpan">{{ userBalance }}</span></div>
+      <!-- Affichage de la mise totale via le getter currentBet -->
       <div class="bet">Mise : <span id="betSpan">{{ currentBet }}</span></div>
     </div>
-    <!-- contenaire pour jeton a parier -->
+    
+    <!-- Sélecteur de jetons  -->
       <div class="chip_container">
         <div
           *ngFor="let value of chipValues; let i = index"
@@ -50,7 +70,8 @@
           <span class="color_chip_span">{{ value }}</span>
         </div>
       </div>
-      <!-- Bouton pour lancer la roue -->
+      
+      <!-- Bouton de lancement  -->
       <div class="buttom_launch">
         <button mat-menu-item (click)="spin()" [disabled]="currentBet === 0 || isSpinning">Lancer la roue</button>
       </div>
