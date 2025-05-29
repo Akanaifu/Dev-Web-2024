@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-compte',
+  standalone: true, // <-- Ajouter cette ligne
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './edit-compte.component.html',
   styleUrl: './edit-compte.component.css',

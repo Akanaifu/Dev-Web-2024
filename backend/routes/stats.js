@@ -35,7 +35,7 @@ router.get("/:id/winrate", async (req, res) => {
       SELECT gs.name AS game_name,
              CAST(SUM(CASE WHEN b.bet_status = 'win' THEN 1 ELSE 0 END) AS UNSIGNED) AS total_wins,
              COUNT(*) AS total_games,
-             ROUND( SUM( CASE WHEN b.bet_status = 'win' THEN 1 ELSE 0 END) / COUNT(*), 2)*100 AS win_rate
+             CAST(ROUND(SUM(CASE WHEN b.bet_status = 'win' THEN 1 ELSE 0 END) / COUNT(*), 2) * 100 AS DECIMAL(5,2)) AS win_rate
       FROM bets b
       JOIN games_session gs ON b.game_session_id = gs.game_session_id
       WHERE b.user_id = ?

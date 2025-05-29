@@ -50,11 +50,11 @@
       [1, 5, 7],
       [6, 2, 8],
       [4, 0, 3],
-      [3, 9, 2]
+      [7, 7, 7]
     ],
-    "gain": 0,
-    "joueurId": "5",
-    "mise": 10,
+    "gain": 500,
+    "joueurId": "6",
+    "mise": 50,
     "partieAffichee": false,
     "partieJouee": true,
     "solde": 50,

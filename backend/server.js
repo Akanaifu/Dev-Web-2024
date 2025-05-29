@@ -21,9 +21,11 @@ const statsRoutes = require("./routes/stats");
 
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
+const rouletteRoutes = require("./routes/roulette-net");
 const registerRoutes = require("./routes/register");
 const playerRoutes = require("./routes/get_id");
 const editCompteRoutes = require("./routes/edit-compte");
+const rouletteOddsRoutes = require("./routes/roulette-net-odds");
 // Services
 const SocketService = require("./services/socketService");
 
@@ -58,7 +60,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
 // Middlewares pour l'API
 app.use(express.json());
 app.use(cookieParser());
