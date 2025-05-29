@@ -1,0 +1,670 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for roulette-net.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="prettify.css" />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="index.html">All files</a> roulette-net.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">78.04% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>64/82</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">47.61% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>40/84</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">57.14% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>4/7</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">95.45% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>63/66</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line medium'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const express = require("express");
+const router = express.Router();
+const db = require("../config/dbConfig");
+&nbsp;
+// Configuration des numéros rouges selon les règles standard de la roulette européenne
+// Cette constante détermine la couleur de chaque numéro pour les calculs de gains sur les paris couleur
+const RED_NUMBERS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+&nbsp;
+/**
+ * Détermine la couleur d'un numéro selon les règles de la roulette européenne.
+ * Cette fonction est utilisée pour valider les paris sur rouge/noir lors du calcul des gains.
+ */
+function getNumberColor(number) {
+    if (number === 0) return 'green';
+    return RED_NUMBERS.includes(number) ? 'red' : 'black';
+}
+&nbsp;
+/**
+ * Fonction principale de calcul des gains et pertes pour un spin de roulette.
+ * Cette logique métier centralise tous les calculs et met à jour directement la base de données.
+ */
+async function win(winningSpin, bets, solde, userId, winValue = <span class="branch-0 cbranch-no" title="branch not covered" >0,</span> payout = <span class="branch-0 cbranch-no" title="branch not covered" >0,</span> betTotal = <span class="branch-0 cbranch-no" title="branch not covered" >0)</span> {
+    // Logs d'initialisation pour tracer le début de chaque calcul de gains
+    // Ces console.log permettent de suivre précisément chaque session de jeu et d'identifier les problèmes
+    console.log(`[WIN CALCULATION] 🎰 Début du calcul des gains pour l'utilisateur ${userId}`);
+    console.log(`[WIN CALCULATION] Numéro gagnant: ${winningSpin}, Solde initial: ${solde}`);
+    console.log(`[WIN CALCULATION] Nombre de mises: ${bets.length}`);
+    
+    let newsolde = solde;
+    let betLose = 0;
+    const winColor = getNumberColor(winningSpin);
+    const isEven = winningSpin !== 0 &amp;&amp; winningSpin % 2 === 0;
+    
+    // Définition des colonnes pour les paris "2 à 1" selon la disposition du plateau
+    // Ces tableaux permettent de vérifier si un numéro appartient à une colonne spécifique
+    const firstColumn = [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34];
+    const secondColumn = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35];
+    const thirdColumn = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36];
+    
+    // Boucle de traitement de chaque mise pour déterminer les gains ou pertes
+    // Chaque pari est évalué individuellement selon ses propres règles de gain
+    for (let b of bets) {
+        const numArray = b.numbers.split(',').map(Number);
+        let isWin = false;
+        
+        // Vérification directe si le numéro gagnant fait partie des numéros misés
+        // Cette condition couvre les mises pleines, à cheval, carrés, transversales, etc.
+        if (numArray.includes(winningSpin)) {
+            isWin = true;
+        } 
+        // Évaluation des paris spéciaux basés sur les propriétés du numéro (couleur, parité, plage)
+        // Ces conditions gèrent tous les paris externes comme rouge/noir, pair/impair, douzaines, etc.
+        else <span class="missing-if-branch" title="else path not taken" >E</span>if (b.label) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === 'RED' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >winColor === 'red')</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === 'BLACK' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >winColor === 'black')</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === 'EVEN' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >isEven)</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === 'ODD' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!isEven </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >winningSpin !== 0)</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === '1 à 18' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >winningSpin &gt;= 1 </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >winningSpin &lt;= 18)</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === '19 à 36' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >winningSpin &gt;= 19 </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >winningSpin &lt;= 36)</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === '1 à 12' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >winningSpin &gt;= 1 </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >winningSpin &lt;= 12)</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === '13 à 24' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >winningSpin &gt;= 13 </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >winningSpin &lt;= 24)</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === '25 à 36' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >winningSpin &gt;= 25 </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >winningSpin &lt;= 36)</span> <span class="cstat-no" title="statement not covered" >isWin = true;</span>
+            // Traitement spécial des colonnes qui nécessite une vérification d'appartenance
+            // Les colonnes sont plus complexes car elles ne suivent pas une séquence numérique simple
+            else <span class="missing-if-branch" title="if path not taken" >I</span>if (b.label === '2 à 1' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >b.type === 'outside_column')</span> {
+                // Double vérification défensive pour les paris de colonnes :
+                // 1. firstColumn.includes(winningSpin) : Le numéro gagnant est-il dans cette colonne ?
+                // 2. numArray.every(n =&gt; firstColumn.includes(n)) : Le pari porte-t-il vraiment sur cette colonne ?
+                // Note: Logiquement, si (1) est false, (2) ne sera pas évalué grâce au court-circuit (&amp;&amp;)
+                // Cette double vérification protège contre les données corrompues et valide l'intégrité du pari
+<span class="cstat-no" title="statement not covered" >                if (firstColumn.includes(winningSpin) &amp;&amp; numArray.every(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >firstColumn.includes(n))</span>) <span class="cstat-no" title="statement not covered" >isWin = true;</span></span>
+                else <span class="cstat-no" title="statement not covered" >if (secondColumn.includes(winningSpin) &amp;&amp; numArray.every(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >secondColumn.includes(n))</span>) <span class="cstat-no" title="statement not covered" >isWin = true; </span></span>
+                else <span class="cstat-no" title="statement not covered" >if (thirdColumn.includes(winningSpin) &amp;&amp; numArray.every(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >thirdColumn.includes(n))</span>) <span class="cstat-no" title="statement not covered" >isWin = true;</span></span>
+            }
+        }
+        
+        // Calcul et logging des gains ou pertes pour chaque mise
+        // Les logs détaillés permettent de vérifier la justesse de chaque calcul
+        if (isWin) {
+            const gain = b.odds * b.amt;
+            winValue += gain;
+            // console.log(`[WIN CALCULATION] ✅ Mise gagnante: ${b.label || b.numbers} - Mise: ${b.amt}, Gain: ${gain}`);
+        }else{
+            betLose += b.amt;
+            // console.log(`[WIN CALCULATION] ❌ Mise perdante: ${b.label || b.numbers} - Mise perdue: ${b.amt}`);
+        }
+        betTotal += b.amt;
+    }
+    
+    // Calcul final du résultat net et du nouveau solde
+    // Le payout représente le gain net (gains - pertes) qui s'ajoute au solde initial
+    payout = winValue - betLose;
+    newsolde += payout;
+    
+    // Logs de résumé pour vérifier la cohérence des calculs
+    // Ces informations permettent de valider que tous les montants sont corrects
+    // console.log(`[WIN CALCULATION] 📊 Résumé des gains:`);
+    // console.log(`[WIN CALCULATION] - Total des gains: ${winValue}`);
+    // console.log(`[WIN CALCULATION] - Total des pertes: ${betLose}`);
+    // console.log(`[WIN CALCULATION] - Total des mises: ${betTotal}`);
+    // console.log(`[WIN CALCULATION] - Payout net: ${payout}`);
+    // console.log(`[WIN CALCULATION] - Nouveau solde calculé: ${solde} → ${newsolde}`);
+    
+    // Mise à jour immédiate du solde en base de données pour persistance
+    // Cette opération garantit que le nouveau solde est sauvegardé même en cas de déconnexion
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (userId) {
+        try {
+            // console.log(`[WIN CALCULATION] 🔄 Mise à jour du solde en base de données...`);
+            await db.query(
+                "UPDATE user SET solde = ? WHERE user_id = ?",
+                [newsolde, userId]
+            );
+            // console.log(`[WIN CALCULATION] ✅ Solde mis à jour en base de données pour l'utilisateur ${userId}: ${newsolde}`);
+        } catch (err) {
+            // console.error(`[WIN CALCULATION] ❌ Erreur lors de la mise à jour du solde en base:`, err);
+            // Propagation de l'erreur pour qu'elle soit gérée au niveau de la route
+            throw err;
+        }
+    }
+    
+    // Retour des résultats structurés pour le frontend
+    // Ces valeurs permettent au client d'afficher les résultats et de mettre à jour l'interface
+    return { 
+        winValue: winValue, 
+        payout: payout,
+        newsolde: newsolde,
+        betTotal: betTotal
+    };
+}
+&nbsp;
+/**
+ * Endpoint pour générer un numéro aléatoire de roulette (0-36).
+ * Cette route simule le lancement de la roulette avec un générateur de nombres aléatoires côté serveur.
+ */
+router.post('/spin', (req, res) =&gt; {
+    const number = Math.floor(Math.random() * 37); // 0-36
+    const color = getNumberColor(number);
+    
+    res.json({ number, color });
+});
+&nbsp;
+/**
+ * Endpoint principal pour calculer les gains d'un spin de roulette.
+ * Cette route reçoit les mises du frontend, vérifie la cohérence du solde et calcule les gains.
+ */
+router.post('/win', async (req, res) =&gt; {
+    const { winningSpin, bets, solde } = req.body;
+    const userId = req.body.userId;
+    
+    // Logs d'entrée pour tracer chaque demande de calcul de gains
+    // Ces informations permettent de diagnostiquer les problèmes de communication frontend/backend
+    // console.log(`[ROULETTE WIN] 🎯 Nouvelle demande de calcul de gains`);
+    // console.log(`[ROULETTE WIN] UserId: ${userId}, Numéro gagnant: ${winningSpin}, Solde reçu du frontend: ${solde}`);
+    
+    // Vérification de cohérence entre le solde frontend et la base de données
+    // Cette double vérification permet de détecter les désynchronisations et problèmes de cache
+    if (userId) {
+        try {
+            const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (rows.length &gt; 0) {
+                const soldeReel = rows[0].solde;
+                // console.log(`[ROULETTE WIN] 💰 Solde réel en base de données: ${soldeReel}`);
+                // console.log(`[ROULETTE WIN] ⚠️ Différence: Frontend(${solde}) vs Base(${soldeReel}) = ${solde - soldeReel}`);
+            }
+        } catch (err) {
+            // console.log(`[ROULETTE WIN] ❌ Erreur lors de la vérification du solde en base:`, err);
+        }
+    }
+    
+    // Validation des données d'entrée pour éviter les erreurs de calcul
+    // Ces vérifications garantissent que tous les paramètres nécessaires sont présents et valides
+    if (winningSpin === undefined || !Array.isArray(bets) || solde === undefined) {
+        // console.log(`[ROULETTE WIN] ❌ Données invalides reçues`);
+        return res.status(400).json({ 
+            message: "Données invalides. Veuillez fournir un numéro gagnant, des mises et la valeur de la banque." 
+        });
+    }
+    
+    try {
+        // Appel de la fonction de calcul avec logging du résultat pour suivi
+        // Cette étape centralise toute la logique de jeu et retourne les résultats structurés
+        const result = await win(winningSpin, bets, solde, userId, 0, 0, 0);
+        
+        // console.log(`[ROULETTE WIN] ✅ Calcul terminé, envoi de la réponse:`, result);
+        res.json(result);
+    } catch (error) {
+        // Gestion d'erreur avec logging détaillé pour faciliter le débogage
+        // Ces informations sont cruciales pour identifier les problèmes de logique ou de base de données
+        //  console.error(`[ROULETTE WIN] ❌ Erreur lors du calcul des gains:`, error);
+        res.status(500).json({ 
+            message: "Erreur lors du calcul des gains" 
+        });
+    }
+});
+&nbsp;
+module.exports = router;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2025-05-29T19:32:06.326Z
+            </div>
+        <script src="prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="sorter.js"></script>
+        <script src="block-navigation.js"></script>
+    </body>
+</html>
+    
