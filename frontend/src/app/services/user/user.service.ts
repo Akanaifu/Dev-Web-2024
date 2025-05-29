@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -29,12 +29,29 @@ export class UserService {
 
   updateUserBalance(
     userId: number,
-    value: number,
-    action: 'add' | 'subtract'
+    amount: number,
+    operation: 'add' | 'subtract'
   ): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${userId}/balance`, {
-      value,
-      action,
-    });
+    if (
+      userId === null ||
+      userId === undefined ||
+      amount === null ||
+      amount === undefined ||
+      operation === null ||
+      operation === undefined ||
+      (operation !== 'add' && operation !== 'subtract')
+    ) {
+      return throwError(() => new Error('Invalid arguments'));
+    }
+
+    let url = '';
+    if (operation === 'add') {
+      url = `${this.apiUrl}/balance/add`;
+    } else if (operation === 'subtract') {
+      url = `${this.apiUrl}/balance/subtract`;
+    }
+
+    // Use 'value' instead of 'amount' in the request body
+    return this.http.post(url, { userId, value: amount });
   }
 }

@@ -53,6 +53,8 @@ export class BalanceComponent implements OnInit {
       if (this.amount < 0) {
         this.amount = 0; // Ensure amount does not go below zero
       }
+    } else {
+      this.amount = 0; // Si l'incrément dépasse le montant, on met à zéro
     }
   }
 
