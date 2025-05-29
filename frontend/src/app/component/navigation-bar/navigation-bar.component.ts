@@ -14,7 +14,7 @@ import { User } from '../../models/user.models'; // Import the User model
   templateUrl: 'navigation-bar.component.html',
   styleUrl: 'navigation-bar.component.css',
   standalone: true,
-  imports: [MatButtonModule, MatMenuModule, CommonModule],
+  imports: [MatButtonModule, MatMenuModule, RouterLink, CommonModule],
 })
 export class NavigationBarComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
