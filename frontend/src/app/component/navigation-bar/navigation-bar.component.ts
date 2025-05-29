@@ -24,10 +24,7 @@ export class NavigationBarComponent implements OnInit {
 
   constructor(
     public loginService: LoginService,
-    public avatarUploadService: AvatarUploadService // Injection du service
-  ) {}
-  constructor(
-    public loginService: LoginService,
+    public avatarUploadService: AvatarUploadService, // Injection du service
     private userService: UserService
   ) {}
 

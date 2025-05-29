@@ -23,7 +23,7 @@ const newGameRoutes = require("./routes/new_game");
 const registerRoutes = require("./routes/register");
 const playerRoutes = require("./routes/get_id");
 const editCompteRoutes = require("./routes/edit-compte");
-const rouletteOddsRoutes = require("./routes/roulette-net-odds");
+// const rouletteOddsRoutes = require("./routes/roulette-net-odds");
 const uploadAvatarRouter = require('./routes/upload-avatar');
 
 
@@ -74,7 +74,7 @@ app.use("/new-game", newGameRoutes);
 app.use("/get_id", playerRoutes);
 app.use("/edit-compte", editCompteRoutes);
 app.use("/api/roulette", rouletteRoutes);
-app.use("/api/roulette-odds", rouletteOddsRoutes.router);
+// app.use("/api/roulette-odds", rouletteOddsRoutes.router);
 app.use('/avatar', uploadAvatarRouter);
 app.use("/api/roulette-odds", rouletteNetPrepareBettingBoard.router);
 

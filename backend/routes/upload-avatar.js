@@ -24,6 +24,10 @@ router.post('/upload-avatar', upload.single('avatar'), async (req, res) => {
       .toFile(outputPath);
 
     // Scan antivirus
+    // Il faut installer ClamAV et le configurer pour que NodeClam puisse l'utiliser.
+    
+    // Via sudo apt install clamav
+
     // const clamscan = await new NodeClam().init({
     //   removeInfected: true,
     //   clamscan: {

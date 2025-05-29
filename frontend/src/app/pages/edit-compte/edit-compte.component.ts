@@ -12,12 +12,12 @@ import { AvatarUploadService } from '../../services/avatar-upload.service';
 
 @Component({
   selector: 'app-edit-compte',
-  standalone: true, // <-- Ajouter cette ligne
   imports: [ReactiveFormsModule, CommonModule],
   standalone: true,
   templateUrl: './edit-compte.component.html',
   styleUrl: './edit-compte.component.css',
 })
+
 export class EditCompteComponent implements OnInit {
   editForm: FormGroup;
   playerInfo: {
