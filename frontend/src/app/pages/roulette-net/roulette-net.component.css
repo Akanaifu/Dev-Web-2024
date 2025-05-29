@@ -1,13 +1,38 @@
+/*
+  STYLES CSS POUR LA ROULETTE EN LIGNE
+  
+  ORGANISATION DU FICHIER :
+  1. Styles globaux et conteneur principal
+  2. Roue de roulette (animation, sections, bille)
+  3. Interface de contrôle (solde, jetons, boutons)
+  4. Plateau de mise (grille de numéros, zones externes)
+  5. États interactifs (hover, disabled, sélections)
+  6. Responsive design pour mobiles
+  
+  ARCHITECTURE VISUELLE :
+  - Layout flexbox : colonnes gauche (roue) et droite (plateau)
+  - Animations CSS : rotation de la bille, transitions hover
+  - Système de couleurs : vert casino, rouge/noir roulette, jetons colorés
+  - États d'interface : isSpinning désactive visuellement les interactions
+  
+  CLASSES IMPORTANTES :
+  - .disabled : État pendant le spin (pointer-events: none)
+  - .chip : Affichage des mises sur le plateau
+  - .sect : Sections de la roue avec rotations précises
+  - .redNum/.blackNum : Couleurs des numéros selon les règles de roulette
+*/
+
 html, body {
 	font-family: arial;
 	cursor: default;
+	/* Désactivation de la sélection de texte pour une interface de jeu propre */
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	--background : #016D29;
+	--background : #016D29; /* Couleur verte traditionnelle du casino */
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -511,6 +536,7 @@ button:enabled {
 .space_2to1 {
 	width: 100%;
 	height: 8%;
+	
 }
 
 .table-column-right-first, 
@@ -556,6 +582,7 @@ button:enabled {
 	font-weight: bold;
 	background: transparent;
 	color: #fff;
+	cursor: pointer;
 }
 
 
@@ -617,6 +644,7 @@ button:enabled {
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
+	cursor: pointer;
 }
 
 .zero_arc_label {
@@ -649,26 +677,15 @@ button:enabled {
 	margin: 0 -0.2px;
 }
 
-/* Pour garder le texte lisible, on inverse la rotation sur les numéros */
-.number_block .nbn {
+.nbn{
 	transform: none;
 	display: flex;
 	width: 100%;
 	height: 100%;
 	align-items: center;
 	justify-content: center;
-}
-
-.nbn{
-	font-size: 20px;
+	cursor: pointer;
 	font-weight: bold;
-	letter-spacing: 2px;
-	transform: rotate(-90deg);
-	-webkit-transform: rotate(-90deg);
-	-moz-transform: rotate(-90deg);
-	-ms-transform: rotate(-90deg);
-	-o-transform: rotate(-90deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
 .number_block .chip{
@@ -694,6 +711,7 @@ button:enabled {
 	font-weight: bold;
 	color: #fff;
 	background: transparent;
+	cursor: pointer;
 }
 
 .table-column-right{
