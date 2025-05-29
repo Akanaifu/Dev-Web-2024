@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'; // <-- Ajouté
 import { UserService } from '../../services/user/user.service';
 
 @Component({
   selector: 'app-balance',
   templateUrl: './balance.component.html',
   styleUrls: ['./balance.component.css'],
+  imports: [CommonModule], // <-- Ajouté
 })
 export class BalanceComponent implements OnInit {
   amount: number = 0; // Initialize the amount
   incrementValue: number = 10; // Default increment value
   maxAmount: number = 1000; // Maximum amount limit
   userId: number | null = null;
+  showOverdraftModal: boolean = false; // Contrôle l'affichage du pop-up
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
@@ -41,9 +44,7 @@ export class BalanceComponent implements OnInit {
 
   increaseAmount(): void {
     this.amount += this.incrementValue; // Increment by selected value
-    if (this.amount > this.maxAmount) {
-      this.amount = this.maxAmount; // Ensure amount does not exceed max limit
-    }
+    // Suppression du cap sur maxAmount
   }
 
   decreaseAmount(): void {
@@ -75,6 +76,15 @@ export class BalanceComponent implements OnInit {
 
   handleWithdrawal(): void {
     if (this.userId == null) return;
+    if (this.amount > this.maxAmount) {
+      this.showOverdraftModal = true;
+      return;
+    }
+    this.proceedWithdrawal();
+  }
+
+  proceedWithdrawal(): void {
+    if (this.userId == null) return;
     this.userService
       .updateUserBalance(this.userId, this.amount, 'subtract')
       .subscribe({
@@ -89,6 +99,11 @@ export class BalanceComponent implements OnInit {
           console.error('Erreur lors du retrait:', err);
         },
       });
+    this.showOverdraftModal = false;
+  }
+
+  cancelOverdraft(): void {
+    this.showOverdraftModal = false;
   }
 
   updateAmount(newAmount: string): void {

@@ -37,3 +37,15 @@
     <button mat-button (click)="handleWithdrawal()">Faire un retrait</button>
   </div>
 </div>
+<div class="overdraft-modal" *ngIf="showOverdraftModal">
+  <div class="overdraft-modal-content">
+    <p>
+      Le montant du retrait ({{ amount }} €) dépasse votre solde actuel ({{
+        maxAmount
+      }}
+      €). Voulez-vous continuer ?
+    </p>
+    <button mat-button (click)="proceedWithdrawal()">Continuer</button>
+    <button mat-button (click)="cancelOverdraft()">Annuler</button>
+  </div>
+</div>

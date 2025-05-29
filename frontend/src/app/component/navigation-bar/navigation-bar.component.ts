@@ -21,12 +21,18 @@ export class NavigationBarComponent implements OnInit {
   balance: number | null = null;
   userId: number | null = null; // Initialize as null
 
-  constructor(public loginService: LoginService, private userService: UserService) {}
+  constructor(
+    public loginService: LoginService,
+    private userService: UserService
+  ) {}
 
   ngOnInit() {
     // Vérifier si nous sommes dans un navigateur avant d'accéder à localStorage
     if (isPlatformBrowser(this.platformId)) {
-      if (localStorage.getItem('token') && this.loginService.user() === undefined) {
+      if (
+        localStorage.getItem('token') &&
+        this.loginService.user() === undefined
+      ) {
         this.loginService.getUser().subscribe({
           next: (user: User | null | undefined) => {
             this.userId = user?.userId || null; // Use userId instead of id
@@ -35,7 +41,10 @@ export class NavigationBarComponent implements OnInit {
             }
           },
           error: (err) => {
-            console.error('Erreur lors de la récupération de l\'utilisateur:', err);
+            console.error(
+              "Erreur lors de la récupération de l'utilisateur:",
+              err
+            );
           },
         });
       } else {
@@ -56,7 +65,17 @@ export class NavigationBarComponent implements OnInit {
         }
       },
       error: (err: any) => {
-        console.error('Erreur lors de la gestion de l\'événement de connexion:', err);
+        console.error(
+          "Erreur lors de la gestion de l'événement de connexion:",
+          err
+        );
+      },
+    });
+
+    // Subscribe to balance changes
+    this.userService.balanceChanged.subscribe({
+      next: (newBalance: number) => {
+        this.balance = newBalance;
       },
     });
   }
@@ -84,7 +103,7 @@ export class NavigationBarComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors de la déconnexion', err);
-      }
+      },
     });
   }
 }
