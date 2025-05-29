@@ -10,6 +10,7 @@ import { RouletteNetComponent } from './pages/roulette-net/roulette-net.componen
 
 import { EditCompteComponent } from './pages/edit-compte/edit-compte.component';
 
+import { BalanceComponent } from './pages/balance/balance.component';
 
 export const routes: Routes = [
   {
@@ -25,10 +26,11 @@ export const routes: Routes = [
     canActivate: [isLoggedInGuard],
   }, // page de la machine à sous
 
-  { //page de la roulette
-    path: 'Roulette', 
+  {
+    //page de la roulette
+    path: 'Roulette',
     component: RouletteNetComponent,
-    canActivate: [isLoggedInGuard]
+    canActivate: [isLoggedInGuard],
   },
   {
     path: 'stats',
@@ -36,10 +38,10 @@ export const routes: Routes = [
     canActivate: [isLoggedInGuard],
   }, // page de stats
   {
-    path: 'compte',
-    component: EditCompteComponent,
+    path: 'balance',
+    component: BalanceComponent,
     canActivate: [isLoggedInGuard],
-  }, // page de gestion de compte
+  }, // page de solde
   { path: '**', component: NotFoundComponent },
   // page d'erreur route inexistante. A mettre à la fin !!!!!!!!
 ];

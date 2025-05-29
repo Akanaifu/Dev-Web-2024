@@ -13,6 +13,7 @@ set SQL_DATA=data-casino.sql
 :: Supprimer la base de donnees
 echo Supprimer la base de donnees %DB_NAME%...
 mysql -u %MYSQL_USER% -p%MYSQL_PASSWORD% --port=3307  -e "DROP DATABASE IF EXISTS `%DB_NAME%`;"
+mysql -u %MYSQL_USER% -p%MYSQL_PASSWORD% --port=3307 -e "DROP DATABASE IF EXISTS `%DB_NAME%`;"
 
 :: Recreer la base de donnees
 echo Recreer la base de donnees %DB_NAME%...
