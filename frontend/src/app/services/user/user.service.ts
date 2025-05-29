@@ -13,6 +13,15 @@ export class UserService {
   // ...existing methods...
 
   getUserBalance(userId: number): Observable<{ balance: number }> {
-    return this.http.get<{ balance: number }>(`${this.apiUrl}/${userId}/balance`);
+    return this.http.get<{ balance: number }>(
+      `${this.apiUrl}/${userId}/balance`
+    );
+  }
+
+  getUserId(): Observable<{ solde: number }> {
+    return this.http.get<{ solde: number }>(
+      'http://localhost:3000/get_id/info',
+      { withCredentials: true }
+    );
   }
 }
