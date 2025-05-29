@@ -10,14 +10,21 @@ export class BalanceComponent implements OnInit {
   amount: number = 0; // Initialize the amount
   incrementValue: number = 10; // Default increment value
   maxAmount: number = 1000; // Maximum amount limit
+  userId: number | null = null;
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
     this.userService.getUserId().subscribe({
       next: (response) => {
-        if (response && typeof response.solde === 'number') {
+        console.log('ID utilisateur récupéré:', response);
+        if (response) {
+          this.userId = response.user_id; // Store user ID from response
           this.maxAmount = response.solde;
-        }
+          console.log(
+            '🚀 ~ BalanceComponent ~ this.userService.getUserId ~ this.userId:',
+            this.userId
+          );
+        } // Set max amount from response
       },
       error: (err) => {
         console.error(
@@ -49,13 +56,39 @@ export class BalanceComponent implements OnInit {
   }
 
   handleDeposit(): void {
-    console.log(`Dépôt de ${this.amount} €`);
-    // Add logic for deposit
+    if (this.userId == null) return;
+    this.userService
+      .updateUserBalance(this.userId, this.amount, 'add')
+      .subscribe({
+        next: (res) => {
+          console.log('Dépôt effectué:', res);
+          if (typeof res.balance === 'number') {
+            this.maxAmount = res.balance;
+            this.amount = 0;
+          }
+        },
+        error: (err) => {
+          console.error('Erreur lors du dépôt:', err);
+        },
+      });
   }
 
   handleWithdrawal(): void {
-    console.log(`Retrait de ${this.amount} €`);
-    // Add logic for withdrawal
+    if (this.userId == null) return;
+    this.userService
+      .updateUserBalance(this.userId, this.amount, 'subtract')
+      .subscribe({
+        next: (res) => {
+          console.log('Retrait effectué:', res);
+          if (typeof res.balance === 'number') {
+            this.maxAmount = res.balance;
+            this.amount = 0;
+          }
+        },
+        error: (err) => {
+          console.error('Erreur lors du retrait:', err);
+        },
+      });
   }
 
   updateAmount(newAmount: string): void {
