@@ -8,6 +8,7 @@ const db = require('../config/dbConfig');
 const router = express.Router();
 const upload = multer({ dest: 'tmp/' });
 
+
 router.post('/upload-avatar', upload.single('avatar'), async (req, res) => {
   const userId = req.body.userId;
   console.log("caca boudin");
@@ -40,10 +41,11 @@ router.post('/upload-avatar', upload.single('avatar'), async (req, res) => {
 // http://localhost:3000/avatar/1
 
 router.get('/:id', (req, res) => {
-    console.log("caca boudin");
-  let filePath = path.join(__dirname, '../assets', `${req.params.id}.png`);
+  console.log('Route avatar appelée', req.params.id);
+  let filePath = path.join(__dirname, '../assets/', `${req.params.id}.png`);
+  console.log('Recherche avatar:', filePath, 'Existe:', fs.existsSync(filePath));
   if (!fs.existsSync(filePath)) {
-    filePath = path.join(__dirname, '../assets', 'default.png');
+    filePath = path.join(__dirname, '../assets/', 'default.png');
   }
   res.sendFile(filePath);
 });

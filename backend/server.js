@@ -16,11 +16,8 @@ const socketConfig = require("./config/socketConfig");
 
 // Routes
 const sessionRoutes = require("./routes/sessions");
-
 const userRoutes = require("./routes/users");
-
 const statsRoutes = require("./routes/stats");
-
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
 const rouletteRoutes = require("./routes/roulette-net");
@@ -28,6 +25,8 @@ const registerRoutes = require("./routes/register");
 const playerRoutes = require("./routes/get_id");
 const editCompteRoutes = require("./routes/edit-compte");
 const rouletteOddsRoutes = require("./routes/roulette-net-odds");
+const uploadAvatarRouter = require('./routes/upload-avatar');
+
 // Services
 const SocketService = require("./services/socketService");
 
@@ -63,17 +62,15 @@ app.use(bodyParser.json());
 // Routes de l'API
 app.use("/sessions", sessionRoutes);
 app.use("/register", registerRoutes);
-
 app.use("/users", userRoutes);
-
 app.use("/stats", statsRoutes);
-
 app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
 app.use("/get_id", playerRoutes);
 app.use("/edit-compte", editCompteRoutes);
 app.use("/api/roulette", rouletteRoutes);
 app.use("/api/roulette-odds", rouletteOddsRoutes.router);
+app.use('/avatar', uploadAvatarRouter);
 
 // Route pour servir la page HTML
 app.get("/inject-data", (req, res) => {

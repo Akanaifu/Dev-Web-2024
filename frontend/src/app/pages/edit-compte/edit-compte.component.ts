@@ -8,10 +8,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AvatarUploadService } from '../../services/avatar-upload.service';
 
 @Component({
   selector: 'app-edit-compte',
   imports: [ReactiveFormsModule, CommonModule],
+  standalone: true,
   templateUrl: './edit-compte.component.html',
   styleUrl: './edit-compte.component.css',
 })
@@ -28,10 +30,10 @@ export class EditCompteComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    http: HttpClient,
-    private router: Router
+    private http: HttpClient,
+    private router: Router,
+    private avatarUploadService: AvatarUploadService // Ajoute ceci
   ) {
-    this.http = http;
     this.editForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]], // Nom d'utilisateur
       email: ['', [Validators.required, Validators.email]], // Email
@@ -39,7 +41,6 @@ export class EditCompteComponent implements OnInit {
       confirmPassword: ['', [Validators.required, Validators.minLength(6)]], // Ajout de confirmPassword
     });
   }
-  private http: HttpClient;
 
   ngOnInit(): void {
     console.log('Initialisation du composant EditCompte');
@@ -111,12 +112,8 @@ export class EditCompteComponent implements OnInit {
       console.error('Aucun fichier sélectionné ou user_id manquant');
       return;
     }
-    const formData = new FormData();
-    formData.append('file', this.selectedFile);
-    formData.append('userId', this.playerInfo.user_id.toString());
-
-    this.http
-      .post('http://localhost:3000/edit-compte/avatar', formData)
+    this.avatarUploadService
+      .uploadAvatar(this.selectedFile, this.playerInfo.user_id)
       .subscribe({
         next: (res) => {
           console.log('Avatar uploadé avec succès', res);

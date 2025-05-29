@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoginService } from '../../services/login/login.service';
+import { AvatarUploadService } from '../../services/avatar-upload.service';
 
 @Component({
   selector: 'navigation-bar',
@@ -17,7 +18,10 @@ import { LoginService } from '../../services/login/login.service';
 export class NavigationBarComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
 
-  constructor(public loginService: LoginService) {}
+  constructor(
+    public loginService: LoginService,
+    public avatarUploadService: AvatarUploadService // Injection du service
+  ) {}
 
   ngOnInit() {
     // Vérifier si nous sommes dans un navigateur avant d'accéder à localStorage
@@ -45,9 +49,6 @@ export class NavigationBarComponent implements OnInit {
 
   getAvatarUrl(): string {
     const user = this.loginService.user();
-    if (user && user.userId) {
-      return `http://localhost:3000/avatar/${user.userId}.png`;
-    }
-    return 'http://localhost:3000/avatar/default.png';
+    return this.avatarUploadService.getAvatarUrl(user?.userId);
   }
 }
