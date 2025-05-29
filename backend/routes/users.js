@@ -106,11 +106,18 @@ router.put("/:id/balance", async (req, res) => {
       return res.status(404).json({ error: "Utilisateur non trouvé" });
     }
     let newBalance = rows[0].solde;
+    let transactionType, transactionStatus = 1;
+
     if (action === "add") {
       newBalance += value;
+      transactionType = 1; // 1 = dépôt
     } else if (action === "subtract") {
       newBalance -= value;
-      if (newBalance < 0) newBalance = 0; // Optionnel: empêcher solde négatif
+      transactionType = 2; // 2 = retrait
+      if (newBalance < 0) {
+        newBalance = 0; // empêcher solde négatif
+        transactionStatus = 0; // statut échec si dépassement
+      }
     }
 
     // Mettre à jour le solde
@@ -118,6 +125,13 @@ router.put("/:id/balance", async (req, res) => {
       newBalance,
       userId,
     ]);
+
+    // Insérer la transaction bancaire
+    await db.query(
+      "INSERT INTO Banking_transaction (user_id, amount_banking, transaction_type, transaction_status) VALUES (?, ?, ?, ?)",
+      [userId, value, transactionType, transactionStatus]
+    );
+
     res.json({ message: "Solde mis à jour.", balance: newBalance });
   } catch (err) {
     console.error("Erreur SQL:", err);
