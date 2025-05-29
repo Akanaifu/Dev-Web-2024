@@ -97,10 +97,6 @@ export class MachineASousComponent implements OnInit {
 
     const solde = this.playerInfo.solde; // Utilisation du solde récupéré via getPlayerInfo
     const playerId = this.playerInfo.user_id; // Utilisation du solde comme playerId
-    console.log(
-      '🚀 ~ MachineASousComponent ~ sendPartieToFirebase ~ this.playerInfo:',
-      this.playerInfo
-    );
 
     this.firebaseSendService
       .sendPartie(playerId, solde)
