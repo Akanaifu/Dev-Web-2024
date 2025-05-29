@@ -105,12 +105,11 @@ router.post("/add", async (req, res) => {
   }
 });
 
-// Nouvelle route pour modifier le solde d'un utilisateur
-router.put("/:id/balance", async (req, res) => {
-  const userId = parseInt(req.params.id);
-  const { value, action } = req.body;
+// Nouveau endpoint pour ajouter au solde
+router.put("/balance/add", async (req, res) => {
+  const { userId, value } = req.body;
 
-  if (typeof value !== "number" || !["add", "subtract"].includes(action)) {
+  if (typeof value !== "number" || typeof userId !== "number") {
     return res.status(400).json({ error: "Paramètres invalides." });
   }
 
@@ -122,20 +121,48 @@ router.put("/:id/balance", async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ error: "Utilisateur non trouvé" });
     }
-    let newBalance = rows[0].solde;
-    let transactionType,
-      transactionStatus = 1;
+    let newBalance = rows[0].solde + value;
 
-    if (action === "add") {
-      newBalance += value;
-      transactionType = 1; // 1 = dépôt
-    } else if (action === "subtract") {
-      newBalance -= value;
-      transactionType = 2; // 2 = retrait
-      if (newBalance < 0) {
-        newBalance = 0; // empêcher solde négatif
-        transactionStatus = 0; // statut échec si dépassement
-      }
+    // Mettre à jour le solde
+    await db.query("UPDATE user SET solde = ? WHERE user_id = ?", [
+      newBalance,
+      userId,
+    ]);
+
+    // Insérer la transaction bancaire (type 1 = dépôt, statut 1 = succès)
+    await db.query(
+      "INSERT INTO Banking_transaction (user_id, amount_banking, transaction_type, transaction_status) VALUES (?, ?, ?, ?)",
+      [userId, value, 1, 1]
+    );
+
+    res.json({ message: "Solde augmenté.", balance: newBalance });
+  } catch (err) {
+    console.error("Erreur SQL:", err);
+    res.status(500).json({ error: "Erreur lors de la modification du solde." });
+  }
+});
+
+// Nouveau endpoint pour soustraire du solde
+router.put("/balance/subtract", async (req, res) => {
+  const { userId, value } = req.body;
+
+  if (typeof value !== "number" || typeof userId !== "number") {
+    return res.status(400).json({ error: "Paramètres invalides." });
+  }
+
+  try {
+    // Récupérer le solde actuel
+    const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [
+      userId,
+    ]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+    let newBalance = rows[0].solde - value;
+    let transactionStatus = 1;
+    if (newBalance < 0) {
+      newBalance = 0;
+      transactionStatus = 0; // statut échec si dépassement
     }
 
     // Mettre à jour le solde
@@ -144,13 +171,12 @@ router.put("/:id/balance", async (req, res) => {
       userId,
     ]);
 
-    // Insérer la transaction bancaire
+    // Insérer la transaction bancaire (type 2 = retrait)
     await db.query(
       "INSERT INTO Banking_transaction (user_id, amount_banking, transaction_type, transaction_status) VALUES (?, ?, ?, ?)",
-      [userId, value, transactionType, transactionStatus]
+      [userId, value, 2, transactionStatus]
     );
-
-    res.json({ message: "Solde mis à jour.", balance: newBalance });
+    res.json({ message: "Solde diminué.", balance: newBalance });
   } catch (err) {
     console.error("Erreur SQL:", err);
     res.status(500).json({ error: "Erreur lors de la modification du solde." });

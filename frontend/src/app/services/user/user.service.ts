@@ -51,7 +51,7 @@ export class UserService {
       url = `${this.apiUrl}/balance/subtract`;
     }
 
-    // Use 'value' instead of 'amount' in the request body
-    return this.http.post(url, { userId, value: amount });
+    // Utilise PUT au lieu de POST
+    return this.http.put(url, { userId, value: amount });
   }
 }
