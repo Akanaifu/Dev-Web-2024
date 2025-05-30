@@ -4,7 +4,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   roots: ['<rootDir>/src'],
-  testRegex: '\\.test\\.ts$',
+  testRegex: '\\.(test|spec)\\.ts$',
   
   // Extensions de fichiers
   moduleFileExtensions: ['ts', 'js', 'json'],
