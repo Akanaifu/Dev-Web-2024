@@ -269,8 +269,7 @@ router.post('/win', async (req, res) => {
             return res.status(500).json({ 
                 message: "Erreur lors de la mise à jour du solde" 
             });
-        }
-        
+        }  
         // Ce console.log() sert au fichier test
         // console.log(`[ROULETTE WIN] ✅ Calcul terminé, envoi de la réponse:`, result);
         res.json(result);
