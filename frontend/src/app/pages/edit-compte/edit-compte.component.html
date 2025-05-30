@@ -1,44 +1,78 @@
-<form [formGroup]="editForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label for="username">Username : </label>
-    <input
-      id="username"
-      formControlName="username"
-      type="text"
-      placeholder="nouveau username"
-    />
-  </div>
+<div style="display: flex; gap: 2em;">
+  <!-- Formulaire principal à gauche -->
+  <form
+    [formGroup]="editForm"
+    (ngSubmit)="onSubmit()"
+  >
+    <div>
+      <label for="username">Username : </label>
+      <input
+        id="username"
+        formControlName="username"
+        type="text"
+        placeholder="nouveau username"
+      />
+    </div>
 
-  <div>
-    <label for="email">Email : </label>
-    <input
-      id="email"
-      formControlName="email"
-      type="email"
-      placeholder="nouveau email"
-    />
-  </div>
+    <div>
+      <label for="email">Email : </label>
+      <input
+        id="email"
+        formControlName="email"
+        type="email"
+        placeholder="nouveau email"
+      />
+    </div>
 
-  <div>
-    <label for="password">New Password : </label>
-    <input
-      id="password"
-      formControlName="password"
-      type="password"
-      placeholder="nouveau mot de passe"
-    />
-  </div>
+    <div>
+      <label for="password">New Password : </label>
+      <input
+        id="password"
+        formControlName="password"
+        type="password"
+        placeholder="nouveau mot de passe"
+      />
+    </div>
 
-  <div *ngIf="editForm.get('password')?.value">
-    <label for="confirmPassword">Confirm Password : </label>
-    <input
-      id="confirmPassword"
-      formControlName="confirmPassword"
-      type="password"
-    />
-  </div>
+    <div *ngIf="editForm.get('password')?.value">
+      <label for="confirmPassword">Confirm Password : </label>
+      <input
+        id="confirmPassword"
+        formControlName="confirmPassword"
+        type="password"
+      />
+    </div>
 
-  <div>
-    <button type="submit">Submit</button>
-  </div>
-</form>
+    <div>
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+
+  <section class="avatar-section">
+    <h3>Modifier l'avatar</h3>
+    <label for="avatar" class="avatar-upload-label">
+      <div class="avatar-preview-container">
+        <img
+          [src]="selectedFile ? avatarPreviewUrl : 'assets/default.png'"
+          class="avatar-preview"
+          alt=""
+        />
+        <span class="avatar-preview-text" *ngIf="!selectedFile">Aperçu avatar</span>
+      </div>
+      <input
+        type="file"
+        id="avatar"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        style="display: none;"
+      />
+    </label>
+    <button
+      type="button"
+      (click)="uploadAvatar()"
+      [disabled]="!selectedFile"
+    >
+      Envoyer l'avatar
+    </button>
+  </section>
+</div>
