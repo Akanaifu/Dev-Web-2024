@@ -1,5 +1,6 @@
 import { Database, ref, get, child, set } from '@angular/fire/database';
 import { NewGameService } from '../../services/machine-a-sous/new-game.service';
+import { UserService } from '../../services/user/user.service';
 
 interface Combination {
   id: string;
@@ -19,6 +20,7 @@ export class MachineASousLogic {
   // Properties
   private db: Database;
   private newGameService: NewGameService;
+  private userService: UserService;
 
   public highlightCombination: any = null;
   public showTable: boolean = false;
@@ -109,9 +111,14 @@ export class MachineASousLogic {
     solde: 0,
   };
 
-  constructor(db: Database, newGameService: NewGameService) {
+  constructor(
+    db: Database,
+    newGameService: NewGameService,
+    userService: UserService
+  ) {
     this.db = db;
     this.newGameService = newGameService;
+    this.userService = userService;
   }
 
   // Utility Methods
@@ -308,6 +315,10 @@ export class MachineASousLogic {
             part.combinaison[part.combinaison.length - 1] || [],
             part.timestamp || new Date().toISOString()
           );
+          // Notifier la nav-bar via UserService
+          if (this.userService && typeof part.gain === 'number') {
+            this.userService.balanceChanged.next(part.gain);
+          }
         }
         part.partieAffichee = true;
         // Mettre à jour le flag dans Firebase
