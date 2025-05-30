@@ -30,6 +30,9 @@ export class EditCompteComponent implements OnInit {
   selectedFile: File | null = null;
   avatarPreviewUrl: string = 'assets/default.png';
 
+  // Ajoute une propriété pour l'URL de l'avatar utilisateur
+  avatarUrl: string = 'assets/default.png';
+
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
@@ -46,7 +49,18 @@ export class EditCompteComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('Initialisation du composant EditCompte');
-    this.getPlayerInfo(); // Fetch user ID on component initialization
+    this.getPlayerInfo();
+    this.loadAvatar(); // Charge l'avatar au démarrage
+  }
+
+  // Nouvelle méthode pour charger l'avatar depuis le backend
+  loadAvatar(): void {
+    if (!this.playerInfo.user_id) {
+      this.avatarUrl = 'assets/default.png';
+      return;
+    }
+    // Ajoute un timestamp pour forcer le rafraîchissement du cache navigateur
+    this.avatarUrl = `http://localhost:3000/avatar/${this.playerInfo.user_id}?t=${Date.now()}`;
   }
 
   onSubmit() {
@@ -128,6 +142,7 @@ export class EditCompteComponent implements OnInit {
         next: (res) => {
           console.log('Avatar uploadé avec succès', res);
           this.selectedFile = null;
+          this.loadAvatar(); // Recharge l'avatar après upload
         },
         error: (err) => {
           console.error('Erreur lors de l\'upload de l\'avatar', err);
