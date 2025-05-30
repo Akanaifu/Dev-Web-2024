@@ -70,15 +70,18 @@ router.get("/bets/:userId", async (req, res) => {
 
   try {
     const query = `
-      SELECT amount, bet_status, combinaison, timestamp 
-      FROM Bets 
-      WHERE user_id = ?
+      SELECT b.amount, b.bet_status, b.combinaison, gs.timestamp 
+      FROM Bets b
+      JOIN Games_session gs ON b.game_session_id = gs.game_session_id
+      WHERE b.user_id = ?
     `;
     const [rows] = await db.execute(query, [userId]);
 
     // Passe chaque combinaison et mise dans la fonction calculerGain
     const results = rows.map((row) => {
-      const rouleaux = row.combinaison.split(",").map(Number); // Convertir la combinaison en tableau de nombres
+      const rouleaux = row.combinaison
+        ? row.combinaison.replace(/[\[\]]/g, "").split(",").map(Number) // Remove square brackets and split
+        : []; // Handle null combinaison
       const gain = calculerGain(rouleaux, row.amount, row.bet_status); // Appel avec bet_status
       return { ...row, gain };
     });

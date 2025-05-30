@@ -21,6 +21,7 @@ export class StatsComponent implements AfterViewInit, OnInit {
   winRateChart!: Chart;
 
   stats: { stat_id?: number; user_id?: number; game?: string; num_games?: number; num_wins?: number; timestamp: string; gain: number }[] = []; // Initialisé à un tableau vide
+  statsData: any[] = []; // Add a class-level property to store the fetched data
 
   games: string[] = [];
   selectedGame: string = '';
@@ -53,17 +54,20 @@ export class StatsComponent implements AfterViewInit, OnInit {
         if (data && data.length > 0) {
           this.stats = data.map((item) => ({
             ...item,
-            timestamp: item.timestamp || new Date().toISOString(), // Assurez-vous que chaque item a un timestamp
+            timestamp: item.timestamp || new Date().toISOString(), // Utilise le timestamp de Games_session
           }));
+          this.statsData = data; // Store the fetched data in the class-level property
         } else {
           console.warn('Aucune donnée de gains disponible pour cet utilisateur.');
           this.stats = []; // Réinitialise les stats si aucune donnée
+          this.statsData = []; // Reset the class-level property
         }
         this.updateChart(); // Met à jour le graphique avec les nouvelles données
       },
       (error) => {
         console.error('Erreur lors de la récupération des gains :', error);
         this.stats = []; // Réinitialise les stats en cas d'erreur
+        this.statsData = []; // Reset the class-level property
         this.updateChart(); // Met à jour le graphique avec un état vide
       }
     );
@@ -116,7 +120,7 @@ export class StatsComponent implements AfterViewInit, OnInit {
   }
 
   get totalMise(): number {
-    return this.stats.reduce((total, stat) => total + Math.abs(stat.gain), 0);
+    return this.statsData.reduce((total, stat) => total + (stat.amount || 0), 0); // Sum up the amount values from statsData
   }
 
   ngAfterViewInit(): void {

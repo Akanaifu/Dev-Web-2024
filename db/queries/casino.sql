@@ -38,7 +38,6 @@ CREATE TABLE `Bets` (
   `amount` FLOAT NOT NULL DEFAULT 0,
   `bet_status` VARCHAR(50) NOT NULL DEFAULT '0',
   `combinaison` VARCHAR(11) NULL DEFAULT '000',
-  `timestamp` TIMESTAMP DEFAULT NULL,
   PRIMARY KEY (`bet_id`),
   FOREIGN KEY (`user_id`) REFERENCES `User`(`user_id`),
   FOREIGN KEY (`game_session_id`) REFERENCES `Games_session`(`game_session_id`)
