@@ -5,11 +5,16 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jest"
+      "jest",
+      "node"
     ]
   },
   "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "src/**/*.test.ts",
+    "src/types/**/*.d.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts"
   ]
 }
