@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 })
 export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
-  private partiesSubscription?: Subscription;
+  public partiesSubscription?: Subscription;
   logic: MachineASousLogic;
   playerInfo: {
     user_id: number;
