@@ -3,6 +3,9 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const db = require("../config/dbConfig");
 
+
+
+// Modification des infos utilisateur (hors avatar)
 router.put("/edit-compte", async (req, res) => {
   const { userId, username, email, password } = req.body;
 

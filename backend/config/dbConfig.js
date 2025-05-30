@@ -1,5 +1,3 @@
-const mysql = require("mysql2");
-
 const pool = mysql.createPool({
   host: "localhost", // Assurez-vous que c'est l'hôte correct
   user: "root", // Assurez-vous que c'est l'utilisateur correct

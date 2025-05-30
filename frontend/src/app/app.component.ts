@@ -24,7 +24,7 @@ export class AppComponent {
   @ViewChild('chatComponent') chatComponent!: ChatComponent;
 
   constructor(public loginService: LoginService) {}
-
+  public title = 'frontend';
   toggleChat(): void {
     this.chatComponent.toggle();
   }
