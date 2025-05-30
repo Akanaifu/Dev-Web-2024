@@ -21,6 +21,8 @@ export class StatsComponent implements AfterViewInit, OnInit {
   winRateChart!: Chart;
 
   stats: { stat_id?: number; user_id?: number; game?: string; num_games?: number; num_wins?: number; timestamp: string; gain: number }[] = []; // Initialisé à un tableau vide
+  statsData: any[] = []; // Keep statsData for bets
+  createdAt: string | null = null; // Add a separate property for created_at
 
   games: string[] = [];
   selectedGame: string = '';
@@ -50,20 +52,26 @@ export class StatsComponent implements AfterViewInit, OnInit {
     this.statsService.getUserBets(this.userId).subscribe(
       (data) => {
         console.log('Gains reçus depuis le backend :', data); // Ajout du console.log
-        if (data && data.length > 0) {
-          this.stats = data.map((item) => ({
+        if (data && data.bets && data.bets.length > 0) {
+          this.stats = data.bets.map((item) => ({
             ...item,
-            timestamp: item.timestamp || new Date().toISOString(), // Assurez-vous que chaque item a un timestamp
+            timestamp: item.timestamp || new Date().toISOString(), // Utilise le timestamp de Games_session
           }));
+          this.statsData = data.bets; // Store the fetched bets data
+          this.createdAt = data.created_at ?? null; // Store created_at separately
         } else {
           console.warn('Aucune donnée de gains disponible pour cet utilisateur.');
           this.stats = []; // Réinitialise les stats si aucune donnée
+          this.statsData = []; // Reset the bets data
+          this.createdAt = null; // Reset created_at
         }
         this.updateChart(); // Met à jour le graphique avec les nouvelles données
       },
       (error) => {
         console.error('Erreur lors de la récupération des gains :', error);
         this.stats = []; // Réinitialise les stats en cas d'erreur
+        this.statsData = []; // Reset the bets data
+        this.createdAt = null; // Reset created_at
         this.updateChart(); // Met à jour le graphique avec un état vide
       }
     );
@@ -116,7 +124,8 @@ export class StatsComponent implements AfterViewInit, OnInit {
   }
 
   get totalMise(): number {
-    return this.stats.reduce((total, stat) => total + Math.abs(stat.gain), 0);
+    console.log(this.createdAt); // Log the statsData to check its structure
+    return this.statsData.reduce((total, stat) => total + (stat.amount || 0), 0); // Sum up the amount values from statsData
   }
 
   ngAfterViewInit(): void {
@@ -320,11 +329,20 @@ export class StatsComponent implements AfterViewInit, OnInit {
   }
 
   onPeriodChange(): void {
-    this.updateChart();
+    this.updateChart(); // Ensure the chart is updated with the new period
   }
 
   onGameChange(): void {
     this.fetchWinRateData();
+  }
+
+  onYearChange(): void {
+    this.gainChart.data.labels = []; // Reset labels
+    this.gainChart.data.datasets[0].data = []; // Reset data
+    const filtered = this.getFilteredStats(); // Get filtered stats for the selected year
+    this.gainChart.data.labels = filtered.map(item => item.label); // Update labels with filtered data
+    this.gainChart.data.datasets[0].data = filtered.map(item => item.gain); // Update data with filtered gains
+    this.gainChart.update(); // Refresh the chart with the new year data
   }
 
   loadNombreParties(): void {
@@ -385,5 +403,16 @@ export class StatsComponent implements AfterViewInit, OnInit {
         }
       });
     }
+  }
+
+  getAvailableYears(): number[] {
+    if (!this.createdAt) return [];
+    const createdYear = new Date(this.createdAt).getFullYear();
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = createdYear; year <= currentYear; year++) {
+      years.push(year);
+    }
+    return years;
   }
 }
