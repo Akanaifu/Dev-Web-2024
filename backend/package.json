@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node websocket.js",
     "dev": "nodemon websocket.js",
-    "test": "jest"
+    "test": "jest",
+    "test:gains": "jest tests/gain.test.js"
   },
   "keywords": [],
   "author": "",
