@@ -51,7 +51,12 @@ describe('MachineASousComponent', () => {
       getPlayerInfo: jest.fn().mockReturnValue({ subscribe: jest.fn() }),
     };
     const dbMock = {}; // Add a mock for Database
-    component = new MachineASousComponent(newGameServiceMock, dbMock as any);
+    const userServiceMock = { balanceChanged: { next: jest.fn() } }; // Add a mock for UserService
+    component = new MachineASousComponent(
+      newGameServiceMock,
+      dbMock as any,
+      userServiceMock as any
+    );
 
     await TestBed.configureTestingModule({
       imports: [MachineASousComponent, HttpClientTestingModule],
