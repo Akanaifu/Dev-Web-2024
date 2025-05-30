@@ -6,7 +6,15 @@
     /></a>
   </div>
   @if (loginService.user()) {
-  <p class="gambler-login">Bonjour {{ loginService.user()?.username }}</p>
+  <p class="gambler-login">
+    <img 
+      [src]="getAvatarUrl()" 
+      class="avatar-image"
+      style="width:32px; height:32px; border-radius:50%; margin-right:8px;"
+    />
+    {{ loginService.user()?.username }}
+    <!-- {{ loginService.user()?.avatarUrl }} -->
+  </p>
   <div class="gambler">
     <button mat-button (click)="logout()">
       <i class="fa-solid fa-sign-out-alt"></i> Déconnexion
@@ -20,6 +28,12 @@
     <button mat-button routerLink="/register"><i></i>Sign Up</button>
   </div>
   }
+  <div class="balance-container">
+    <button mat-button routerLink="/balance">
+      <i class="fa-solid fa-wallet"></i>
+      Solde: {{ balance !== null ? balance + " €" : "/" }}
+    </button>
+  </div>
   <div class="menu-container">
     <button mat-button [matMenuTriggerFor]="menu">
       <i class="fa-solid fa-bars"></i> Menu

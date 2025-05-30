@@ -1,6 +1,5 @@
 import { Database, ref, get, child, set } from '@angular/fire/database';
-import { HttpClient } from '@angular/common/http';
-import { NewGameService } from '../../services/new-game.service';
+import { NewGameService } from '../../services/machine-a-sous/new-game.service';
 
 interface Combination {
   id: string;
@@ -109,16 +108,14 @@ export class MachineASousLogic {
     email: '',
     solde: 0,
   };
-  private http: HttpClient;
 
-  constructor(db: Database, newGameService: NewGameService, http: HttpClient) {
-    this.http = http;
+  constructor(db: Database, newGameService: NewGameService) {
     this.db = db;
     this.newGameService = newGameService;
   }
 
   // Utility Methods
-  private updateAfficheurs(combination: string): void {
+  updateAfficheurs(combination: string): void {
     this.afficheurs.forEach((afficheur, i) => {
       afficheur.currentChiffre = +combination[i] || 0;
     });
@@ -137,6 +134,10 @@ export class MachineASousLogic {
 
   // Core Logic
   computeQuadraticFunction(long_arr: number): (x: number) => number {
+    if (long_arr <= 0) {
+      // fallback: always return a positive delay
+      return () => 1000;
+    }
     const mid = long_arr / 2;
     const origine = 1000; // f(0) = 1000
     const ymin = 50; // f(mid) = 50
@@ -268,22 +269,15 @@ export class MachineASousLogic {
   }
 
   getCurrentUserId(): void {
-    this.http
-      .get<{ user_id: number; username: string; email: string; solde: number }>(
-        'http://localhost:3000/get_id/info'
-      )
-      .subscribe({
-        next: (data) => {
-          this.playerInfo = data;
-          console.log('Informations du joueur :', this.playerInfo);
-        },
-        error: (err) => {
-          console.error(
-            'Erreur lors de la récupération des informations :',
-            err
-          );
-        },
-      });
+    this.newGameService.getPlayerInfo().subscribe({
+      next: (data) => {
+        this.playerInfo = data;
+        console.log('Informations du joueur :', this.playerInfo);
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des informations :', err);
+      },
+    });
   }
 
   private processPart(part: any, callback: () => void): void {
