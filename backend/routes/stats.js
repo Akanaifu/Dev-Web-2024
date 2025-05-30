@@ -48,34 +48,19 @@ router.get("/:id/winrate", async (req, res) => {
   }
 });
 
-// Route pour récupérer le nombre de partie joué par utilisateur
-//http://localhost:3000/stats/:id/numberOfGame
-// router.get("/:id/numberOfGame", async (req, res) => {
-//   const userId = parseInt(req.params.id);
-//   try {
-//     const query = `
-//       SELECT sum(num_games) 'nombre de partie', SUM(num_wins) AS 'nombre de victoire'
-//       FROM stats
-//       WHERE user_id = ?
-//     `;
-//     const [rows] = await db.query(query, [userId]);
-//     res.json(rows);
-//   } catch (err) {
-//     res.status(500).json({ error: "Erreur lors de la récupération du win rate." });
-//   }
-// });
-
 router.get("/bets/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
     const query = `
-      SELECT b.amount, b.bet_status, b.combinaison, gs.timestamp 
+      SELECT b.amount, b.bet_status, b.combinaison, gs.timestamp, u.created_at
       FROM Bets b
       JOIN Games_session gs ON b.game_session_id = gs.game_session_id
+      JOIN user u ON b.user_id = u.user_id -- Correct table name to lowercase 'user'
       WHERE b.user_id = ?
     `;
     const [rows] = await db.execute(query, [userId]);
+    console.log("🚀 ~ router.get ~ rows:", rows);
 
     // Passe chaque combinaison et mise dans la fonction calculerGain
     const results = rows.map((row) => {
@@ -86,7 +71,10 @@ router.get("/bets/:userId", async (req, res) => {
       return { ...row, gain };
     });
 
-    res.status(200).json(results);
+    const createdAt = rows[0]?.created_at; // Extract created_at
+    results.forEach((row) => delete row.created_at); // Remove created_at from each bet
+    console.log("🚀 ~ router.get ~ response:", { results, createdAt });
+    res.status(200).json({ bets: results, created_at: createdAt });
   } catch (error) {
     console.error("Erreur lors de la récupération des paris :", error);
     res.status(500).json({ error: "Erreur serveur." });

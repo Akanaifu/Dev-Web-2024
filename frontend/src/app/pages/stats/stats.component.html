@@ -24,9 +24,12 @@
       </select>
 
       <!-- New select for choosing the year when "année" is selected -->
-      <select [(ngModel)]="selectedYear" (change)="updateChart()" *ngIf="selectedPeriod==='année'">
-        <option *ngFor="let y of [2020,2021,2022,2023,2024,2025]" [value]="y">{{ y }}</option>
-      </select>
+      <div>
+        <label for="year-select">Sélectionnez une année :</label>
+        <select id="year-select" [(ngModel)]="selectedYear" (change)="onYearChange()" *ngIf="selectedPeriod==='année'">
+          <option *ngFor="let year of getAvailableYears()" [value]="year">{{ year }}</option>
+        </select>
+      </div>
 
       <canvas #gainChartCanvas></canvas>
 
