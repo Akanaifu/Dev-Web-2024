@@ -147,6 +147,8 @@ SELECT solde FROM User WHERE user_id = ?
     const currentSolde = userResult[0]?.solde || 0;
 
     // Mettre à jour le solde du joueur
+    console.log("🚀 ~ router.post ~ mise:", mise);
+    console.log("🚀 ~ router.post ~ gain:", gain);
     const updatedSolde = currentSolde + gain - mise;
     const updateSoldeQuery = `
 UPDATE User SET solde = ? WHERE user_id = ?
