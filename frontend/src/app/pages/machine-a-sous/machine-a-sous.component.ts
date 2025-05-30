@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
-import { NewGameService } from '../../services/new-game.service';
+import { NewGameService } from '../../services/machine-a-sous/new-game.service';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
@@ -31,12 +31,8 @@ export class MachineASousComponent implements OnInit {
   };
   sendButtonDisabled: boolean = false;
 
-  constructor(
-    private newGameService: NewGameService,
-    private http: HttpClient
-  ) {
-    const db = inject(Database);
-    this.logic = new MachineASousLogic(db, newGameService, this.http);
+  constructor(private newGameService: NewGameService, public db: Database) {
+    this.logic = new MachineASousLogic(db, newGameService);
     this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
   }
 
@@ -67,21 +63,14 @@ export class MachineASousComponent implements OnInit {
   }
 
   getPlayerInfo(): void {
-    this.http
-      .get<{ user_id: number; username: string; email: string; solde: number }>(
-        'http://localhost:3000/get_id/info'
-      )
-      .subscribe({
-        next: (data) => {
-          this.playerInfo = data;
-        },
-        error: (err) => {
-          console.error(
-            'Erreur lors de la récupération des informations :',
-            err
-          );
-        },
-      });
+    this.newGameService.getPlayerInfo().subscribe({
+      next: (data) => {
+        this.playerInfo = data;
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des informations :', err);
+      },
+    });
   }
 
   checkIfSendButtonShouldBeDisabled(): void {
@@ -121,26 +110,22 @@ export class MachineASousComponent implements OnInit {
     }
 
     // Récupère le solde à jour depuis le backend AVANT d'envoyer à Firebase
-    this.http
-      .get<{ user_id: number; username: string; email: string; solde: number }>(
-        'http://localhost:3000/get_id/info'
-      )
-      .subscribe({
-        next: (data) => {
-          this.playerInfo = data;
-          const solde = this.playerInfo.solde;
-          const playerId = this.playerInfo.user_id;
+    this.newGameService.getPlayerInfo().subscribe({
+      next: (data) => {
+        this.playerInfo = data;
+        const solde = this.playerInfo.solde;
+        const playerId = this.playerInfo.user_id;
 
-          // Désactive le bouton après récupération du solde à jou
-          this.sendButtonDisabled = true;
-          this.firebaseSendService.sendPartie(playerId, solde);
-        },
-        error: (err) => {
-          console.error(
-            "Impossible d'envoyer les données : informations du joueur non disponibles.",
-            err
-          );
-        },
-      });
+        // Désactive le bouton après récupération du solde à jour
+        this.sendButtonDisabled = true;
+        this.firebaseSendService.sendPartie(playerId, solde);
+      },
+      error: (err) => {
+        console.error(
+          "Impossible d'envoyer les données : informations du joueur non disponibles.",
+          err
+        );
+      },
+    });
   }
 }
