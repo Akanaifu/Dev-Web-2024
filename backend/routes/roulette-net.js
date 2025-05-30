@@ -83,7 +83,11 @@ async function win(winningSpin, bets, solde, userId, winValue = 0, payout = 0, b
         // Calcul et logging des gains ou pertes pour chaque mise
         // Les logs détaillés permettent de vérifier la justesse de chaque calcul
         if (isWin) {
-            const gain = b.odds * b.amt;
+            // Mise gagnante : calcul du gain net
+            // Le gain est calculé comme (cote - 1) * montant de la mise
+            // Car le solde de la base n'est pas mis à jour ici, donc on fait la cote - 1
+            // Exemple : pour une cote de 36, le gain est de 35 fois la mise
+            const gain = (b.odds-1) * b.amt;
             winValue += gain;
             console.log(`[WIN CALCULATION] ✅ Mise gagnante: ${b.label || b.numbers} - Mise: ${b.amt}, Gain: ${gain}`);
         }else{
