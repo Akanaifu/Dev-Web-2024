@@ -14,7 +14,7 @@ jest.mock('firebase/database', () => ({
 
 import * as database from 'firebase/database';
 import { MachineASousComponent } from '../app/pages/machine-a-sous/machine-a-sous.component';
-import { NewGameService } from '../app/services/new-game.service';
+import { NewGameService } from '../app/services/machine-a-sous/new-game.service';
 
 // Ajoute la définition de databaseMock ici
 const databaseMock = {
@@ -45,22 +45,19 @@ describe('MachineASousComponent', () => {
   let component: MachineASousComponent;
   let fixture: ComponentFixture<MachineASousComponent>;
   let newGameServiceMock: any;
-  let httpMock: any;
 
   beforeEach(async () => {
-    newGameServiceMock = {};
-    httpMock = { get: jest.fn().mockReturnValue({ subscribe: jest.fn() }) };
+    newGameServiceMock = {
+      getPlayerInfo: jest.fn().mockReturnValue({ subscribe: jest.fn() }),
+    };
     const dbMock = {}; // Add a mock for Database
-    component = new MachineASousComponent(
-      newGameServiceMock,
-      httpMock,
-      dbMock as any
-    );
+    component = new MachineASousComponent(newGameServiceMock, dbMock as any);
 
     await TestBed.configureTestingModule({
       imports: [MachineASousComponent, HttpClientTestingModule],
       providers: [
         { provide: Database, useValue: databaseMock }, // Utilise le mock amélioré
+        { provide: NewGameService, useValue: newGameServiceMock },
       ],
     }).compileComponents();
 
@@ -90,15 +87,17 @@ describe('MachineASousComponent', () => {
 
   it('getPlayerInfo should update playerInfo on success', () => {
     const mockData = { user_id: 1, username: 'u', email: 'e', solde: 10 };
-    const subscribe = jest.fn(({ next }: any) => next(mockData));
-    component['http'].get = jest.fn().mockReturnValue({ subscribe });
+    newGameServiceMock.getPlayerInfo = jest.fn().mockReturnValue({
+      subscribe: ({ next }: any) => next(mockData),
+    });
     component.getPlayerInfo();
     expect(component.playerInfo).toEqual(mockData);
   });
 
   it('getPlayerInfo should handle error', () => {
-    const subscribe = jest.fn(({ error }: any) => error('err'));
-    component['http'].get = jest.fn().mockReturnValue({ subscribe });
+    newGameServiceMock.getPlayerInfo = jest.fn().mockReturnValue({
+      subscribe: ({ error }: any) => error('err'),
+    });
     component.getPlayerInfo();
     // Should not throw
   });
@@ -120,7 +119,7 @@ describe('MachineASousComponent', () => {
 
   it('sendPartieToFirebase should handle error from http', () => {
     component.sendButtonDisabled = false;
-    component['http'].get = jest.fn().mockReturnValue({
+    newGameServiceMock.getPlayerInfo = jest.fn().mockReturnValue({
       subscribe: ({ error }: any) => error('err'),
     });
     component.sendPartieToFirebase();
@@ -130,7 +129,7 @@ describe('MachineASousComponent', () => {
   it('sendPartieToFirebase should call firebaseSendService.sendPartie', () => {
     component.sendButtonDisabled = false;
     const mockData = { user_id: 1, username: 'u', email: 'e', solde: 10 };
-    component['http'].get = jest.fn().mockReturnValue({
+    newGameServiceMock.getPlayerInfo = jest.fn().mockReturnValue({
       subscribe: ({ next }: any) => next(mockData),
     });
     const sendSpy = jest

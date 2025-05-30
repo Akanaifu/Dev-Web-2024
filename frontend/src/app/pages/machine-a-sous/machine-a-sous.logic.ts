@@ -1,6 +1,5 @@
 import { Database, ref, get, child, set } from '@angular/fire/database';
-import { HttpClient } from '@angular/common/http';
-import { NewGameService } from '../../services/new-game.service';
+import { NewGameService } from '../../services/machine-a-sous/new-game.service';
 
 interface Combination {
   id: string;
@@ -109,10 +108,8 @@ export class MachineASousLogic {
     email: '',
     solde: 0,
   };
-  private http: HttpClient;
 
-  constructor(db: Database, newGameService: NewGameService, http: HttpClient) {
-    this.http = http;
+  constructor(db: Database, newGameService: NewGameService) {
     this.db = db;
     this.newGameService = newGameService;
   }
@@ -272,22 +269,15 @@ export class MachineASousLogic {
   }
 
   getCurrentUserId(): void {
-    this.http
-      .get<{ user_id: number; username: string; email: string; solde: number }>(
-        '/api/get_id/info'
-      )
-      .subscribe({
-        next: (data) => {
-          this.playerInfo = data;
-          console.log('Informations du joueur :', this.playerInfo);
-        },
-        error: (err) => {
-          console.error(
-            'Erreur lors de la récupération des informations :',
-            err
-          );
-        },
-      });
+    this.newGameService.getPlayerInfo().subscribe({
+      next: (data) => {
+        this.playerInfo = data;
+        console.log('Informations du joueur :', this.playerInfo);
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des informations :', err);
+      },
+    });
   }
 
   private processPart(part: any, callback: () => void): void {

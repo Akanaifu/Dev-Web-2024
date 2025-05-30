@@ -13,15 +13,14 @@ describe('MachineASousLogic', () => {
   let logic: MachineASousLogic;
   let dbMock: any;
   let newGameServiceMock: any;
-  let httpMock: any;
 
   beforeEach(() => {
     dbMock = {};
     newGameServiceMock = {
       addNewGame: jest.fn().mockReturnValue({ subscribe: jest.fn() }),
+      getPlayerInfo: jest.fn().mockReturnValue({ subscribe: jest.fn() }),
     };
-    httpMock = { get: jest.fn().mockReturnValue({ subscribe: jest.fn() }) };
-    logic = new MachineASousLogic(dbMock, newGameServiceMock, httpMock);
+    logic = new MachineASousLogic(dbMock, newGameServiceMock);
   });
 
   // Use variables to store spies
@@ -209,7 +208,7 @@ describe('MachineASousLogic', () => {
       dbMock = {
         ...dbMock,
       };
-      logic = new MachineASousLogic(dbMock, newGameServiceMock, httpMock);
+      logic = new MachineASousLogic(dbMock, newGameServiceMock);
       jest.spyOn(logic, 'getCurrentUserId').mockImplementation(() => {});
       jest
         .spyOn(MachineASousLogic.prototype as any, 'sortAndFilterParts')
@@ -248,7 +247,7 @@ describe('MachineASousLogic', () => {
         email: 'test@test.com',
         solde: 100,
       };
-      httpMock.get = jest.fn().mockReturnValue({
+      newGameServiceMock.getPlayerInfo = jest.fn().mockReturnValue({
         subscribe: (handlers: any) => {
           handlers.next(mockData);
         },
@@ -259,7 +258,7 @@ describe('MachineASousLogic', () => {
 
     it('should handle error', () => {
       const error = new Error('fail');
-      httpMock.get = jest.fn().mockReturnValue({
+      newGameServiceMock.getPlayerInfo = jest.fn().mockReturnValue({
         subscribe: (handlers: any) => {
           handlers.error(error);
         },

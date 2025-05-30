@@ -11,9 +11,19 @@
   }
   
   .menu-container {
-    margin-left: auto; /* Ceci pousse le menu vers la droite */
+    display: flex;
+    align-items: center;
+    margin-left: 0; /* Pushes the menu container to the right */
     padding-right: 20px;
   }
+
+  .balance-container {
+    display: flex;
+    align-items: right;
+    margin-left: auto;
+    padding-right: 20px;
+  }
+
   .logo {
     height: 100%;
     display: flex;

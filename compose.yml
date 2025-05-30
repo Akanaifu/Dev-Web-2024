@@ -5,8 +5,6 @@ services:
     container_name: maria_db
     env_file:
       - .env
-    ports:
-      - "3310:3306"
     volumes:
       - ./../db/queries/:/docker-entrypoint-initdb.d/
       - ./mariadb-custom.cnf:/etc/mysql/conf.d/custom.cnf
@@ -21,6 +19,7 @@ services:
 
   backend:
     build: backend
+    container_name: backend
     env_file:
       - .env
     depends_on:
@@ -33,11 +32,14 @@ services:
     
   frontend:
     build: frontend
+    depends_on:
+      - backend
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
       - dmz
       
