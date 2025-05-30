@@ -260,7 +260,8 @@ export class RouletteNetLogic {
         
         // Mettre à jour les deux soldes avec le résultat du backend
         this.currentUser.solde = safeNewsolde;
-        this._originalSolde = safeNewsolde;
+
+        this._originalSolde = this.currentUser.solde;
         
         return { 
           winValue: safeWinValue, 
