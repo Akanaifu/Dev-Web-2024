@@ -7,6 +7,8 @@ CREATE TABLE `User` (
   `solde` FLOAT NOT NULL DEFAULT '0',
   `email` VARCHAR(50) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
+  `avatar` VARCHAR(255) NULL,
+  `created_at` TIMESTAMP DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) COLLATE='utf8mb4_uca1400_ai_ci';
 
@@ -36,6 +38,7 @@ CREATE TABLE `Bets` (
   `amount` FLOAT NOT NULL DEFAULT 0,
   `bet_status` VARCHAR(50) NOT NULL DEFAULT '0',
   `combinaison` VARCHAR(11) NULL DEFAULT '000',
+  `timestamp` TIMESTAMP DEFAULT NULL,
   PRIMARY KEY (`bet_id`),
   FOREIGN KEY (`user_id`) REFERENCES `User`(`user_id`),
   FOREIGN KEY (`game_session_id`) REFERENCES `Games_session`(`game_session_id`)

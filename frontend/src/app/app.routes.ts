@@ -42,6 +42,11 @@ export const routes: Routes = [
     component: BalanceComponent,
     canActivate: [isLoggedInGuard],
   }, // page de solde
+  {
+    path: 'compte',
+    component: EditCompteComponent,
+    canActivate: [isLoggedInGuard],
+  },
   { path: '**', component: NotFoundComponent },
   // page d'erreur route inexistante. A mettre à la fin !!!!!!!!
 ];

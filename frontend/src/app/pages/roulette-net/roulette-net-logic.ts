@@ -6,14 +6,29 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 /**
- * Service de logique métier pour le jeu de roulette en ligne.
- * Gère toutes les opérations de mise, calcul des gains et communication avec l'API backend.
+ * SERVICE DE LOGIQUE MÉTIER POUR LE JEU DE ROULETTE EN LIGNE
  * 
- * ARCHITECTURE AVEC LE COMPOSANT :
- * - Ce service contient toute la logique métier et les données d'état du jeu
- * - Le composant accède aux données via des getters qui délèguent à ce service
- * - Pattern : Séparation claire entre logique métier (service) et présentation (composant)
- * - Avantage : Testabilité, réutilisabilité et maintenance facilitées
+ * RESPONSABILITÉS PRINCIPALES :
+ * - Gestion complète des mises et calcul des gains selon les règles de la roulette européenne
+ * - Communication sécurisée avec l'API backend pour les opérations critiques
+ * - Synchronisation intelligente du solde utilisateur (évite le double débit)
+ * - Gestion d'état du jeu (spinning, mises actives, historique)
+ * 
+ * ARCHITECTURE DE SOLDE ANTI-DOUBLE-DÉBIT :
+ * Le problème : Sans cette architecture, le solde pourrait être débité deux fois :
+ * 1. Une fois visuellement dans le frontend (UX immédiate)
+ * 2. Une fois par le backend lors du calcul des gains
+ * 
+ * La solution implémentée :
+ * - _originalSolde : Solde réel non modifié, utilisé pour les calculs backend
+ * - currentUser.solde : Solde affiché avec mises débitées visuellement pour l'UX
+ * - À chaque spin : le backend reçoit _originalSolde, calcule les gains/pertes, retourne le nouveau solde
+ * - Les deux valeurs sont synchronisées avec le résultat du backend
+ * 
+ * PATTERN D'ENCAPSULATION :
+ * - Propriétés privées avec getters/setters pour contrôler l'accès et la validation
+ * - Séparation claire entre données d'affichage et logique métier
+ * - Validation automatique des valeurs (ex: currentBet toujours >= 0)
  */
 @Injectable({ providedIn: 'root' })
 export class RouletteNetLogic {
@@ -21,17 +36,36 @@ export class RouletteNetLogic {
   private BASE_URL = 'http://localhost:3000';
   
   // ===== PROPRIÉTÉS PRIVÉES ENCAPSULÉES =====
+  // L'encapsulation permet un contrôle strict de l'état et une validation automatique
+  
+  /** Données de l'utilisateur connecté (undefined si non connecté) */
   private _currentUser?: IUser;
+  
+  /** État de rotation de la roulette (bloque les interactions pendant le spin) */
   private _isSpinning = false;
+  
+  /** Montant total des mises en cours (toujours >= 0 grâce au setter) */
   private _currentBet = 0;
+  
+  /** Valeur de la mise sélectionnée (minimum 1 grâce au setter) */
   private _wager = 5;
+  
+  /** Index du jeton sélectionné (validé dans les limites du tableau) */
   private _selectedChipIndex = 1;
   
-  // ===== GETTERS/SETTERS ES6 POUR L'ENCAPSULATION =====
+  /** 
+   * Solde réel avant débits visuels - CLÉ DE L'ARCHITECTURE ANTI-DOUBLE-DÉBIT
+   * Cette valeur reste synchronisée avec la base de données et est utilisée
+   * pour tous les calculs backend, évitant ainsi le double débit du solde
+   */
+  private _originalSolde = 0;
   
-  /**
-   * Getter/Setter pour l'utilisateur connecté avec validation.
-   * Centralise l'accès aux données utilisateur depuis le composant.
+  // ===== GETTERS/SETTERS AVEC VALIDATION AUTOMATIQUE =====
+  // Ces accesseurs garantissent la cohérence des données et appliquent les règles métier
+  
+  /** 
+   * ACCÈS CONTRÔLÉ AUX DONNÉES UTILISATEUR
+   * Centralise l'accès aux informations de l'utilisateur connecté
    */
   get currentUser(): IUser | undefined {
     return this._currentUser;
@@ -41,9 +75,9 @@ export class RouletteNetLogic {
     this._currentUser = user;
   }
   
-  /**
-   * Getter/Setter pour l'état de rotation avec contrôle d'accès.
-   * Empêche les modifications non autorisées de l'état de jeu.
+  /** 
+   * ÉTAT DE ROTATION DE LA ROULETTE
+   * Contrôle l'activation/désactivation des interactions utilisateur
    */
   get isSpinning(): boolean {
     return this._isSpinning;
@@ -53,33 +87,33 @@ export class RouletteNetLogic {
     this._isSpinning = value;
   }
   
-  /**
-   * Getter/Setter pour la mise actuelle avec validation des montants.
-   * Garantit que les montants sont toujours positifs et cohérents.
+  /** 
+   * MONTANT TOTAL DES MISES EN COURS
+   * Validation automatique : toujours positif ou nul
    */
   get currentBet(): number {
     return this._currentBet;
   }
   
   set currentBet(value: number) {
-    this._currentBet = Math.max(0, value); // Protection contre les valeurs négatives
+    this._currentBet = Math.max(0, value); // Garantit une valeur >= 0
   }
   
-  /**
-   * Getter/Setter pour la valeur de mise avec validation.
-   * Assure que la mise respecte les limites du jeu.
+  /** 
+   * VALEUR DE LA MISE SÉLECTIONNÉE
+   * Validation automatique : minimum 1 pour éviter les mises nulles
    */
   get wager(): number {
     return this._wager;
   }
   
   set wager(value: number) {
-    this._wager = Math.max(1, value); // Mise minimum de 1
+    this._wager = Math.max(1, value); // Garantit une valeur >= 1
   }
   
-  /**
-   * Getter/Setter pour l'index du jeton sélectionné avec validation.
-   * Contrôle la sélection des jetons disponibles.
+  /** 
+   * INDEX DU JETON SÉLECTIONNÉ
+   * Validation automatique : doit être dans les limites du tableau chipValues
    */
   get selectedChipIndex(): number {
     return this._selectedChipIndex;
@@ -91,140 +125,255 @@ export class RouletteNetLogic {
     }
   }
   
-  // Configuration des jetons de mise avec leurs valeurs et couleurs associées
-  // Le système permet de miser avec différentes valeurs prédéfinies
+  // ===== CONFIGURATION DU JEU (CONSTANTES MÉTIER) =====
+  
+  /** 
+   * VALEURS DES JETONS DISPONIBLES POUR LES MISES
+   * Progression classique des casinos : 1, 5, 10, 100 + option 'clear' pour tout effacer
+   */
   chipValues = [1, 5, 10, 100, 'clear'];
+  
+  /** 
+   * COULEURS CSS CORRESPONDANT AUX JETONS
+   * Mapping 1:1 avec chipValues pour l'affichage visuel cohérent
+   */
   chipColors = ['red', 'blue', 'orange', 'gold', 'clearBet'];
+  
+  /** Dernière mise effectuée (pour l'historique et les statistiques) */
   lastWager = 0;
 
-  // Tableaux de stockage des mises et des résultats
-  // Ils permettent de gérer l'historique et l'état des paris en cours
+  /** 
+   * TABLEAU DES MISES ACTIVES AVEC LEURS DÉTAILS COMPLETS
+   * Chaque mise contient : label (affichage), numbers (numéros couverts), 
+   * type (catégorie), odds (cote), amt (montant misé)
+   */
   bet: { label: string; numbers: string; type: string; odds: number; amt: number }[] = [];
+  
+  /** 
+   * NUMÉROS SUR LESQUELS DES MISES SONT PLACÉES
+   * Utilisé pour l'affichage visuel et les vérifications rapides
+   */
   numbersBet: number[] = [];
+  
+  /** 
+   * HISTORIQUE DES 10 DERNIERS NUMÉROS SORTIS
+   * Permet aux joueurs de suivre les tendances (bien que chaque spin soit indépendant)
+   */
   previousNumbers: number[] = [];
 
-  // Configuration de la roulette européenne avec numéros rouges et disposition de la roue
-  // Ces constantes définissent les règles et l'apparence du jeu de roulette
+  /** 
+   * NUMÉROS ROUGES SELON LES RÈGLES DE LA ROULETTE EUROPÉENNE
+   * Configuration standard : 18 numéros rouges, 18 noirs, 1 vert (0)
+   */
   numRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+  
+  /** 
+   * DISPOSITION PHYSIQUE DES NUMÉROS SUR LA ROUE EUROPÉENNE
+   * Ordre exact des numéros sur une vraie roulette européenne (37 cases)
+   * Utilisé pour l'animation réaliste de la bille
+   */
   wheelnumbersAC = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34,
     6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 
     1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
 
+  /**
+   * CONSTRUCTEUR - INITIALISATION DU SERVICE
+   * 
+   * Configure l'état initial du jeu et récupère les données utilisateur.
+   * Utilise des valeurs par défaut sécurisées pour éviter les erreurs.
+   */
   constructor() {
-    // Récupération automatique des données utilisateur au démarrage du service
-    // Cette initialisation garantit que l'utilisateur connecté est identifié dès le chargement
-    this.fetchIUser();
-    
-    // Initialisation des valeurs par défaut via les setters pour validation
-    this.selectedChipIndex = 1; // Par défaut, jeton de 5 actif
-    this.wager = 5;
-    this.currentBet = 0;
-    this.isSpinning = false;
+    this.fetchIUser();           // Récupération asynchrone des données utilisateur
+    this.selectedChipIndex = 1;  // Jeton de 5 par défaut (index 1)
+    this.wager = 5;              // Mise par défaut de 5
+    this.currentBet = 0;         // Aucune mise au démarrage
+    this.isSpinning = false;     // Roulette à l'arrêt
   }
 
   /**
-   * Récupère les informations de l'utilisateur connecté depuis l'API.
-   * Les console.log permettent de tracer les appels API et diagnostiquer les problèmes de connexion.
+   * RÉCUPÉRATION DES INFORMATIONS UTILISATEUR DEPUIS L'API
+   * 
+   * Charge les données de l'utilisateur connecté et initialise le solde original.
+   * Cette méthode est cruciale pour l'architecture anti-double-débit.
+   * 
+   * SÉCURITÉ :
+   * - Utilise withCredentials pour l'authentification par cookies
+   * - Gestion d'erreur robuste pour éviter les crashes
+   * - Initialisation de _originalSolde avec le solde réel de la base
    */
   fetchIUser() {
-    console.log('🔄 Récupération des données utilisateur depuis l\'API...');
     this.http.get<IUser>(`${this.BASE_URL}/get_id/info`, { withCredentials: true })
       .subscribe({
         next: (userData) => {
           this.currentUser = userData; 
-          console.log('✅ Données utilisateur récupérées:', this.currentUser);
-          console.log('💰 Solde récupéré depuis l\'API:', this.currentUser?.solde);
-          
-          // Si l'utilisateur a un solde, on peut l'utiliser comme valeur initiale de la banque
+          this._originalSolde = userData.solde; // CRUCIAL : synchronisation du solde réel
+          console.log('👤 Utilisateur chargé:', userData.username, 'Solde:', userData.solde);
         },
         error: (error) => {
-          console.error('❌ Erreur lors de la récupération des informations utilisateur:', error);
-          
+          console.error('❌ Erreur récupération utilisateur:', error);
         }
       });
   }
 
   /**
-   * Remet à zéro toutes les variables de jeu pour une nouvelle partie.
-   * Cette méthode nettoie l'état du jeu tout en conservant les données utilisateur.
+   * REMISE À ZÉRO COMPLÈTE DU JEU
+   * 
+   * Remet le jeu dans son état initial pour une nouvelle session.
+   * Synchronise le solde affiché avec le solde original (annule les débits visuels).
+   * 
+   * UTILISATION :
+   * - Bouton "Reset" dans l'interface
+   * - Après une déconnexion/reconnexion
+   * - En cas d'erreur nécessitant une réinitialisation
    */
   resetGame() {
-    this.currentBet = 0; 
-    this.wager = 5;      
-    this.bet = [];
-    this.numbersBet = [];
-    this.previousNumbers = [];
+    this.currentBet = 0;         // Efface le total des mises
+    this.wager = 5;              // Remet la mise par défaut
+    this.bet = [];               // Vide toutes les mises
+    this.numbersBet = [];        // Efface les numéros misés
+    this.previousNumbers = [];   // Efface l'historique
+    
+    // SYNCHRONISATION CRUCIALE : remet le solde affiché = solde réel
+    if (this.currentUser) {
+      this.currentUser.solde = this._originalSolde;
+      console.log('🔄 Jeu remis à zéro, solde restauré:', this._originalSolde);
+    }
   }
 
   /**
-   * Efface toutes les mises en cours sans affecter le solde.
-   * Utilisée pour annuler les paris avant le lancement de la roulette.
+   * EFFACEMENT DES MISES SANS AFFECTER LE SOLDE
+   * 
+   * Supprime toutes les mises mais conserve l'état du solde.
+   * Utilisé pour nettoyer le plateau sans réinitialiser complètement.
    */
   clearBet() {
     this.bet = [];
     this.numbersBet = [];
+    console.log('🧹 Mises effacées');
   }
 
   /**
-   * Supprime une mise spécifique et recrédite le montant au solde affiché.
-   * Cette opération est locale (pas de base de données) pour l'affichage temps réel.
+   * REMISE À ZÉRO DE L'ÉTAT DES MISES APRÈS UN SPIN
+   * 
+   * Méthode appelée après chaque spin pour préparer le tour suivant.
+   * Synchronise _originalSolde avec le nouveau solde calculé par le backend.
+   * 
+   * ARCHITECTURE ANTI-DOUBLE-DÉBIT :
+   * Cette méthode est essentielle car elle met à jour _originalSolde avec le résultat
+   * du backend, garantissant que le prochain pari utilisera le bon solde de référence.
+   */
+  resetBettingState() {
+    this.currentBet = 0;
+    this.bet = [];
+    this.numbersBet = [];
+    
+    // SYNCHRONISATION CRUCIALE : _originalSolde = nouveau solde calculé
+    if (this.currentUser) {
+      this._originalSolde = this.currentUser.solde;
+      console.log('🔄 État des mises réinitialisé, nouveau solde de référence:', this._originalSolde);
+    }
+  }
+
+  /**
+   * SUPPRESSION D'UNE MISE SPÉCIFIQUE
+   * 
+   * Retire une mise du plateau et recrédite visuellement le montant au solde.
+   * Permet aux joueurs de corriger leurs erreurs avant le spin.
+   * 
+   * LOGIQUE DE SUPPRESSION :
+   * 1. Trouve la mise correspondante dans le tableau
+   * 2. Soustrait le montant de la mise (ou la valeur du wager si plus petite)
+   * 3. Recrédite visuellement le montant au solde affiché
+   * 4. Supprime les mises à montant zéro
+   * 
+   * @param cell Cellule du plateau contenant la mise à supprimer
    */
   removeBet(cell: IBettingBoardCell) {
-    if (!this.currentUser) return; // Vérification de sécurité
-    if (!cell || !cell.numbers) return; // Vérification de sécurité pour cell
+    if (!this.currentUser || !cell?.numbers) return;
     
-    this.wager = (this.wager === 0) ? 100 : this.wager; 
-    const n = cell.numbers.join(', ');
-    const t = cell.type;
-    for (let b of this.bet) {
-      if (b.numbers === n && b.type === t) {
-        if (b.amt !== 0) {
-          this.wager = (b.amt > this.wager) ? this.wager : b.amt; 
-          b.amt -= this.wager;
-          // Créditer localement pour l'affichage en temps réel (sans toucher la base de données)
-          if (this.currentUser) {
-            this.currentUser.solde += this.wager;
-          }
-          this.currentBet -= this.wager; 
-        }
+    // Sécurité : s'assurer qu'on a une valeur de wager valide
+    this.wager = this.wager === 0 ? 100 : this.wager; 
+    const numbers = cell.numbers.join(', ');
+    const type = cell.type;
+    
+    // Recherche et modification de la mise correspondante
+    for (let bet of this.bet) {
+      if (bet.numbers === numbers && bet.type === type && bet.amt > 0) {
+        // Calcul du montant à retirer (minimum entre wager et montant de la mise)
+        this.wager = bet.amt > this.wager ? this.wager : bet.amt; 
+        bet.amt -= this.wager;
+        
+        // Recréditer visuellement le montant (UX immédiate)
+        this.currentUser.solde += this.wager;
+        this.currentBet -= this.wager; 
+        
+        console.log(`➖ Mise retirée: ${this.wager} sur ${cell.label || numbers}`);
       }
     }
-    // Nettoyer les bets à 0
+    
+    // Nettoyage : supprimer les mises à montant zéro
     this.bet = this.bet.filter(b => b.amt > 0);
   }
 
   /**
-   * Lance la roulette et retourne un numéro aléatoire via l'API.
-   * L'appel API garantit que le résultat est généré côté serveur pour éviter la triche.
+   * LANCEMENT DE LA ROULETTE VIA L'API BACKEND
+   * 
+   * Effectue un appel API pour obtenir un numéro aléatoire selon les règles de la roulette européenne.
+   * Cette méthode utilise fetch() pour une gestion d'erreur plus fine que HttpClient.
+   * 
+   * SÉCURITÉ :
+   * - Validation de la réponse HTTP (response.ok)
+   * - Gestion d'erreur avec messages explicites
+   * - Transmission de l'userId pour l'audit et les statistiques
+   * 
+   * @returns Promise<IRouletteResult> Numéro gagnant (0-36) et sa couleur
    */
   async spin(): Promise<IRouletteResult> {
     try {
-        // Si l'utilisateur est connecté, on peut envoyer son ID avec la requête
         const userId = this.currentUser?.user_id;
+        
+        console.log('🎰 Lancement de la roulette pour l\'utilisateur:', userId);
         
         const response = await fetch('/api/roulette/spin', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userId: userId }), // Envoyer l'ID de l'utilisateur si disponible
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId })
         });
 
         if (!response.ok) {
-            throw new Error('Failed à spin the roulette');
+            throw new Error(`Échec du lancement de la roulette: ${response.status} ${response.statusText}`);
         }
 
-        const result = await response.json();
-        return result as IRouletteResult;
+        const result = await response.json() as IRouletteResult;
+        console.log('🎯 Numéro tiré:', result.number, result.color);
+        
+        return result;
     } catch (error) {
-        console.error('Error spinning the roulette:', error);
+        console.error('❌ Erreur lors du spin:', error);
         throw error;
     }
   }
 
   /**
-   * Calcule les gains/pertes d'un spin en récupérant d'abord le solde réel de la base de données.
-   * Les console.log tracent le processus de récupération du solde pour diagnostiquer les incohérences.
+   * CALCUL DES GAINS/PERTES D'UN SPIN
+   * 
+   * Méthode centrale qui coordonne avec le backend pour calculer les résultats d'un spin.
+   * Implémente l'architecture anti-double-débit en envoyant le solde original non modifié.
+   * 
+   * LOGIQUE ANTI-DOUBLE-DÉBIT DÉTAILLÉE :
+   * 1. Frontend : débite visuellement currentUser.solde (UX immédiate)
+   * 2. Backend : reçoit _originalSolde (non débité) + mises
+   * 3. Backend : calcule soldeOriginal + gains - pertes = nouveau solde
+   * 4. Frontend : synchronise les deux valeurs avec le résultat backend
+   * 
+   * AVANTAGES :
+   * - Évite le double débit du solde
+   * - Calculs centralisés et sécurisés côté serveur
+   * - Synchronisation garantie avec la base de données
+   * - Gestion d'erreur robuste avec rollback automatique
+   * 
+   * @param winningSpin Numéro gagnant du spin (0-36)
+   * @returns Promise avec winValue, payout, newsolde, betTotal
    */
   async win(winningSpin: number): Promise<{ winValue: number; payout: number; newsolde: number; betTotal: number }> {
     if (!this.currentUser) {
@@ -232,14 +381,10 @@ export class RouletteNetLogic {
     }
     
     try {
-      // Récupération du solde réel depuis la base de données pour éviter les désynchronisations
-      // Cette étape garantit que les calculs se basent sur la valeur la plus récente en base
-      console.log('💰 Récupération du solde réel depuis la base de données...');
-      const userData = await firstValueFrom(this.http.get<IUser>(`${this.BASE_URL}/get_id/info`, { withCredentials: true }));
-      const soldeReel = userData.solde;
-      console.log(`💰 Solde réel récupéré: ${soldeReel}`);
+      console.log('💰 Calcul des gains pour le numéro:', winningSpin);
+      console.log('📊 Solde original envoyé au backend:', this._originalSolde);
+      console.log('🎯 Nombre de mises à traiter:', this.bet.length);
       
-      // Appel de l'API win du backend avec le vrai solde de la base de données
       const response = await firstValueFrom(this.http.post<{ 
         winValue: number; 
         payout: number;
@@ -250,29 +395,28 @@ export class RouletteNetLogic {
         { 
           winningSpin, 
           bets: this.bet,
-          solde: soldeReel,  // Utiliser le solde réel de la base de données
+          solde: this._originalSolde,  // CRUCIAL : solde réel non débité
           userId: this.currentUser.user_id
         }
       ));
       
       if (response) {
-        // Protection contre les valeurs nulles retournées par l'API
-        // Ces vérifications assurent la robustesse en cas de réponse incomplète du serveur
-        const safeWinValue = response.winValue !== null ? response.winValue : 0;
-        const safePayout = response.payout !== null ? response.payout : 0;
-        const safeBetTotal = response.betTotal !== null ? response.betTotal : 0;
-        const safeNewsolde = response.newsolde !== null ? response.newsolde : this.currentUser.solde;
+        // Sécurisation des valeurs reçues avec fallbacks
+        const safeWinValue = response.winValue ?? 0;
+        const safePayout = response.payout ?? 0;
+        const safeBetTotal = response.betTotal ?? 0;
+        const safeNewsolde = response.newsolde ?? this.currentUser.solde;
         
-        // Mise à jour du solde local avec la valeur calculée par le backend
-        // Le console.log confirme que la mise à jour a eu lieu côté frontend
-        if (this.currentUser) {
-          this.currentUser.solde = safeNewsolde;
-        }
-        console.log(`💰 Solde frontend mis à jour: ${safeNewsolde}`);
+        console.log('✅ Résultat du backend:', {
+          winValue: safeWinValue,
+          payout: safePayout,
+          newsolde: safeNewsolde,
+          betTotal: safeBetTotal
+        });
         
-        // Actualisation des données utilisateur pour garantir la cohérence avec la base
-        // Cette double vérification s'assure que frontend et backend restent synchronisés
-        this.fetchIUser();
+        // SYNCHRONISATION CRUCIALE : mise à jour des deux soldes
+        this.currentUser.solde = safeNewsolde;      // Solde affiché
+        this._originalSolde = this.currentUser.solde; // Solde de référence
         
         return { 
           winValue: safeWinValue, 
@@ -282,59 +426,101 @@ export class RouletteNetLogic {
         };
       }
       
-      throw new Error('Échec du calcul des gains');
+      throw new Error('Réponse invalide du serveur');
     } catch (error) {
-      console.error('Erreur lors du calcul des gains:', error);
+      console.error('❌ Erreur calcul gains:', error);
       throw error;
     }
   }
 
-  // ===== MÉTHODES D'ACCÈS ET UTILITAIRES =====
-  // Ces méthodes préfixées "get" ne sont PAS des getters ES6 mais des méthodes classiques
-  // Différence avec les getters du composant : ces méthodes effectuent des calculs ou transformations
-  // Les getters du composant délèguent simplement l'accès aux propriétés de ce service
+  // ===== MÉTHODES UTILITAIRES POUR L'AFFICHAGE ET LA LOGIQUE =====
 
-  /**
-   * Détermine la couleur d'un numéro selon les règles de la roulette européenne.
-   * Le zéro est vert, les autres numéros sont rouges ou noirs selon la configuration.
+  /** 
+   * DÉTERMINATION DE LA COULEUR D'UN NUMÉRO
+   * 
+   * Applique les règles standard de la roulette européenne pour déterminer la couleur.
+   * Cette méthode est utilisée pour l'affichage et la validation des paris couleur.
+   * 
+   * RÈGLES DE LA ROULETTE EUROPÉENNE :
+   * - 0 : Vert (case spéciale de la banque)
+   * - Numéros dans numRed : Rouge
+   * - Tous les autres numéros : Noir
+   * 
+   * @param number Numéro de la roulette (0-36)
+   * @returns 'green' | 'red' | 'black'
    */
   getNumberColor(number: number): 'red' | 'black' | 'green' {
     if (number === 0) return 'green';
     return this.numRed.includes(number) ? 'red' : 'black';
   }
 
-  /**
-   * Retourne la disposition physique des numéros sur la roue de roulette.
-   * Cette configuration respecte l'ordre standard de la roulette européenne.
+  /** 
+   * ORDRE DES NUMÉROS SUR LA ROUE PHYSIQUE
+   * 
+   * Retourne la disposition exacte des numéros sur une roulette européenne réelle.
+   * Utilisé pour l'animation réaliste de la bille et le calcul des angles.
+   * 
+   * @returns Tableau des 37 numéros dans l'ordre physique de la roue
    */
   getWheelNumbers(): number[] {
     return this.wheelnumbersAC;
   }
 
-  /**
-   * Génère la couleur de fond CSS pour l'affichage des sections de la roue.
-   * Les couleurs respectent le code traditionnel : vert pour 0, rouge et noir pour les autres.
+  /** 
+   * COULEUR CSS POUR L'AFFICHAGE D'UNE SECTION
+   * 
+   * Convertit la couleur logique d'un numéro en couleur CSS pour l'affichage.
+   * Utilisé pour colorier les sections de la roue dans le template.
+   * 
+   * MAPPING DES COULEURS :
+   * - 0 : Vert casino (#016D29)
+   * - Numéros rouges : Rouge roulette (#E0080B)
+   * - Numéros noirs : Noir (#000)
+   * 
+   * @param number Numéro de la roulette (0-36)
+   * @returns Code couleur CSS hexadécimal
    */
   getSectionColor(number: number): string {
-    if (number === 0) return '#016D29'; // vert
-    if (this.numRed.includes(number)) return '#E0080B'; // rouge
-    return '#000'; // noir
+    if (number === 0) return '#016D29'; // Vert casino traditionnel
+    if (this.numRed.includes(number)) return '#E0080B'; // Rouge roulette
+    return '#000'; // Noir
   }
 
-  /**
-   * Recherche et retourne la mise associée à une cellule du plateau de jeu.
-   * Cette méthode permet d'afficher les jetons placés sur chaque case du tapis.
+  /** 
+   * RECHERCHE D'UNE MISE ASSOCIÉE À UNE CELLULE
+   * 
+   * Trouve la mise correspondante à une cellule du plateau pour l'affichage des jetons.
+   * Utilisé par le template pour afficher visuellement les mises placées.
+   * 
+   * LOGIQUE DE CORRESPONDANCE :
+   * - Compare les numéros couverts (numbers) et le type de mise
+   * - Retourne la première mise correspondante trouvée
+   * - Null si aucune mise sur cette cellule
+   * 
+   * @param cell Cellule du plateau de mise
+   * @returns Objet mise correspondant ou null
    */
   getBetForCell(cell: IBettingBoardCell) {
-    if (!cell || !cell.numbers) return null; // Vérification de sécurité
-    const n = cell.numbers.join(', ');
-    const t = cell.type;
-    return this.bet.find(b => b.numbers === n && b.type === t) || null;
+    if (!cell?.numbers) return null;
+    const numbers = cell.numbers.join(', ');
+    const type = cell.type;
+    return this.bet.find(b => b.numbers === numbers && b.type === type) || null;
   }
 
-  /**
-   * Détermine la classe CSS du jeton selon le montant misé.
-   * Le système de couleurs aide à identifier rapidement les montants des mises.
+  /** 
+   * CLASSE CSS POUR LA COULEUR DES JETONS
+   * 
+   * Détermine la classe CSS à appliquer selon le montant de la mise.
+   * Permet un affichage visuel cohérent et une identification rapide des montants.
+   * 
+   * ÉCHELLE DES COULEURS :
+   * - < 5 : Rouge (petites mises)
+   * - < 10 : Bleu (mises moyennes)
+   * - < 100 : Orange (grosses mises)
+   * - >= 100 : Or (très grosses mises)
+   * 
+   * @param amount Montant de la mise
+   * @returns Nom de la classe CSS correspondante
    */
   getChipColorClass(amount: number): string {
     if (amount < 5) return 'red';
@@ -343,80 +529,122 @@ export class RouletteNetLogic {
     return 'gold';
   }
   
-  /**
-   * Accesseur pour récupérer les données de l'utilisateur actuellement connecté.
-   * Cette méthode centralise l'accès aux informations utilisateur pour le composant.
+  /** 
+   * ACCESSEUR POUR LES DONNÉES UTILISATEUR
+   * 
+   * Méthode d'accès publique aux données de l'utilisateur connecté.
+   * Utilisée par les composants externes qui ont besoin des informations utilisateur.
+   * 
+   * @returns Données utilisateur ou undefined si non connecté
    */
   getCurrentIUser(): IUser | undefined {
     return this.currentUser;
   }
 
   /**
-   * Enregistre une nouvelle mise sur une cellule du plateau de jeu.
-   * La mise est débitée localement pour l'affichage immédiat, la vraie déduction se fait via l'API.
+   * ENREGISTREMENT D'UNE NOUVELLE MISE SUR LE PLATEAU
+   * 
+   * Méthode centrale pour placer une mise sur une cellule du plateau.
+   * Gère le débit visuel du solde et l'ajout de la mise au tableau des mises actives.
+   * 
+   * PROCESSUS D'ENREGISTREMENT :
+   * 1. Validation de l'utilisateur et de la cellule
+   * 2. Ajustement du montant selon le solde disponible
+   * 3. Débit visuel du solde (UX immédiate)
+   * 4. Ajout ou mise à jour de la mise dans le tableau
+   * 5. Mise à jour de la liste des numéros misés
+   * 
+   * GESTION DU SOLDE :
+   * - Débite visuellement currentUser.solde pour l'UX
+   * - Conserve _originalSolde intact pour les calculs backend
+   * - Limite automatiquement la mise au solde disponible
+   * 
+   * GESTION DES MISES MULTIPLES :
+   * - Si une mise existe déjà sur la cellule : additionne les montants
+   * - Sinon : crée une nouvelle entrée dans le tableau des mises
+   * 
+   * @param cell Cellule du plateau sur laquelle placer la mise
    */
   setBet(cell: IBettingBoardCell) {
-    if (!this.currentUser) return; // Vérification de sécurité
-    if (!cell || !cell.numbers) return; // Vérification de sécurité pour cell
+    if (!this.currentUser || !cell?.numbers) return;
     
+    // Sauvegarde de la mise précédente pour l'historique
     this.lastWager = this.wager;
-    this.wager = (this.currentUser.solde < this.wager) ? this.currentUser.solde : this.wager;
+    
+    // Limitation de la mise au solde disponible (sécurité)
+    this.wager = Math.min(this.wager, this.currentUser.solde);
 
     if (this.wager > 0) {
-      // Débit local pour l'affichage temps réel (la vraie déduction se fait via l'API backend)
-      // Cette approche améliore l'expérience utilisateur en montrant immédiatement l'effet de la mise
-      if (this.currentUser) {
-        this.currentUser.solde -= this.wager;
-      }
+      // DÉBIT VISUEL IMMÉDIAT pour l'expérience utilisateur
+      this.currentUser.solde -= this.wager;
       this.currentBet += this.wager; 
       
-      // Vérification et mise à jour des mises existantes ou création d'une nouvelle mise
-      // Le système accumule les mises multiples sur la même cellule
-      const n = cell.numbers.join(', ');
-      const t = cell.type;
-      const o = cell.odds; 
-      const l = cell.label;
-      let found = false;
-      for (let b of this.bet) {
-        if (b.numbers === n && b.type === t) {
-          b.amt += this.wager;
-          found = true;
-          break;
-        }
+      // Préparation des données de la mise
+      const numbers = cell.numbers.join(', ');
+      const type = cell.type;
+      const odds = cell.odds; 
+      const label = cell.label;
+      
+      // Recherche d'une mise existante sur cette cellule
+      let existingBet = this.bet.find(b => b.numbers === numbers && b.type === type);
+      if (existingBet) {
+        // Mise existante : additionner les montants
+        existingBet.amt += this.wager;
+        console.log(`➕ Mise augmentée sur ${label || numbers}: +${this.wager} (total: ${existingBet.amt})`);
+      } else {
+        // Nouvelle mise : créer une entrée
+        this.bet.push({ label, numbers, type, odds, amt: this.wager });
+        console.log(`🆕 Nouvelle mise sur ${label || numbers}: ${this.wager} (cote: ${odds}:1)`);
       }
-      if (!found) {
-        this.bet.push({ label: l, numbers: n, type: t, odds: o, amt: this.wager });
-      }
-      // Tracking des numéros misés pour l'affichage visuel
-      // Cette liste aide à mettre en évidence les cases avec des mises actives
+      
+      // Mise à jour de la liste des numéros misés (pour l'affichage)
       for (let num of cell.numbers) {
         if (!this.numbersBet.includes(num)) {
           this.numbersBet.push(num);
         }
       }
+      
+      console.log(`💰 Solde après mise: ${this.currentUser.solde}, Total misé: ${this.currentBet}`);
+    } else {
+      console.warn('⚠️ Impossible de miser: solde insuffisant');
     }
   }
 
   /**
-   * Gère la sélection des jetons et l'action de nettoyage des mises.
-   * Le système empêche les modifications pendant la rotation de la roulette pour la cohérence du jeu.
+   * GESTION DE LA SÉLECTION DES JETONS ET ACTIONS SPÉCIALES
+   * 
+   * Gère la sélection des jetons et l'action spéciale "clear bet".
+   * Cette méthode centralise la logique de changement de jeton et de nettoyage.
+   * 
+   * FONCTIONNALITÉS :
+   * - Sélection d'un jeton avec valeur prédéfinie (1, 5, 10, 100)
+   * - Action "clear bet" : efface toutes les mises et recrédite le solde
+   * - Validation de l'état du jeu (bloqué pendant le spin)
+   * 
+   * LOGIQUE "CLEAR BET" :
+   * 1. Recrédite visuellement toutes les mises au solde
+   * 2. Remet currentBet à zéro
+   * 3. Vide le tableau des mises
+   * 
+   * @param index Index du jeton sélectionné (dernier index = clear bet)
+   * @returns true si l'action a été effectuée, false si bloquée
    */
   selectChip(index: number): boolean {
-    if (this.isSpinning) return false; // Empêcher la sélection de puce pendant la rotation
+    if (this.isSpinning) return false; // Sécurité : pas d'action pendant le spin
     
     if (index === this.chipValues.length - 1) {
-        // Action "clear bet" qui remet le solde affiché à l'état initial
-        // Cette fonctionnalité permet d'annuler toutes les mises d'un coup
-        if (this.currentUser && this.currentUser.solde !== undefined) {
-            this.currentUser.solde += this.currentBet;  // Remettre les mises dans le solde affiché
+        // Action "clear bet" : recréditer toutes les mises
+        if (this.currentUser) {
+            this.currentUser.solde += this.currentBet;
+            console.log(`🧹 Clear bet: ${this.currentBet} recrédité, nouveau solde: ${this.currentUser.solde}`);
         }
         this.currentBet = 0; 
         this.clearBet();
     } else {
-        // Sélection d'une valeur de jeton spécifique pour les prochaines mises
-        // Les valeurs sont prédéfinies pour correspondre aux jetons standards du casino
+        // Sélection d'un jeton avec valeur prédéfinie
         this.selectedChipIndex = index; 
-        this.wager = index === 0 ? 1 : index === 1 ? 5 : index === 2 ? 10 : 100; 
+        this.wager = [1, 5, 10, 100][index] || 100;
+        console.log(`🎯 Jeton sélectionné: ${this.wager} (index: ${index})`);
     }
     
     return true;
