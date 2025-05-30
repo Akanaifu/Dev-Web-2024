@@ -27,7 +27,7 @@ const editCompteRoutes = require("./routes/edit-compte");
 const uploadAvatarRouter = require('./routes/upload-avatar');
 
 
-const soldeRoutes = require("./routes/update_solde");
+
 
 //Roulette
 const rouletteRoutes = require("./routes/roulette-net");
@@ -73,6 +73,7 @@ app.use("/bets", betRoutes);
 app.use("/new-game", newGameRoutes);
 app.use("/get_id", playerRoutes);
 app.use("/edit-compte", editCompteRoutes);
+
 app.use("/api/roulette", rouletteRoutes);
 // app.use("/api/roulette-odds", rouletteOddsRoutes.router);
 app.use('/avatar', uploadAvatarRouter);
