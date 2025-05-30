@@ -1216,4 +1216,528 @@ describe("Tests des routes Roulette-Net", () => {
       });
     });
   });
+
+  // ===== TESTS DE LA FONCTION UPDATESTATS =====
+  describe("Tests de la fonction updateStats (via route /win)", () => {
+    // Helper function pour tester les statistiques
+    const setupStatsTest = (existingStats = [], insertResult = null, updateResult = null) => {
+      jest.clearAllMocks();
+      
+      // Mock pour SELECT du solde utilisateur (requis par /win)
+      db.query.mockResolvedValueOnce([[{ solde: 1000 }]]);
+      
+      // Mock pour getConnection (requis par /win pour UPDATE solde)
+      const mockConnection = {
+        query: jest.fn()
+          .mockResolvedValueOnce([{ affectedRows: 1, changedRows: 1 }]) // UPDATE solde
+          .mockResolvedValueOnce([[{ solde: 1000 }]]) // SELECT vérification même connexion
+          .mockResolvedValueOnce([[{ solde: 1000 }]]), // SELECT après délai
+        beginTransaction: jest.fn().mockResolvedValue(),
+        commit: jest.fn().mockResolvedValue(),
+        rollback: jest.fn().mockResolvedValue(),
+        release: jest.fn().mockResolvedValue()
+      };
+      db.getConnection.mockResolvedValue(mockConnection);
+      
+      // Mock pour SELECT vérification avec pool (requis par /win)
+      db.query.mockResolvedValueOnce([[{ solde: 1000 }]]);
+      
+      // Mock pour les requêtes de statistiques
+      if (existingStats.length > 0) {
+        // Mock pour SELECT des stats existantes
+        db.query.mockResolvedValueOnce([existingStats]);
+        // Mock pour UPDATE des stats
+        if (updateResult) {
+          db.query.mockResolvedValueOnce([updateResult]);
+        }
+      } else {
+        // Mock pour SELECT des stats (aucune trouvée)
+        db.query.mockResolvedValueOnce([[]]);
+        // Mock pour INSERT nouvelles stats
+        if (insertResult) {
+          db.query.mockResolvedValueOnce([insertResult]);
+        }
+      }
+      
+      return mockConnection;
+    };
+
+    describe("Tests de création de nouvelles statistiques", () => {
+      it("doit créer de nouvelles statistiques pour une victoire", async () => {
+        setupStatsTest([], { insertId: 1, affectedRows: 1 });
+
+        const bets = [{
+          label: "7",
+          numbers: "7",
+          type: "inside_whole",
+          odds: 36,
+          amt: 10
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 7, // Victoire
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Vérifier que les bonnes requêtes SQL ont été appelées
+        const calls = db.query.mock.calls;
+        
+        // Trouver l'appel SELECT pour les stats existantes
+        const selectStatsCall = calls.find(call => 
+          call[0].includes("SELECT * FROM stats WHERE user_id = ?")
+        );
+        expect(selectStatsCall).toBeDefined();
+        expect(selectStatsCall[1]).toEqual([1]);
+        
+        // Trouver l'appel INSERT pour créer nouvelles stats
+        const insertStatsCall = calls.find(call => 
+          call[0].includes("INSERT INTO stats")
+        );
+        expect(insertStatsCall).toBeDefined();
+        expect(insertStatsCall[1]).toEqual([1, 1]); // userId=1, num_wins=1 (victoire)
+      });
+
+      it("doit créer de nouvelles statistiques pour une défaite", async () => {
+        setupStatsTest([], { insertId: 2, affectedRows: 1 });
+
+        const bets = [{
+          label: "7",
+          numbers: "7",
+          type: "inside_whole",
+          odds: 36,
+          amt: 10
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 15, // Défaite (7 ne sort pas)
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Trouver l'appel INSERT pour créer nouvelles stats
+        const calls = db.query.mock.calls;
+        const insertStatsCall = calls.find(call => 
+          call[0].includes("INSERT INTO stats")
+        );
+        expect(insertStatsCall[1]).toEqual([1, 0]); // num_wins = 0 car payout < 0
+      });
+    });
+
+    describe("Tests de mise à jour des statistiques existantes", () => {
+      it("doit mettre à jour les statistiques existantes pour une victoire", async () => {
+        const existingStats = [{
+          stat_id: 1,
+          user_id: 1,
+          num_games: 5,
+          num_wins: 2,
+          timestamp: new Date()
+        }];
+        
+        setupStatsTest(existingStats, null, { affectedRows: 1 });
+
+        const bets = [{
+          label: "RED",
+          numbers: "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36",
+          type: "outside_color",
+          odds: 2,
+          amt: 20
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 3, // Rouge = victoire
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Trouver l'appel UPDATE pour mettre à jour les stats
+        const calls = db.query.mock.calls;
+        const updateStatsCall = calls.find(call => 
+          call[0].includes("UPDATE stats SET num_games = ?, num_wins = ?")
+        );
+        expect(updateStatsCall).toBeDefined();
+        expect(updateStatsCall[1]).toEqual([6, 3, 1]); // 6 parties (5+1), 3 victoires (2+1), stat_id=1
+      });
+
+      it("doit mettre à jour les statistiques existantes pour une défaite", async () => {
+        const existingStats = [{
+          stat_id: 2,
+          user_id: 1,
+          num_games: 10,
+          num_wins: 4,
+          timestamp: new Date()
+        }];
+        
+        setupStatsTest(existingStats, null, { affectedRows: 1 });
+
+        const bets = [{
+          label: "BLACK",
+          numbers: "2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35",
+          type: "outside_color",
+          odds: 2,
+          amt: 15
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 3, // Rouge = défaite pour mise sur noir
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Trouver l'appel UPDATE pour mettre à jour les stats
+        const calls = db.query.mock.calls;
+        const updateStatsCall = calls.find(call => 
+          call[0].includes("UPDATE stats SET num_games = ?, num_wins = ?")
+        );
+        expect(updateStatsCall).toBeDefined();
+        expect(updateStatsCall[1]).toEqual([11, 4, 2]); // 11 parties (10+1), 4 victoires (pas de changement), stat_id=2
+      });
+    });
+
+    describe("Tests de gestion d'erreurs des statistiques", () => {
+      it("doit continuer le jeu même si les statistiques échouent", async () => {
+        jest.clearAllMocks();
+        
+        // Mock pour SELECT du solde utilisateur (requis par /win)
+        db.query.mockResolvedValueOnce([[{ solde: 1000 }]]);
+        
+        // Mock pour getConnection (requis par /win pour UPDATE solde)
+        const mockConnection = {
+          query: jest.fn()
+            .mockResolvedValueOnce([{ affectedRows: 1, changedRows: 1 }]) // UPDATE solde
+            .mockResolvedValueOnce([[{ solde: 1020 }]]) // SELECT vérification même connexion
+            .mockResolvedValueOnce([[{ solde: 1020 }]]), // SELECT après délai
+          beginTransaction: jest.fn().mockResolvedValue(),
+          commit: jest.fn().mockResolvedValue(),
+          rollback: jest.fn().mockResolvedValue(),
+          release: jest.fn().mockResolvedValue()
+        };
+        db.getConnection.mockResolvedValue(mockConnection);
+        
+        // Mock pour SELECT vérification avec pool (requis par /win)
+        db.query.mockResolvedValueOnce([[{ solde: 1020 }]]);
+        
+        // Mock pour les statistiques qui échouent
+        db.query.mockRejectedValueOnce(new Error("Stats DB error"));
+
+        const bets = [{
+          label: "RED",
+          numbers: "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36",
+          type: "outside_color",
+          odds: 2,
+          amt: 20
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 3, // Rouge = victoire
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        // Le jeu doit réussir malgré l'erreur de stats
+        expect(res.statusCode).toBe(200);
+        expect(res.body.winValue).toBe(20);
+        expect(res.body.newsolde).toBe(1020);
+      });
+
+      it("doit gérer une erreur lors de l'INSERT de nouvelles statistiques", async () => {
+        jest.clearAllMocks();
+        
+        // Mock pour SELECT du solde utilisateur (requis par /win)
+        db.query.mockResolvedValueOnce([[{ solde: 1000 }]]);
+        
+        // Mock pour getConnection (requis par /win pour UPDATE solde)
+        const mockConnection = {
+          query: jest.fn()
+            .mockResolvedValueOnce([{ affectedRows: 1, changedRows: 1 }]) // UPDATE solde
+            .mockResolvedValueOnce([[{ solde: 990 }]]) // SELECT vérification même connexion
+            .mockResolvedValueOnce([[{ solde: 990 }]]), // SELECT après délai
+          beginTransaction: jest.fn().mockResolvedValue(),
+          commit: jest.fn().mockResolvedValue(),
+          rollback: jest.fn().mockResolvedValue(),
+          release: jest.fn().mockResolvedValue()
+        };
+        db.getConnection.mockResolvedValue(mockConnection);
+        
+        // Mock pour SELECT vérification avec pool (requis par /win)
+        db.query.mockResolvedValueOnce([[{ solde: 990 }]]);
+        
+        // Mock pour les statistiques : SELECT réussit (pas de stats) mais INSERT échoue
+        db.query.mockResolvedValueOnce([[]]); // SELECT stats (aucune trouvée)
+        db.query.mockRejectedValueOnce(new Error("INSERT stats failed")); // INSERT échoue
+
+        const bets = [{
+          label: "7",
+          numbers: "7",
+          type: "inside_whole",
+          odds: 36,
+          amt: 10
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 15, // Défaite
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        // Le jeu doit réussir malgré l'erreur d'INSERT des stats
+        expect(res.statusCode).toBe(200);
+        expect(res.body.winValue).toBe(0);
+        expect(res.body.newsolde).toBe(990); // 1000 - 10 (perte)
+      });
+
+      it("doit gérer une erreur lors de l'UPDATE des statistiques existantes", async () => {
+        jest.clearAllMocks();
+        
+        // Mock pour SELECT du solde utilisateur (requis par /win)
+        db.query.mockResolvedValueOnce([[{ solde: 1000 }]]);
+        
+        // Mock pour getConnection (requis par /win pour UPDATE solde)
+        const mockConnection = {
+          query: jest.fn()
+            .mockResolvedValueOnce([{ affectedRows: 1, changedRows: 1 }]) // UPDATE solde
+            .mockResolvedValueOnce([[{ solde: 1020 }]]) // SELECT vérification même connexion
+            .mockResolvedValueOnce([[{ solde: 1020 }]]), // SELECT après délai
+          beginTransaction: jest.fn().mockResolvedValue(),
+          commit: jest.fn().mockResolvedValue(),
+          rollback: jest.fn().mockResolvedValue(),
+          release: jest.fn().mockResolvedValue()
+        };
+        db.getConnection.mockResolvedValue(mockConnection);
+        
+        // Mock pour SELECT vérification avec pool (requis par /win)
+        db.query.mockResolvedValueOnce([[{ solde: 1020 }]]);
+        
+        // Mock pour les statistiques : SELECT réussit mais UPDATE échoue
+        const existingStats = [{
+          stat_id: 1,
+          user_id: 1,
+          num_games: 5,
+          num_wins: 2,
+          timestamp: new Date()
+        }];
+        db.query.mockResolvedValueOnce([existingStats]); // SELECT stats existantes
+        db.query.mockRejectedValueOnce(new Error("UPDATE stats failed")); // UPDATE échoue
+
+        const bets = [{
+          label: "RED",
+          numbers: "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36",
+          type: "outside_color",
+          odds: 2,
+          amt: 20
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 3, // Rouge = victoire
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        // Le jeu doit réussir malgré l'erreur d'UPDATE des stats
+        expect(res.statusCode).toBe(200);
+        expect(res.body.winValue).toBe(20);
+        expect(res.body.newsolde).toBe(1020);
+      });
+    });
+
+    describe("Tests de logique de détermination victoire/défaite", () => {
+      it("doit détecter une victoire avec payout positif", async () => {
+        setupStatsTest([], { insertId: 1, affectedRows: 1 });
+
+        const bets = [{
+          label: "RED",
+          numbers: "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36",
+          type: "outside_color",
+          odds: 2,
+          amt: 50
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 3, // Rouge = victoire, payout = 50
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Vérifier que num_wins = 1 dans l'INSERT
+        const calls = db.query.mock.calls;
+        const insertStatsCall = calls.find(call => 
+          call[0].includes("INSERT INTO stats")
+        );
+        expect(insertStatsCall[1]).toEqual([1, 1]); // num_wins = 1 car payout > 0
+      });
+
+      it("doit détecter une défaite avec payout négatif", async () => {
+        setupStatsTest([], { insertId: 1, affectedRows: 1 });
+
+        const bets = [{
+          label: "RED",
+          numbers: "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36",
+          type: "outside_color",
+          odds: 2,
+          amt: 30
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 2, // Noir = défaite, payout = -30
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Vérifier que num_wins = 0 dans l'INSERT
+        const calls = db.query.mock.calls;
+        const insertStatsCall = calls.find(call => 
+          call[0].includes("INSERT INTO stats")
+        );
+        expect(insertStatsCall[1]).toEqual([1, 0]); // num_wins = 0 car payout < 0
+      });
+
+      it("doit détecter une égalité avec payout zéro comme défaite", async () => {
+        setupStatsTest([], { insertId: 1, affectedRows: 1 });
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 7,
+            bets: [], // Aucune mise = payout = 0
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Vérifier que num_wins = 0 dans l'INSERT (payout = 0 compte comme défaite)
+        const calls = db.query.mock.calls;
+        const insertStatsCall = calls.find(call => 
+          call[0].includes("INSERT INTO stats")
+        );
+        expect(insertStatsCall[1]).toEqual([1, 0]); // num_wins = 0 car payout = 0
+      });
+    });
+
+    describe("Tests des requêtes SQL de statistiques", () => {
+      it("doit utiliser la bonne requête SQL pour SELECT des stats existantes", async () => {
+        setupStatsTest([], { insertId: 1, affectedRows: 1 });
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 7,
+            bets: [],
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Vérifier la requête SELECT avec CURDATE()
+        const calls = db.query.mock.calls;
+        const selectStatsCall = calls.find(call => 
+          call[0].includes("SELECT * FROM stats WHERE user_id = ? AND timestamp LIKE CONCAT(CURDATE(), '%')")
+        );
+        expect(selectStatsCall).toBeDefined();
+        expect(selectStatsCall[1]).toEqual([1]);
+      });
+
+      it("doit utiliser la bonne requête SQL pour INSERT de nouvelles stats", async () => {
+        setupStatsTest([], { insertId: 1, affectedRows: 1 });
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 7,
+            bets: [],
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Vérifier la requête INSERT avec NOW() - recherche avec plusieurs espaces possibles
+        const calls = db.query.mock.calls;
+        const insertStatsCall = calls.find(call => 
+          call[0].includes("INSERT INTO stats") && call[0].includes("VALUES")
+        );
+        expect(insertStatsCall).toBeDefined();
+        expect(insertStatsCall[1]).toEqual([1, 0]); // userId=1, num_wins=0
+      });
+
+      it("doit utiliser la bonne requête SQL pour UPDATE des stats existantes", async () => {
+        const existingStats = [{
+          stat_id: 42,
+          user_id: 1,
+          num_games: 7,
+          num_wins: 3,
+          timestamp: new Date()
+        }];
+        
+        setupStatsTest(existingStats, null, { affectedRows: 1 });
+
+        const bets = [{
+          label: "RED",
+          numbers: "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36",
+          type: "outside_color",
+          odds: 2,
+          amt: 25
+        }];
+
+        const res = await request(app)
+          .post("/api/roulette/win")
+          .send({
+            winningSpin: 1, // Rouge = victoire
+            bets: bets,
+            solde: 1000,
+            userId: 1
+          });
+
+        expect(res.statusCode).toBe(200);
+        
+        // Vérifier la requête UPDATE avec NOW() - recherche plus flexible
+        const calls = db.query.mock.calls;
+        const updateStatsCall = calls.find(call => 
+          call[0].includes("UPDATE stats SET") && call[0].includes("WHERE stat_id")
+        );
+        expect(updateStatsCall).toBeDefined();
+        expect(updateStatsCall[1]).toEqual([8, 4, 42]); // 8 parties (7+1), 4 victoires (3+1), stat_id=42
+      });
+    });
+  });
 });
