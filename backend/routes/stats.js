@@ -81,4 +81,74 @@ router.get("/bets/:userId", async (req, res) => {
   }
 });
 
+// Route pour mettre à jour les statistiques après une partie de roulette
+// pas utilisée actuellement mais dans le futur
+router.post("/update-roulette-stats", async (req, res) => {
+  const { userId, payout, betTotal } = req.body;
+  
+  // console.log(`[STATS UPDATE] 🎯 Début mise à jour stats roulette`);
+  // console.log(`[STATS UPDATE] UserId: ${userId}, Payout: ${payout}, BetTotal: ${betTotal}`);
+  
+  try {
+    // Détermine si c'est une victoire (payout positif)
+    const isWin = payout > 0;
+    // console.log(`[STATS UPDATE] 🎲 Résultat: ${isWin ? 'VICTOIRE' : 'DÉFAITE'} (payout: ${payout})`);
+    
+    // Vérifie s'il existe déjà des statistiques pour cet utilisateur et la roulette
+    // console.log(`[STATS UPDATE] 🔍 Recherche stats existantes pour aujourd'hui...`);
+    const [existingStats] = await db.query(
+      `SELECT * FROM stats WHERE user_id = ? AND timestamp LIKE CONCAT(CURDATE(), '%')`,
+      [userId]
+    );
+    
+    // console.log(`[STATS UPDATE] 📊 Stats trouvées: ${existingStats.length} entrées`);
+    
+    if (existingStats.length > 0) {
+      // Met à jour les statistiques existantes pour aujourd'hui
+      const currentStats = existingStats[0];
+      const newNumGames = currentStats.num_games + 1;
+      const newNumWins = currentStats.num_wins + (isWin ? 1 : 0);
+      
+      // console.log(`[STATS UPDATE] 🔄 UPDATE - Anciens: ${currentStats.num_games} parties, ${currentStats.num_wins} victoires`);
+      // console.log(`[STATS UPDATE] 🔄 UPDATE - Nouveaux: ${newNumGames} parties, ${newNumWins} victoires`);
+      
+      await db.query(
+        `UPDATE stats SET num_games = ?, num_wins = ?, timestamp = NOW() 
+         WHERE stat_id = ?`,
+        [newNumGames, newNumWins, currentStats.stat_id]
+      );
+      
+      // console.log(`[STATS UPDATE] ✅ UPDATE réussi pour stat_id: ${currentStats.stat_id}`);
+    } else {
+      // Crée une nouvelle entrée de statistiques
+      // console.log(`[STATS UPDATE] 🆕 INSERT - Première partie du jour`);
+      // console.log(`[STATS UPDATE] 🆕 INSERT - 1 partie, ${isWin ? 1 : 0} victoire`);
+      
+      await db.query(
+        `INSERT INTO stats (user_id, num_games, num_wins, timestamp) 
+         VALUES (?, 1, ?, NOW())`,
+        [userId, isWin ? 1 : 0]
+      );
+      
+      // console.log(`[STATS UPDATE] ✅ INSERT réussi pour user_id: ${userId}`);
+    }
+    
+    // console.log(`[STATS UPDATE] 🎉 Stats mises à jour avec succès !`);
+    
+    res.json({ 
+      success: true, 
+      message: "Statistiques mises à jour avec succès",
+      game_played: 1,
+      game_won: isWin ? 1 : 0,
+      payout: payout
+    });
+    
+  } catch (error) {
+    console.error(`[STATS UPDATE] ❌ Erreur lors de la mise à jour des statistiques:`, error);
+    res.status(500).json({ 
+      error: "Erreur lors de la mise à jour des statistiques." 
+    });
+  }
+});
+
 module.exports = router;

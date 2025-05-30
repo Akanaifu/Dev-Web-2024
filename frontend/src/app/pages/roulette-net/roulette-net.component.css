@@ -20,49 +20,63 @@
   - .chip : Affichage des mises sur le plateau
   - .sect : Sections de la roue avec rotations précises
   - .redNum/.blackNum : Couleurs des numéros selon les règles de roulette
+  
+  PERFORMANCE :
+  - Utilisation de transform pour les animations (processeur graphique)
+  - Transitions CSS plutôt que JavaScript pour la fluidité
+  - Optimisation des sélecteurs pour éviter les recalculs de mise en page
 */
+
+/* ===== STYLES GLOBAUX ET CONFIGURATION DE BASE ===== */
 
 html, body {
 	font-family: arial;
 	cursor: default;
+	
 	/* Désactivation de la sélection de texte pour une interface de jeu propre */
+	/* Empêche la sélection accidentelle pendant les interactions rapides */
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	--background : #016D29; /* Couleur verte traditionnelle du casino */
+	
+	/* Couleur verte traditionnelle du casino pour l'ambiance */
+	--background : #016D29;
+	
+	/* Layout flexbox pour une disposition responsive */
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-start;
 }
 
+/* CONTENEUR PRINCIPAL - ARCHITECTURE EN COLONNES */
 #container {
 	display: flex;
 	flex-direction: row;
-	width: 100vw;
-	height: 100vh;
 	padding: 1%;
-	color: #fff;
+	color: #fff; /* Texte blanc pour contraste sur fond vert */
 }
 
-/* la partie roulette */
+/* ===== SECTION ROUE DE ROULETTE (COLONNE GAUCHE) ===== */
+
+/* Conteneur de la colonne gauche : roue + contrôles */
 .first-column {
 	width: 310px;
-	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	margin-right: 5%;
 	margin-left: 3%;
 }
-/* la partie de la roulette */
+
+/* ROUE DE ROULETTE - STRUCTURE PRINCIPALE */
 .wheel {
 	height: 350px;
 	width: 100%;
-	position: relative;
+	position: relative; /* Nécessaire pour le positionnement absolu des éléments internes */
 }
 
 .wheel_rotating {
@@ -73,220 +87,127 @@ html, body {
 	display: block;
 }
 
+/* BORDURE EXTÉRIEURE DE LA ROUE */
 .outer_rim {
 	width: 290px;
 	height: 290px;
 	border-radius: 100%;
-	box-shadow: 0px 0px 8px rgba(0,0,0,0.5);
-	border: 10px solid #F3c620;
+	box-shadow: 0px 0px 8px rgba(0,0,0,0.5); /* Ombre pour effet de profondeur */
+	border: 10px solid #F3c620; /* Bordure dorée traditionnelle */
 	position: relative;
 	z-index: 1;
 }
 
+/* SECTIONS INDIVIDUELLES DE LA ROUE */
+/* Chaque section représente un numéro avec sa couleur */
 .sect {
 	position: absolute;
 	width: 290px;
 	height: 290px;
 	border-radius: 100%;
-	clip: rect(0px, 290px, 290px, 145px);
+	clip: rect(0px, 290px, 290px, 145px); /* Découpe pour créer les sections */
 }
+
+/* ROTATION DE BASE POUR LA PREMIÈRE SECTION */
 #sect1 .block {
-	transform:rotate(9.73deg);
+	transform:rotate(9.73deg); /* 360° / 37 sections = 9.73° par section */
 }
-    
+
+/* SECTIONS ROUGES - Numéros pairs dans la séquence */
 #sect2 .block, #sect4 .block, #sect6 .block,
 #sect8 .block, #sect10 .block, #sect12 .block,
 #sect14 .block, #sect16 .block, #sect18 .block,
 #sect20 .block, #sect22 .block, #sect24 .block,
 #sect26 .block, #sect28 .block, #sect30 .block,
 #sect32 .block, #sect34 .block, #sect36 .block {
-	background-color: #E0080B;
+	background-color: #E0080B; /* Rouge roulette standard */
 	transform: rotate(9.73deg);
 }
 
+/* SECTIONS NOIRES - Numéros impairs dans la séquence */
 #sect3 .block, #sect5 .block,
 #sect7 .block, #sect9 .block, #sect11 .block,
 #sect13 .block, #sect15 .block, #sect17 .block, 
 #sect19 .block, #sect21 .block, #sect23 .block, #sect25 .block, 
 #sect27 .block, #sect29 .block, #sect31 .block, #sect33 .block,
 #sect35 .block, #sect37 .block {
-	background-color: #000;
+	background-color: #000; /* Noir roulette */
 	transform: rotate(9.73deg);
 }
 
-#sect2 {
-	transform: rotate(9.73deg);
-}
+/* ROTATIONS INDIVIDUELLES POUR CHAQUE SECTION */
+/* Positionnement précis de chaque numéro sur la roue */
+#sect2 { transform: rotate(9.73deg); }
+#sect3 { transform: rotate(19.46deg); }
+#sect4 { transform: rotate(29.19deg); }
+#sect5 { transform: rotate(38.92deg); }
+#sect6 { transform: rotate(48.65deg); }
+#sect7 { transform: rotate(58.38deg); }
+#sect8 { transform: rotate(68.11deg); }
+#sect9 { transform: rotate(77.84deg); }
+#sect10 { transform: rotate(87.57deg); }
+#sect11 { transform: rotate(97.3deg); }
+#sect12 { transform: rotate(107.03deg); }
+#sect13 { transform: rotate(116.76deg); }
+#sect14 { transform: rotate(126.49deg); }
+#sect15 { transform: rotate(136.22deg); }
+#sect16 { transform: rotate(145.95deg); }
+#sect17 { transform: rotate(155.68deg); }
+#sect18 { transform: rotate(165.41deg); }
+#sect19 { transform: rotate(175.14deg); }
+#sect20 { transform: rotate(184.87deg); }
+#sect21 { transform: rotate(194.6deg); }
+#sect22 { transform: rotate(204.33deg); }
+#sect23 { transform: rotate(214.06deg); }
+#sect24 { transform: rotate(223.79deg); }
+#sect25 { transform: rotate(233.52deg); }
+#sect26 { transform: rotate(243.25deg); }
+#sect27 { transform: rotate(252.98deg); }
+#sect28 { transform: rotate(262.71deg); }
+#sect29 { transform: rotate(272.44deg); }
+#sect30 { transform: rotate(282.17deg); }
+#sect31 { transform: rotate(291.9deg); }
+#sect32 { transform: rotate(301.63deg); }
+#sect33 { transform: rotate(311.36deg); }
+#sect34 { transform: rotate(321.09deg); }
+#sect35 { transform: rotate(330.82deg); }
+#sect36 { transform: rotate(340.55deg); }
+#sect37 { transform: rotate(350.28deg); }
 
-#sect3 {
-	transform: rotate(19.46deg);
-}
-
-#sect4 {
-	transform: rotate(29.19deg);
-}
-
-#sect5 {
-	transform: rotate(38.92deg);
-}
-
-#sect6 {
-	transform: rotate(48.65deg);
-}
-
-#sect7 {
-	transform: rotate(58.38deg);
-}
-
-#sect8 {
-	transform: rotate(68.11deg);
-}
-
-#sect9 {
-	transform: rotate(77.84deg);
-}
-
-#sect10 {
-	transform: rotate(87.57deg);
-}
-
-#sect11 {
-	transform: rotate(97.3deg);
-}
-
-#sect12 {
-	transform: rotate(107.03deg);
-}
-
-#sect13 {
-	transform: rotate(116.76deg);
-}
-
-#sect14 {
-	transform: rotate(126.49deg);
-}
-
-#sect15 {
-	transform: rotate(136.22deg);
-}
-
-#sect16 {
-	transform: rotate(145.95deg);
-}
-
-#sect17 {
-	transform: rotate(155.68deg);
-}
-
-#sect18 {
-	transform: rotate(165.41deg);
-}
-
-#sect19 {
-	transform: rotate(175.14deg);
-}
-
-#sect20 {
-	transform: rotate(184.87deg);
-}
-
-#sect21 {
-	transform: rotate(194.6deg);
-}
-
-#sect22 {
-	transform: rotate(204.33deg);
-}
-
-#sect23 {
-	transform: rotate(214.06deg);
-}
-
-#sect24 {
-	transform: rotate(223.79deg);
-}
-
-#sect25 {
-	transform: rotate(233.52deg);
-}
-
-#sect26 {
-	transform: rotate(243.25deg);
-}
-
-#sect27 {
-	transform: rotate(252.98deg);
-}
-
-#sect28 {
-	transform: rotate(262.71deg);
-}
-
-#sect29 {
-	transform: rotate(272.44deg);
-}
-
-#sect30 {
-	transform: rotate(282.17deg);
-}
-
-#sect31 {
-	transform: rotate(291.9deg);
-}
-
-#sect32 {
-	transform: rotate(301.63deg);
-}
-
-#sect33 {
-	transform: rotate(311.36deg);
-}
-
-#sect34 {
-	transform: rotate(321.09deg);
-}
-
-#sect35 {
-	transform: rotate(330.82deg);
-}
-
-#sect36 {
-	transform: rotate(340.55deg);
-}
-
-#sect37 {
-	transform: rotate(350.28deg);
-}
-
+/* AFFICHAGE DES NUMÉROS SUR LA ROUE */
 .single,.double{
 	position: absolute;
 	z-index: 1;
 	color: #fff;
 	font-size: 14px;
-	transform: rotate(3deg);
+	transform: rotate(3deg); /* Légère rotation pour suivre la courbure */
 }
 
+/* Positionnement pour les numéros à un chiffre */
 .single{
 	left: 152px;
 	margin-top: 4.5px;
 }
 
+/* Positionnement pour les numéros à deux chiffres */
 .double{
-	left: 148px;
+	left: 148px; /* Légèrement décalé pour centrer */
 	margin-top: 4.5px;
 }
 
+/* BLOCS DE COULEUR DES SECTIONS */
 .block {
-	transition: all 1s;
+	transition: all 1s; /* Transition fluide pour les changements */
 	position: absolute;
 	width: 290px;
 	height: 290px;
 	border-radius: 100%;
-	clip: rect(0px, 145px, 290px, 0px);
+	clip: rect(0px, 145px, 290px, 0px); /* Découpe pour créer l'effet secteur */
 }
 
+/* ===== ÉLÉMENTS INTERNES DE LA ROUE ===== */
 
-
+/* Bordure des poches (séparations entre numéros) */
 .pockets_rim {
 	position: absolute;
 	top: 24px;
@@ -300,6 +221,7 @@ html, body {
 	z-index: 2;
 }
 
+/* PISTE DE LA BILLE - ÉLÉMENT ANIMÉ */
 .ball_track{
 	width: 212px;
 	height: 207px;
@@ -308,17 +230,21 @@ html, body {
 	top: 40px;
 	border-radius: 100%;
 	z-index:2;
+	/* La rotation est contrôlée par ballRotation dans le composant */
 }
+
+/* BILLE DE ROULETTE */
 .ball{
-	background-color: #fff;
+	background-color: #fff; /* Bille blanche traditionnelle */
 	width: 16px;
 	height: 16px;
 	border-radius: 100%;
 	position: relative;
-	left: 109px;
+	left: 109px; /* Positionnement sur la piste */
 	top: -8px;
 }
 
+/* Poches intérieures (effet visuel) */
 .pockets {
 	position: absolute;
 	top: 27px;
@@ -327,9 +253,10 @@ html, body {
 	height: 235px;
 	background-color: #000;
 	border-radius: 100%;
-	opacity: .5;
+	opacity: .5; /* Semi-transparence pour l'effet de profondeur */
 }
 
+/* CÔNE CENTRAL DE LA ROULETTE */
 .cone {
 	position: absolute;
 	top: 52px;
@@ -338,11 +265,14 @@ html, body {
 	width: 180px;
 	border: 3px solid #9f9a9a;
 	border-radius: 100%;
+	/* Dégradé radial pour l'effet 3D */
 	background: radial-gradient(circle at 100px 100px, #892c10, #000);
 }
 
+/* MÉCANISME CENTRAL (TOURELLE) */
 .turret{
 	border-radius: 100%;
+	/* Dégradé doré pour l'aspect métallique */
 	background: radial-gradient( circle at 30% 30%, #f3c620, #1a1608 );
 	width: 35px;
 	height: 35px;
@@ -351,7 +281,8 @@ html, body {
 	left: 134px;
 	z-index: 1;
 }
-	
+
+/* POIGNÉE DE LA TOURELLE */
 .turret_handle{
 	background: radial-gradient( circle at 44%, #f3c620, #6a570f);
 	width: 87px;
@@ -361,6 +292,7 @@ html, body {
 	top: 138px;
 }
 
+/* EXTRÉMITÉS DE LA POIGNÉE */
 .thend_one, .thend_two{
 	border-radius: 100%;
 	background: radial-gradient( circle at 30% 30%, #f3c620, #1a1608 );
@@ -377,30 +309,40 @@ html, body {
 .thend_two{
 	left: 83px;
 }
-/* la fin de la partie de la roulette */
 
+/* ===== AFFICHAGE DES RÉSULTATS ===== */
+
+/* Message de résultat après un spin */
 .roulette_result_message {
-	margin: 16px auto 8px auto;
-	padding: 12px 24px;
-	background: #222b;
+	height: 20%;
+	margin: 10% auto 0% auto;
+	padding: 2% 5%;
+	background: #222b; /* Fond sombre semi-transparent */
 	color: #fff;
-	font-size: 1.3em;
+	font-size: 1.17rem;
 	font-weight: bold;
 	border-radius: 10px;
 	text-align: center;
 	max-width: 350px;
-	box-shadow: 0 2px 8px #0005;
+	box-shadow: 0 2px 8px #0005; /* Ombre légère */
 	z-index: 20;
+	white-space: pre-line; /* Permet les retours à la ligne avec \n */
 }
-/* la partie du solde */
+
+/* ===== INTERFACE DE CONTRÔLE DU SOLDE ET DES MISES ===== */
+
+/* Conteneur principal des contrôles monétaires */
 .money_container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	/* justify-content: center; */
 	width: 100%;
 	height: 100%;
+	margin-top: 10%;
 }
+
+/* AFFICHAGE DU SOLDE ET DES MISES */
 .bankContainer {
 	position: relative;
 	display: flex;
@@ -410,24 +352,23 @@ html, body {
 	width: 100%;
 	height: 10%;
 	padding: 2% 0;
-	margin-bottom: 4%;
-	border: 1px solid;
-	border-radius: 10px;
-	box-shadow: inset -2px -4px rgb(0 0 0 / 20%);
+	margin-bottom: 5%;
 }
 
+/* Styles pour les affichages de solde et de mise */
 .bank, .bet {
 	display: inline-block;
 	width: calc(50% - 28px);
-    background-color: #000;
+    background-color: #000; /* Fond noir pour contraste */
     font-size: 18px;
     margin-left: 7px;
     padding: 5px;
-    border: 4px solid silver;
+    border: 4px solid silver; /* Bordure métallique */
     border-radius: 7px;
-    text-align: right;
+    text-align: right; /* Alignement des chiffres à droite */
 }
 
+/* SÉLECTEUR DE JETONS */
 .chip_container {
 	position: relative;
 	display: flex;
@@ -435,26 +376,29 @@ html, body {
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	height: 10%;
+	height: 20%;
 	padding: 2% 0;
-	margin-bottom: 4%;
+	margin-bottom: 1%;
 	border: 1px solid;
 	border-radius: 10px;
-	box-shadow: inset -2px -4px rgb(0 0 0 / 20%);
+	box-shadow: inset -2px -4px rgb(0 0 0 / 20%); /* Effet enfoncé */
 }
 
+/* JETONS INDIVIDUELS */
 .color_chip {
 	width: 20%;
 	height: 80%;
 	background-color: #fff;
-	border: 5px solid;
-	border-radius: 100%;
+	border: 5px solid; /* Couleur définie par les classes spécifiques */
+	border-radius: 100%; /* Forme circulaire des jetons */
 	display: inline-block;
 	margin-left: 9px;
 	color: #000;
 	cursor: pointer;
+	transition: all 0.2s ease; /* Animation fluide pour les interactions */
 }
 
+/* Texte affiché sur les jetons */
 .color_chip_span {
 	display: flex;
 	position: relative;
@@ -467,14 +411,14 @@ html, body {
 	text-align: center;
 }
 
-
-
+/* ÉTAT SÉLECTIONNÉ DU JETON */
 .color_chip_on {
 	position: relative;
-	top: -4px;
-	box-shadow: 0 4px rgb(0 0 0 / 20%);
+	top: -4px; /* Élévation visuelle */
+	box-shadow: 0 4px rgb(0 0 0 / 20%); /* Ombre pour effet de profondeur */
 }
 
+/* JETON SPÉCIAL "CLEAR BET" */
 .clearBet {
 	border-color:red;
 	background-color:red;
@@ -483,14 +427,13 @@ html, body {
 }
 
 .clearBet .color_chip_span {
-	margin-left:-2px;
+	margin-left:-2px; /* Ajustement pour centrer le texte */
 }
 
-
-
+/* BOUTON DE LANCEMENT */
 .buttom_launch{
 	width: 100%;
-	height:10%;
+	height:20%;
 	position: relative;
 	display: flex;
 	flex-direction: row;
@@ -498,47 +441,52 @@ html, body {
 	justify-content: center;
 }
 
+/* Styles du bouton principal */
 button {
 	background: linear-gradient(135deg, rgba(58, 12, 187, 0.8), rgba(58, 12, 187, 0.6));
 	color: white;
 	border: none;
-	border-radius: 50px;
+	border-radius: 50px; /* Bouton arrondi */
 	padding: 3%;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	font-size: 16px;
-	transition: all 0.05s ease;
+	transition: all 0.05s ease; /* Animation rapide pour la réactivité */
 }
 
+/* État activé du bouton */
 button:enabled {
 	background: linear-gradient(135deg, rgba(58, 12, 187, 0.9), rgba(58, 12, 187, 0.7));
-	transform: translateY(-2px);
+	transform: translateY(-2px); /* Légère élévation */
 	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-	border: 2px solid rgba(255, 215, 0, 0.5);
+	border: 2px solid rgba(255, 215, 0, 0.5); /* Bordure dorée */
 	cursor: pointer;
 }
 
+/* ===== PLATEAU DE MISE (COLONNE DROITE) ===== */
 
-/* fin de la partie roulette */
+/* Structure principale du plateau */
 .second_column {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
-	height: auto;
-	width: 50%;
+	width: 35%;
 }
+
+/* Espaces de mise spéciaux */
 .space_zero {
 	width: 100%;
 	height: 4%;
 }
+
 .space_2to1 {
 	width: 100%;
 	height: 8%;
-	
 }
 
+/* Colonnes du plateau de mise */
 .table-column-right-first, 
 .table-column-right-second {
 	display: flex;
@@ -554,21 +502,26 @@ button:enabled {
 	height: 100%;
 }
 
+/* ===== ÉTATS INTERACTIFS ET DÉSACTIVATION ===== */
+
+/* État désactivé pendant le spin */
 .disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
 }
 
+/* Désactivation spécifique des cellules de mise */
 .number_block.disabled, 
 .table_column_left_cell_top.disabled, 
 .table_column_left_cell_bottom.disabled,
 .side_cell.disabled,
 .table-column-right-first-cell.disabled,
 .table-column-right-second-cell.disabled {
-	pointer-events: none;
+	pointer-events: none; /* Empêche toute interaction */
 	opacity: 0.7;
 }
 
+/* CELLULES DE MISE GÉNÉRIQUES */
 .table_column_left_cell_top,
 .table_column_left_cell_bottom,
 .table-column-right-first-cell,
@@ -583,27 +536,33 @@ button:enabled {
 	background: transparent;
 	color: #fff;
 	cursor: pointer;
+	transition: background-color 0.2s ease; /* Animation hover */
 }
 
-
+/* Hauteurs spécifiques pour certaines cellules */
 .table_column_left_cell_top,
 .table_column_left_cell_bottom {
 	height: 44%;
 }
 
+/* ===== AFFICHAGE DES JETONS SUR LE PLATEAU ===== */
+
+/* Jetons placés sur les cellules de mise */
 .chip{
     width: 21px;
 	height: 21px;
 	background-color:#fff;
-	border: 3px solid;
+	border: 3px solid; /* Couleur définie par les classes de couleur */
 	border-radius: 100%;
     position:absolute;
+	/* Reset des contraintes de taille pour un affichage précis */
 	min-width: unset;
 	min-height: unset;
 	max-width: unset;
 	max-height: unset;
 }
 
+/* Texte affiché sur les jetons du plateau */
 .chip_span{
 	position: relative;
 	display: block;
@@ -611,9 +570,12 @@ button:enabled {
 	color: #000;
 	font-weight: bold;
 	font-size: 11px;
-	top: 4px;
+	top: 4px; /* Centrage vertical */
 }
 
+/* ===== STRUCTURE DU PLATEAU DE NUMÉROS ===== */
+
+/* Conteneur principal du plateau de mise */
 .wheel_board_bet {
 	display: flex;
 	flex-direction: column;
@@ -622,6 +584,7 @@ button:enabled {
 	height: 100%;
 } 
 
+/* ZONE SPÉCIALE POUR LE ZÉRO */
 .zero_arc_wrapper {
 	position: relative;
 	width: 100%;
@@ -632,28 +595,31 @@ button:enabled {
 	justify-content: center;
 }
 
+/* Cellule du zéro avec forme d'arc */
 .zero_arc {
 	position: relative;
 	width: 100%;
 	height:100%;
-	background: #0a5;
-	border-top-left-radius: 120px 40px;
+	background: #0a5; /* Vert pour le zéro */
+	border-top-left-radius: 120px 40px; /* Forme d'arc caractéristique */
 	border-top-right-radius: 120px 40px;
 	border: 2px solid #fff;
-	border-bottom: none;
+	border-bottom: none; /* Pas de bordure en bas pour l'effet d'arc */
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
 	cursor: pointer;
 }
 
+/* Label du zéro */
 .zero_arc_label {
 	color: #fff;
 	font-size: 20px;
 	font-weight: bold;
-	letter-spacing: 2px;
+	letter-spacing: 2px; /* Espacement des lettres pour l'effet visuel */
 }
 
+/* GRILLE DES NUMÉROS */
 .numbers_board {
 	display: flex;
 	flex-direction: column;
@@ -661,6 +627,7 @@ button:enabled {
 	height: 100%;
 }
 
+/* Lignes de numéros */
 .number_row {
 	display: flex;
 	flex-direction: row;
@@ -668,15 +635,17 @@ button:enabled {
 	height: 100%;
 }
 
+/* CELLULES INDIVIDUELLES DES NUMÉROS */
 .number_block{
 	width: 100%;
 	height: 100%;
 	border: 1px solid;
 	text-align: center;
 	display: inline-block;
-	margin: 0 -0.2px;
+	margin: 0 -0.2px; /* Correction pour éviter les espaces entre cellules */
 }
 
+/* Contenu des cellules de numéros */
 .nbn{
 	transform: none;
 	display: flex;
@@ -688,17 +657,22 @@ button:enabled {
 	font-weight: bold;
 }
 
+/* Positionnement des jetons sur les numéros */
 .number_block .chip{
 	margin-left: 7px;
 	margin-top: -24px;
 }
 
+/* ===== ZONES DE MISE LATÉRALES ===== */
+
+/* Ligne des mises latérales (colonnes) */
 .roulette_table_side {
 	display: flex;
 	flex-direction: row;
 	height: 8%;
 }
 
+/* Cellules latérales génériques */
 .side_cell {
 	position: relative;
 	width: 100%;
@@ -714,6 +688,7 @@ button:enabled {
 	cursor: pointer;
 }
 
+/* COLONNE DROITE DU PLATEAU */
 .table-column-right{
 	width: 50%;
 	display: flex;
@@ -721,34 +696,42 @@ button:enabled {
 	height: 100%;
 }
 
+/* Cellules de la première section droite */
 .table-column-right-first-cell{
 	height: 33.3%;
 } 
 
+/* Conteneur des mises de la colonne droite */
 .table-column-right-bet{
 	display: flex;
 	flex-direction: row;
 	height: 100%;
 }
 
+/* Cellules de la seconde section droite */
 .table-column-right-second-cell{
 	height: 29%;
-
 }
 
+/* ===== COULEURS DES NUMÉROS SELON LES RÈGLES DE ROULETTE ===== */
+
+/* Numéros rouges */
 .redNum {
-	background: #E0080B !important;
+	background: #E0080B !important; /* Rouge roulette standard */
 	color: #fff !important;
 	width: 100%;
 }
 
+/* Numéros noirs */
 .blackNum {
-	background: #000 !important;
+	background: #000 !important; /* Noir roulette */
 	color: #fff !important;
 	width: 100%;
 }
 
-/* sinon les couleurs des jetons s'affichent en noirs */
+/* ===== COULEURS DES JETONS ===== */
+/* Ces classes définissent les couleurs des bordures des jetons */
+
 .gold{
 	border-color:gold;
 }
@@ -765,50 +748,61 @@ button:enabled {
 	border-color:blue;
 }
 
+/* ===== RESPONSIVE DESIGN POUR MOBILES ===== */
+
 @media (max-width: 700px) {
 
+	/* Ajustements globaux pour petits écrans */
 	html, body {
 		height: 100%;
 		width: 100%;
 	}
 
+	/* Passage en layout vertical */
 	#container{
 		flex-direction: column;
 		height: 100%;
 		width: 100%;		
 	}
 
+	/* Ajustements de la roue pour mobile */
 	.wheel {
 		height: 312px;
 		width: 312px;
 		min-width: unset;
 		min-height: unset;
 	}
+	
+	/* Plateau de numéros adaptatif */
 	.numbers_board {
 		min-width: unset;
 		max-width: unset;
 	}
+	
+	/* Numéros plus grands pour faciliter les interactions tactiles */
 	.number_block {
 		font-size: 20px;
 		min-height: unset;
 		max-height: unset;
 		height: auto;
-		
 	}
+	
+	/* Jetons adaptés au tactile */
 	.chip {
 		min-width: unset;
 		min-height: unset;
 		max-width: unset;
 		max-height: unset;
 	}
+	
+	/* Colonnes redimensionnées pour mobile */
 	.first-column {
 		width: 100%;
-		height: 100%;
 		margin-right: 0;
 		margin-left: 0;
 	}
+	
 	.second_column {
 		width: 75%;
-		height: 75%;
 	}	
 }
