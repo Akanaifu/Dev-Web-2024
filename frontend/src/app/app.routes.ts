@@ -7,9 +7,8 @@ import { isLoggedInGuard } from './guards/is-logged-in.guard';
 import { MachineASousComponent } from './pages/machine-a-sous/machine-a-sous.component';
 import { StatsComponent } from './pages/stats/stats.component';
 import { RouletteNetComponent } from './pages/roulette-net/roulette-net.component';
-
+import { SalonComponent } from './pages/salon/salon.component';
 import { EditCompteComponent } from './pages/edit-compte/edit-compte.component';
-
 import { BalanceComponent } from './pages/balance/balance.component';
 
 export const routes: Routes = [
@@ -25,10 +24,27 @@ export const routes: Routes = [
     component: MachineASousComponent,
     canActivate: [isLoggedInGuard],
   }, // page de la machine à sous
-
   {
-    //page de la roulette
+    // Salon générique (par défaut)
+    path: 'salon',
+    component: SalonComponent,
+    canActivate: [isLoggedInGuard],
+  },
+  {
+    // Salon avec type de jeu spécifique
+    path: 'salon/:gameType',
+    component: SalonComponent,
+    canActivate: [isLoggedInGuard],
+  },
+  {
+    // Redirection Roulette vers salon roulette
     path: 'Roulette',
+    redirectTo: '/salon/roulette',
+    pathMatch: 'full'
+  },
+  {
+    // Jeu de roulette avec ID de session
+    path: 'roulette-game/:sessionId',
     component: RouletteNetComponent,
     canActivate: [isLoggedInGuard],
   },

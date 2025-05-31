@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IRouletteWheelSection } from '../../interfaces/roulette-wheel.interface';
 import { IBettingBoardCell } from '../../interfaces/betting-board.interface';
 import { RouletteNetLogic } from './roulette-net-logic';
 import { HttpClient } from '@angular/common/http';
+import { TableauSalonComponent } from '../../component/tableau-salon/tableau-salon.component';
 
 /**
  * COMPOSANT PRINCIPAL DE LA ROULETTE EN LIGNE
@@ -27,11 +28,12 @@ import { HttpClient } from '@angular/common/http';
 @Component({
     selector: 'app-roulette-net',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TableauSalonComponent],
     templateUrl: './roulette-net.component.html',
     styleUrls: ['./roulette-net.component.css'],
 })
 export class RouletteNetComponent implements OnInit {
+    @ViewChild(TableauSalonComponent) tableauSalon!: TableauSalonComponent;
     
     // ===== DONNÉES D'AFFICHAGE POUR L'INTERFACE UTILISATEUR =====
     // Ces tableaux structurent l'interface utilisateur selon les règles de la roulette européenne
@@ -227,62 +229,70 @@ export class RouletteNetComponent implements OnInit {
     }
     
     /**
-     * LANCEMENT DE LA ROULETTE AVEC ANIMATION COMPLÈTE
+     * DÉCLENCHEMENT D'UN SPIN DE ROULETTE
      * 
-     * Méthode principale qui coordonne :
-     * 1. L'appel API pour obtenir le numéro gagnant
-     * 2. L'animation visuelle de la bille (5 secondes)
-     * 3. Le calcul des gains/pertes
-     * 4. L'affichage des résultats
-     * 5. La mise à jour de l'historique
+     * Cette méthode orchestre l'ensemble du processus de jeu :
+     * - Validation des conditions (utilisateur connecté, mises placées)
+     * - Appel de l'API pour obtenir le numéro gagnant
+     * - Animation visuelle de la roulette et de la bille
+     * - Calcul et affichage des gains/pertes
+     * - Nettoyage de l'état pour le prochain tour
      * 
-     * ANIMATION DE LA BILLE :
-     * - Durée : 5000ms (5 secondes)
-     * - Rotations : 5 tours complets + position finale
-     * - Utilise requestAnimationFrame pour une animation fluide
-     * - Calcul de l'angle final basé sur la position du numéro gagnant
+     * SÉCURITÉ ET VALIDATION :
+     * - Vérifie la connexion utilisateur
+     * - Vérifie qu'au moins une mise est placée
+     * - Empêche les spins multiples simultanés
      * 
-     * GESTION D'ÉTAT :
-     * - isSpinning = true pendant toute la durée
-     * - Bloque toutes les interactions utilisateur
-     * - Reset automatique à la fin
+     * ARCHITECTURE D'ANIMATION :
+     * La méthode utilise requestAnimationFrame pour une animation fluide à 60fps.
+     * L'animation calcule les rotations de la roue et de la bille de manière synchronisée.
      */
     async spin() {
-        // Sécurité : empêcher les spins multiples simultanés
-        if (this.isSpinning) return;
+        // 1. VALIDATIONS PRÉLIMINAIRES
+        
+        if (!this.currentUser) {
+            console.warn('❌ Tentative de spin sans utilisateur connecté');
+            return;
+        }
+        
+        if (this.bet.length === 0) {
+            console.warn('❌ Tentative de spin sans mise');
+            return;
+        }
+        
+        if (this.isSpinning) {
+            console.warn('❌ Spin déjà en cours');
+            return;
+        }
+        
+        // 2. GÉNÉRATION DE L'ID DE SESSION ET APPEL API
+        
+        console.log('🎰 Début du spin avec', this.bet.length, 'mise(s)');
         this.isSpinning = true;
-
+        this.resultMessage = null;
+        
+        // Générer un ID unique pour cette session de jeu
+        const gameSessionId = this.generateGameSessionId();
+        console.log('🎮 ID de session générée:', gameSessionId);
+        
         try {
-            // 1. APPEL API POUR OBTENIR LE NUMÉRO GAGNANT
+            // Appel de l'API pour obtenir le numéro gagnant
             const result = await this.game.spin();
+            console.log('🎯 Numéro tiré:', result.number, 'Couleur:', result.color);
             
-            // 2. CONFIGURATION DE L'ANIMATION DE LA BILLE
-            this.ballRotation = 0; // Position initiale
-            const numbers = this.game.getWheelNumbers();
-            const index = numbers.indexOf(result.number);
-            
-            // Calcul de l'angle final de la bille
-            const baseAngle = 360 - index * 9.73; // Position du numéro sur la roue
-            const extraTurns = 5 * 360; // 5 tours complets pour l'effet visuel
-            const targetBall = -baseAngle - extraTurns * 1.2; // Position finale avec effet
-            
-            // Paramètres d'animation
-            const duration = 5000; // 5 secondes
+            // Configuration de l'animation avec durée et rotations calculées
+            const duration = 3000; // 3 secondes d'animation
             const initialBall = this.ballRotation;
-            const start = performance.now();
             
-            /**
-             * FONCTION D'ANIMATION RÉCURSIVE
-             * 
-             * Gère le mouvement fluide de la bille avec :
-             * - Interpolation linéaire entre position initiale et finale
-             * - Utilisation de requestAnimationFrame pour 60fps
-             * - Calcul des gains à la fin de l'animation
-             * 
-             * @param now Timestamp actuel pour calculer le progrès
-             */
+            // Calcul des rotations finales pour un effet réaliste
+            // La bille fait plusieurs tours complets + position finale selon le numéro gagnant
+            const targetBall = initialBall - 1800 - (result.number * 9.73);  // Mouvement de la bille
+            
+            const startTime = performance.now();
+            
+            // 3. BOUCLE D'ANIMATION AVEC TRAITEMENT ASYNCHRONE DES RÉSULTATS
             const animate = async (now: number) => {
-                const elapsed = now - start;
+                const elapsed = now - startTime;
                 const progress = Math.min(elapsed / duration, 1); // Progrès de 0 à 1
                 
                 // Interpolation linéaire de la position de la bille
@@ -304,9 +314,9 @@ export class RouletteNetComponent implements OnInit {
                     }
                     
                     try {
-                        // 4. CALCUL DES GAINS/PERTES VIA L'API
+                        // 4. CALCUL DES GAINS/PERTES VIA L'API AVEC SESSION ID
                         // Cette approche garantit que le solde est mis à jour avant de permettre un nouveau spin
-                        const winResult = await this.game.win(result.number);
+                        const winResult = await this.game.win(result.number, gameSessionId);
                         
                         // 5. AFFICHAGE DES RÉSULTATS SELON LE TYPE DE RÉSULTAT
                         if (winResult.payout > 0) {
@@ -333,12 +343,23 @@ export class RouletteNetComponent implements OnInit {
                         // Garantit que le prochain pari utilisera le bon solde de référence
                         this.game.resetBettingState();
                         
+                        // 8. RAFRAÎCHISSEMENT DU TABLEAU DES MISES
+                        // Le tableau se met à jour pour afficher les nouvelles mises enregistrées
+                        try {
+                            if (this.tableauSalon) {
+                                console.log('🔄 Rafraîchissement du tableau des mises');
+                                this.tableauSalon.refresh();
+                            }
+                        } catch (refreshError) {
+                            console.warn('⚠️ Erreur lors du rafraîchissement du tableau:', refreshError);
+                        }
+                        
                     } catch (winError) {
                         console.error('❌ Erreur lors du calcul des gains:', winError);
                         this.resultMessage += ' - Erreur lors du calcul des gains';
                     }
                     
-                    // 8. RÉACTIVATION DES INTERACTIONS UTILISATEUR
+                    // 9. RÉACTIVATION DES INTERACTIONS UTILISATEUR
                     this.isSpinning = false;
                 }
             };
@@ -479,6 +500,15 @@ export class RouletteNetComponent implements OnInit {
     setBet(cell: IBettingBoardCell) {
         if (this.isSpinning) return; // Sécurité : pas de mise pendant le spin
         this.game.setBet(cell);
+    }
+
+    /**
+     * Génère un ID unique pour la session de jeu
+     */
+    private generateGameSessionId(): string {
+        const userId = this.currentUser?.user_id || 'unknown';
+        const timestamp = Date.now();
+        return `RO-${userId}-${timestamp}`;
     }
 }
 

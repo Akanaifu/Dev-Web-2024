@@ -1,0 +1,54 @@
+<div class="game-selection" [ngClass]="gameConfig.theme" *ngIf="!showSessionList">
+  <div class="header">
+    <h1>{{ gameConfig.icon }} {{ gameConfig.name }}</h1>
+    <button class="back-home-btn" (click)="backToHome()">← Accueil</button>
+  </div>
+  
+  <div class="game-cards">
+    <div class="game-card" (click)="createGame()" [class.loading]="isCreatingSession">
+      <div class="card-icon">🎯</div>
+      <h2>{{ isCreatingSession ? 'Création en cours...' : 'Créer une partie' }}</h2>
+      <p *ngIf="gameType === 'roulette'">Nouvelle table de roulette européenne</p>
+      <p *ngIf="gameType === 'machine'">Nouvelle machine à sous</p>
+      <p *ngIf="gameType === 'general'">Nouveau salon de jeu</p>
+    </div>
+    
+    <div class="game-card" (click)="showJoinOptions()">
+      <div class="card-icon">🎲</div>
+      <h2>Rejoindre une partie</h2>
+      <p *ngIf="gameType === 'roulette'">Tables existantes disponibles</p>
+      <p *ngIf="gameType === 'machine'">Machines disponibles</p>
+      <p *ngIf="gameType === 'general'">Parties existantes</p>
+    </div>
+  </div>
+</div>
+
+<div class="session-list" [ngClass]="gameConfig.theme" *ngIf="showSessionList">
+  <div class="header">
+    <h1>{{ gameConfig.icon }} Sessions Disponibles</h1>
+    <button class="back-button" (click)="backToMenu()">← Retour au salon</button>
+  </div>
+  
+  <div class="sessions-container">
+    <div *ngIf="availableSessions.length === 0" class="no-sessions">
+      <div class="empty-icon">{{ gameConfig.icon }}</div>
+      <p>Aucune session de {{ gameConfig.name.toLowerCase() }} disponible pour le moment.</p>
+      <button class="create-first-btn" (click)="backToMenu()">Créer la première session</button>
+    </div>
+    
+    <div *ngFor="let session of availableSessions" class="session-card" [ngClass]="gameConfig.theme + '-session'">
+      <div class="session-icon">{{ gameConfig.icon }}</div>
+      <div class="session-info">
+        <h3>{{ session.name }}</h3>
+        <div class="session-details">
+          <span class="session-id">ID: {{ session.game_session_id }}</span>
+          <span class="session-limits">Mises: {{ session.bet_min }}€ - {{ session.bet_max }}€</span>
+          <span class="session-time">{{ session.timestamp | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+      <button class="join-button" [ngClass]="gameConfig.theme + '-join'" (click)="joinGame(session.game_session_id)">
+        🎮 Rejoindre
+      </button>
+    </div>
+  </div>
+</div>

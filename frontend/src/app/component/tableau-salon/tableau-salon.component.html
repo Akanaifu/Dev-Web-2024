@@ -1,0 +1,75 @@
+<div class="tableau-salon-container">
+  <div class="header">
+    <h2>📊 Tableau des Mises</h2>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement des mises en cours...</p>
+  </div>
+
+  <!-- Gestion d'erreur -->
+  <div *ngIf="error && !loading" class="error">
+    <p>❌ {{ error }}</p>
+    <button class="retry-btn" (click)="refresh()">Réessayer</button>
+  </div>
+
+  <!-- Tableau des données -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <div *ngIf="bets.length === 0" class="no-data">
+      <p>🎰 Aucune mise trouvée</p>
+    </div>
+
+    <table *ngIf="bets.length > 0" class="bets-table">
+      <thead>
+        <tr>
+          <th>👤 Pseudo</th>
+          <th>🎮 Session</th>
+          <th>💰 Montant</th>
+          <th>📊 Statut</th>
+          <th>🎯 Combinaison</th>
+          <th>📅 Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let bet of bets; trackBy: trackByBetId" 
+            [class]="getStatusClass(bet.bet_status)">
+          <td class="pseudo-cell">
+            <span class="user-avatar">👤</span>
+            {{ bet.pseudo || 'Anonyme' }}
+          </td>
+          <td class="session-cell">
+            <span class="session-id">{{ bet.game_session_id }}</span>
+          </td>
+          <td class="amount-cell">
+            <span class="amount">{{ formatAmount(bet.amount) }}</span>
+          </td>
+          <td class="status-cell">
+            <span class="status-badge" [class]="getStatusClass(bet.bet_status)">
+              {{ bet.bet_status }}
+            </span>
+          </td>
+          <td class="combination-cell">
+            <span class="combination">{{ bet.combinaison || 'N/A' }}</span>
+          </td>
+          <td class="date-cell">
+            <span class="date">{{ formatDate(bet.created_at) }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Statistiques -->
+    <div class="stats" *ngIf="bets.length > 0">
+      <div class="stat-item">
+        <span class="stat-label">Total des mises:</span>
+        <span class="stat-value">{{ bets.length }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Montant total:</span>
+        <span class="stat-value">{{ formatAmount(getTotalAmount()) }}</span>
+      </div>
+    </div>
+  </div>
+</div>

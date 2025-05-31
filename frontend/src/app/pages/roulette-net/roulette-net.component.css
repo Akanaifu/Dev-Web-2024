@@ -64,7 +64,7 @@ html, body {
 
 /* Conteneur de la colonne gauche : roue + contrôles */
 .first-column {
-	width: 310px;
+	width: 270px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -472,7 +472,7 @@ button:enabled {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
-	width: 35%;
+	width: 50%;
 }
 
 /* Espaces de mise spéciaux */
@@ -805,4 +805,27 @@ button:enabled {
 	.second_column {
 		width: 75%;
 	}	
+}
+
+/* ===== SECTION TABLEAU DES MISES ===== */
+
+.tableau-section {
+	width: 75%;
+	margin-left: 2%;
+	padding: 2%;
+	background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+	border-radius: 15px;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Responsive pour la section tableau */
+@media (max-width: 700px) {
+	.tableau-section {
+		margin-top: 1%;
+		padding: 15px;
+		border-radius: 10px;
+	}
+	
 }

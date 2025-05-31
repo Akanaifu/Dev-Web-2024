@@ -355,27 +355,36 @@ export class RouletteNetLogic {
   }
 
   /**
-   * CALCUL DES GAINS/PERTES D'UN SPIN
+   * CALCUL DES GAINS ET SYNCHRONISATION AVEC LE BACKEND
    * 
-   * Méthode centrale qui coordonne avec le backend pour calculer les résultats d'un spin.
-   * Implémente l'architecture anti-double-débit en envoyant le solde original non modifié.
+   * Cette méthode centralise le calcul des gains après un spin de roulette.
+   * Elle utilise l'architecture anti-double-débit pour maintenir la cohérence du solde.
    * 
-   * LOGIQUE ANTI-DOUBLE-DÉBIT DÉTAILLÉE :
-   * 1. Frontend : débite visuellement currentUser.solde (UX immédiate)
-   * 2. Backend : reçoit _originalSolde (non débité) + mises
-   * 3. Backend : calcule soldeOriginal + gains - pertes = nouveau solde
-   * 4. Frontend : synchronise les deux valeurs avec le résultat backend
+   * ARCHITECTURE ANTI-DOUBLE-DÉBIT :
+   * Le problème : Le solde a déjà été débité visuellement dans setBet() pour l'UX immédiate.
+   * La solution : Envoie _originalSolde (non modifié) au backend pour les calculs.
+   * Résultat : Pas de double débit, calculs justes, interface réactive.
    * 
-   * AVANTAGES :
+   * FLUX DE DONNÉES :
+   * 1. Envoi du solde original (non débité) au backend
+   * 2. Backend calcule gains/pertes sur le solde réel
+   * 3. Backend retourne le nouveau solde après calculs
+   * 4. Frontend synchronise les deux valeurs de solde
+   * 
+   * AVANTAGES DE CETTE APPROCHE :
+   * - UX immédiate (débit visuel instantané)
+   * - Sécurité maximale (calculs serveur)
+   * - Pas de désynchronisation possible
    * - Évite le double débit du solde
    * - Calculs centralisés et sécurisés côté serveur
    * - Synchronisation garantie avec la base de données
    * - Gestion d'erreur robuste avec rollback automatique
    * 
    * @param winningSpin Numéro gagnant du spin (0-36)
+   * @param gameSessionId ID de la session de jeu pour traçabilité
    * @returns Promise avec winValue, payout, newsolde, betTotal
    */
-  async win(winningSpin: number): Promise<{ winValue: number; payout: number; newsolde: number; betTotal: number }> {
+  async win(winningSpin: number, gameSessionId?: string): Promise<{ winValue: number; payout: number; newsolde: number; betTotal: number }> {
     if (!this.currentUser) {
       throw new Error('Utilisateur non connecté');
     }
@@ -384,6 +393,7 @@ export class RouletteNetLogic {
       console.log('💰 Calcul des gains pour le numéro:', winningSpin);
       console.log('📊 Solde original envoyé au backend:', this._originalSolde);
       console.log('🎯 Nombre de mises à traiter:', this.bet.length);
+      console.log('🎮 Session de jeu:', gameSessionId);
       
       const response = await firstValueFrom(this.http.post<{ 
         winValue: number; 
@@ -396,7 +406,8 @@ export class RouletteNetLogic {
           winningSpin, 
           bets: this.bet,
           solde: this._originalSolde,  // CRUCIAL : solde réel non débité
-          userId: this.currentUser.user_id
+          userId: this.currentUser.user_id,
+          gameSessionId: gameSessionId || `RO-${Date.now()}-${this.currentUser.user_id}`
         }
       ));
       

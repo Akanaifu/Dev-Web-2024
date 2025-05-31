@@ -147,7 +147,7 @@ router.post('/spin', (req, res) => {
  * Cette route reçoit les mises du frontend, vérifie la cohérence du solde et calcule les gains.
  */
 router.post('/win', async (req, res) => {
-    const { winningSpin, bets, solde } = req.body;
+    const { winningSpin, bets, solde, gameSessionId } = req.body;
     const userId = req.body.userId;
     
     // Logs d'entrée pour tracer chaque demande de calcul de gains
@@ -197,6 +197,47 @@ router.post('/win', async (req, res) => {
     }
     
     try {
+        // ===== NOUVELLE LOGIQUE : ENREGISTREMENT DES MISES =====
+        
+        // Enregistrement de toutes les mises dans la base de données
+        if (bets.length > 0) {
+            console.log(`[ROULETTE WIN] 📝 Enregistrement de ${bets.length} mises en base de données`);
+            
+            const connection = await db.getConnection();
+            try {
+                await connection.beginTransaction();
+                
+                for (const bet of bets) {
+                    // Déterminer le statut de la mise (gagnante ou perdante)
+                    const isWin = await determineBetResult(winningSpin, bet);
+                    const betStatus = isWin ? 'won' : 'lost';
+                    
+                    // Formater la combinaison pour affichage
+                    const combinaison = bet.label || bet.numbers;
+                    
+                    // Utiliser gameSessionId du frontend ou générer un ID par défaut
+                    const sessionId = gameSessionId || `RO-${Date.now()}`;
+                    
+                    await connection.query(`
+                        INSERT INTO bet (user_id, game_session_id, amount, bet_status, combinaison, created_at)
+                        VALUES (?, ?, ?, ?, ?, NOW())
+                    `, [userId, sessionId, bet.amt, betStatus, combinaison]);
+                    
+                    console.log(`[ROULETTE WIN] ✅ Mise enregistrée: ${combinaison} - ${bet.amt}€ - ${betStatus}`);
+                }
+                
+                await connection.commit();
+                console.log(`[ROULETTE WIN] 🎯 Toutes les mises ont été enregistrées avec succès`);
+                
+            } catch (betError) {
+                await connection.rollback();
+                console.error(`[ROULETTE WIN] ❌ Erreur lors de l'enregistrement des mises:`, betError);
+                // Ne pas bloquer le jeu pour une erreur d'enregistrement
+            } finally {
+                connection.release();
+            }
+        }
+        
         // Appel de la fonction de calcul avec le solde réel de la base de données
         // Cette étape centralise toute la logique de jeu et retourne les résultats structurés
         // console.log(`[ROULETTE WIN] 📤 Envoi du solde à la fonction win(): ${soldeReel}`);
@@ -437,5 +478,43 @@ async function updateStats(userId, payout) {
     }
 }
 
+/**
+ * Fonction auxiliaire pour déterminer si une mise est gagnante
+ */
+async function determineBetResult(winningSpin, bet) {
+    const numArray = bet.numbers.split(',').map(Number);
+    const winColor = getNumberColor(winningSpin);
+    const isEven = winningSpin !== 0 && winningSpin % 2 === 0;
+    
+    // Définition des colonnes pour les paris '2 à 1' selon la disposition du plateau
+    const firstColumn = [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34];
+    const secondColumn = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35];
+    const thirdColumn = [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36];
+    
+    // Vérification directe si le numéro gagnant fait partie des numéros misés
+    if (numArray.includes(winningSpin)) {
+        return true;
+    } 
+    // Évaluation des paris spéciaux basés sur les propriétés du numéro
+    else if (bet.label) {
+        if (bet.label === 'RED' && winColor === 'red') return true;
+        if (bet.label === 'BLACK' && winColor === 'black') return true;
+        if (bet.label === 'EVEN' && isEven) return true;
+        if (bet.label === 'ODD' && !isEven && winningSpin !== 0) return true;
+        if (bet.label === '1 à 18' && winningSpin >= 1 && winningSpin <= 18) return true;
+        if (bet.label === '19 à 36' && winningSpin >= 19 && winningSpin <= 36) return true;
+        if (bet.label === '1 à 12' && winningSpin >= 1 && winningSpin <= 12) return true;
+        if (bet.label === '13 à 24' && winningSpin >= 13 && winningSpin <= 24) return true;
+        if (bet.label === '25 à 36' && winningSpin >= 25 && winningSpin <= 36) return true;
+        // Traitement spécial des colonnes
+        if (bet.label === '2 à 1' && bet.type === 'outside_column') {
+            if (firstColumn.includes(winningSpin) && numArray.every(n => firstColumn.includes(n))) return true;
+            if (secondColumn.includes(winningSpin) && numArray.every(n => secondColumn.includes(n))) return true;
+            if (thirdColumn.includes(winningSpin) && numArray.every(n => thirdColumn.includes(n))) return true;
+        }
+    }
+    
+    return false;
+}
 
 module.exports = router;
