@@ -14,18 +14,18 @@ const socketConfig = require("./config/socketConfig");
 
 // Routes
 const sessionRoutes = require("./routes/sessions");
-
 const userRoutes = require("./routes/users");
-
 const statsRoutes = require("./routes/stats");
-
 const betRoutes = require("./routes/bets");
 const newGameRoutes = require("./routes/new_game");
 const registerRoutes = require("./routes/register");
 const playerRoutes = require("./routes/get_id");
 const editCompteRoutes = require("./routes/edit-compte");
+// const rouletteOddsRoutes = require("./routes/roulette-net-odds");
+const uploadAvatarRouter = require('./routes/upload-avatar');
 
-const soldeRoutes = require("./routes/update_solde");
+
+
 
 //Roulette
 const rouletteRoutes = require("./routes/roulette-net");
@@ -85,6 +85,8 @@ app.use("/api/new-game", newGameRoutes);
 app.use("/api/get_id", playerRoutes);
 app.use("/api/edit-compte", editCompteRoutes);
 app.use("/api/roulette", rouletteRoutes);
+// app.use("/api/roulette-odds", rouletteOddsRoutes.router);
+app.use('/avatar', uploadAvatarRouter);
 app.use("/api/roulette-odds", rouletteNetPrepareBettingBoard.router);
 
 // Route pour servir la page HTML
@@ -97,6 +99,9 @@ app.get("/inject-data", (req, res) => {
     }
   });
 });
+
+// Sert le dossier avatar en statique
+app.use('/avatar', express.static(path.join(__dirname, 'avatar')));
 
 // Démarrer le serveur
 server.listen(port, () => {

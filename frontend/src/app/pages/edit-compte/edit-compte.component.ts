@@ -8,14 +8,16 @@ import {
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AvatarUploadService } from '../../services/avatar-upload.service';
 
 @Component({
   selector: 'app-edit-compte',
-  standalone: true, // <-- Ajouter cette ligne
   imports: [ReactiveFormsModule, CommonModule],
+  standalone: true,
   templateUrl: './edit-compte.component.html',
   styleUrl: './edit-compte.component.css',
 })
+
 export class EditCompteComponent implements OnInit {
   editForm: FormGroup;
   playerInfo: {
@@ -25,12 +27,18 @@ export class EditCompteComponent implements OnInit {
   } = {
     user_id: 0,
   };
+  selectedFile: File | null = null;
+  avatarPreviewUrl: string = 'assets/default.png';
+
+  // Ajoute une propriété pour l'URL de l'avatar utilisateur
+  avatarUrl: string = 'assets/default.png';
+
   constructor(
     private fb: FormBuilder,
-    http: HttpClient,
-    private router: Router
+    private http: HttpClient,
+    private router: Router,
+    private avatarUploadService: AvatarUploadService // Ajoute ceci
   ) {
-    this.http = http;
     this.editForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]], // Nom d'utilisateur
       email: ['', [Validators.required, Validators.email]], // Email
@@ -38,11 +46,21 @@ export class EditCompteComponent implements OnInit {
       confirmPassword: ['', [Validators.required, Validators.minLength(6)]], // Ajout de confirmPassword
     });
   }
-  private http: HttpClient;
 
   ngOnInit(): void {
     console.log('Initialisation du composant EditCompte');
-    this.getPlayerInfo(); // Fetch user ID on component initialization
+    this.getPlayerInfo();
+    this.loadAvatar(); // Charge l'avatar au démarrage
+  }
+
+  // Nouvelle méthode pour charger l'avatar depuis le backend
+  loadAvatar(): void {
+    if (!this.playerInfo.user_id) {
+      this.avatarUrl = 'assets/default.png';
+      return;
+    }
+    // Ajoute un timestamp pour forcer le rafraîchissement du cache navigateur
+    this.avatarUrl = `http://localhost:3000/avatar/${this.playerInfo.user_id}?t=${Date.now()}`;
   }
 
   onSubmit() {
@@ -94,6 +112,40 @@ export class EditCompteComponent implements OnInit {
             'Erreur lors de la récupération des informations :',
             err
           );
+        },
+      });
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.avatarPreviewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.selectedFile = null;
+      this.avatarPreviewUrl = 'assets/default.png';
+    }
+  }
+
+  uploadAvatar(): void {
+    if (!this.selectedFile || !this.playerInfo.user_id) {
+      console.error('Aucun fichier sélectionné ou user_id manquant');
+      return;
+    }
+    this.avatarUploadService
+      .uploadAvatar(this.selectedFile, this.playerInfo.user_id)
+      .subscribe({
+        next: (res) => {
+          console.log('Avatar uploadé avec succès', res);
+          this.selectedFile = null;
+          this.loadAvatar(); // Recharge l'avatar après upload
+        },
+        error: (err) => {
+          console.error('Erreur lors de l\'upload de l\'avatar', err);
         },
       });
   }
