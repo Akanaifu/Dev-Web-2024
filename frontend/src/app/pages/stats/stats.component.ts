@@ -124,7 +124,6 @@ export class StatsComponent implements AfterViewInit, OnInit {
   }
 
   get totalMise(): number {
-    console.log(this.createdAt); // Log the statsData to check its structure
     return this.statsData.reduce((total, stat) => total + (stat.amount || 0), 0); // Sum up the amount values from statsData
   }
 
