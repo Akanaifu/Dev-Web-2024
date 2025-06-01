@@ -11,7 +11,7 @@ export class NewGameService {
   constructor(private http: HttpClient) {}
 
   addNewGame(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/games`, data);
+    return this.http.post(`${this.baseUrl}/new-game/add`, data);
   }
 
   getPlayerInfo(): Observable<{
