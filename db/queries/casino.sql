@@ -8,6 +8,7 @@ CREATE TABLE `User` (
   `email` VARCHAR(50) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   `avatar` VARCHAR(255) NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`)
 ) COLLATE='utf8mb4_uca1400_ai_ci';
 

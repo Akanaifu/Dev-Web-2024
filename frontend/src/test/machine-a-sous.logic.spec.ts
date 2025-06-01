@@ -1,4 +1,5 @@
 import { MachineASousLogic } from '../app/pages/machine-a-sous/machine-a-sous.logic';
+
 jest.mock('@angular/fire/database', () => {
   return {
     get: jest.fn(),
@@ -13,6 +14,7 @@ describe('MachineASousLogic', () => {
   let logic: MachineASousLogic;
   let dbMock: any;
   let newGameServiceMock: any;
+  let userServiceMock: any;
 
   beforeEach(() => {
     dbMock = {};
@@ -20,7 +22,10 @@ describe('MachineASousLogic', () => {
       addNewGame: jest.fn().mockReturnValue({ subscribe: jest.fn() }),
       getPlayerInfo: jest.fn().mockReturnValue({ subscribe: jest.fn() }),
     };
-    logic = new MachineASousLogic(dbMock, newGameServiceMock);
+    userServiceMock = {
+      balanceChanged: { next: jest.fn() },
+    };
+    logic = new MachineASousLogic(dbMock, newGameServiceMock, userServiceMock);
   });
 
   // Use variables to store spies
@@ -208,7 +213,11 @@ describe('MachineASousLogic', () => {
       dbMock = {
         ...dbMock,
       };
-      logic = new MachineASousLogic(dbMock, newGameServiceMock);
+      logic = new MachineASousLogic(
+        dbMock,
+        newGameServiceMock,
+        userServiceMock
+      );
       jest.spyOn(logic, 'getCurrentUserId').mockImplementation(() => {});
       jest
         .spyOn(MachineASousLogic.prototype as any, 'sortAndFilterParts')

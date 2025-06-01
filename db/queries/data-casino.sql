@@ -36,7 +36,6 @@ INSERT INTO `Bets` (`bet_id`, `user_id`, `game_session_id`, `amount`, `bet_statu
 (8,3, 'RO02', 10.00, 'win', NULL),       -- Deuxième session de Roulette sans combinaison
 (9,6, 'RO06', 10.00, 'win', NULL); 
 
-
 -- Insérer des statistiques dans la table Stats
 INSERT INTO `Stats` (`stat_id`,`user_id`, `num_games`, `num_wins`, `timestamp`) VALUES
 (1,1, 1, 1, '2025-04-20 10:00:00'),

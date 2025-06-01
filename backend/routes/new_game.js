@@ -18,9 +18,7 @@ function calculerGain(rouleaux, mise, status = "win") {
   if ((r1 + 1 === r2 && r2 + 1 === r3) || (r1 - 1 === r2 && r2 - 1 === r3)) {
     multiplicateur = 5;
     presence_event = true;
-  }
-  // sandwich => celui du milieu est différent
-  else if (r1 === r3 && r2 !== r1) {
+  } else if (r1 === r3 && r1 !== r2) {
     multiplicateur = 2;
     presence_event = true;
   }

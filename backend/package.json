@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node websocket.js",
     "dev": "nodemon websocket.js",
-    "test": "jest"
+    "test": "jest",
+    "test:gains": "jest tests/gain.test.js"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +27,7 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.1"
