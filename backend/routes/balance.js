@@ -26,4 +26,47 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Ajouter du solde à un utilisateur
+router.put("/add", async (req, res) => {
+  const { userId, value } = req.body;
+  if (!userId || typeof value !== "number") {
+    return res.status(400).json({ error: "Paramètres invalides" });
+  }
+  try {
+    // Met à jour le solde
+    await db.query("UPDATE users SET solde = solde + ? WHERE id = ?", [value, userId]);
+    // Récupère le nouveau solde
+    const [rows] = await db.query("SELECT solde FROM users WHERE id = ?", [userId]);
+    res.json({ balance: rows[0]?.solde });
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lors de l'ajout de solde." });
+  }
+});
+
+// Retirer du solde à un utilisateur
+router.put("/subtract", async (req, res) => {
+  const { userId, value } = req.body;
+  if (!userId || typeof value !== "number") {
+    return res.status(400).json({ error: "Paramètres invalides" });
+  }
+  try {
+    // Vérifie le solde actuel
+    const [rows] = await db.query("SELECT solde FROM users WHERE id = ?", [userId]);
+    if (!rows.length) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+    const currentBalance = rows[0].solde;
+    if (currentBalance < value) {
+      return res.status(400).json({ error: "Solde insuffisant" });
+    }
+    // Met à jour le solde
+    await db.query("UPDATE users SET solde = solde - ? WHERE id = ?", [value, userId]);
+    // Récupère le nouveau solde
+    const [updatedRows] = await db.query("SELECT solde FROM users WHERE id = ?", [userId]);
+    res.json({ balance: updatedRows[0]?.solde });
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lors du retrait de solde." });
+  }
+});
+
 module.exports = router;
