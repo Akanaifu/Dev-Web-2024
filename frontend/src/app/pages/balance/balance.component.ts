@@ -76,6 +76,7 @@ export class BalanceComponent implements OnInit {
           if (typeof res.balance === 'number') {
             this.maxAmount = res.balance;
             this.amount = 0;
+            this.userService.balanceChanged.next(res.balance); // <-- Ajouté
           }
         },
         error: (err) => {
@@ -112,6 +113,7 @@ export class BalanceComponent implements OnInit {
           if (typeof res.balance === 'number') {
             this.maxAmount = res.balance;
             this.amount = 0;
+            this.userService.balanceChanged.next(res.balance); // <-- Ajouté
           }
         },
         error: (err) => {
