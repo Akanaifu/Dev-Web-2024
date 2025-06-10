@@ -152,7 +152,7 @@ router.put("/balance/subtract", async (req, res) => {
 
   try {
     // Récupérer le solde actuel
-    const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [
+    const [rows] = await db.query("SELECT solde FROM User WHERE user_id = ?", [
       userId,
     ]);
     if (rows.length === 0) {
