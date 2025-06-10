@@ -4,6 +4,7 @@ import { IUser } from '../../interfaces/users.interface';
 import { IRouletteResult } from '../../interfaces/Roulette-Net-Resultat.interface';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environments';
 
 /**
  * SERVICE DE LOGIQUE MÉTIER POUR LE JEU DE ROULETTE EN LIGNE
@@ -33,7 +34,7 @@ import { firstValueFrom } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class RouletteNetLogic {
   private http = inject(HttpClient);
-  private BASE_URL = '/api';
+  private BASE_URL = environment.production ? '/api' : 'http://localhost:3000';
   
   // ===== PROPRIÉTÉS PRIVÉES ENCAPSULÉES =====
   // L'encapsulation permet un contrôle strict de l'état et une validation automatique
@@ -334,7 +335,7 @@ export class RouletteNetLogic {
         
         console.log('🎰 Lancement de la roulette pour l\'utilisateur:', userId);
         
-        const response = await fetch('/api/roulette/spin', {
+        const response = await fetch(`${this.BASE_URL}/api/roulette/spin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId })
