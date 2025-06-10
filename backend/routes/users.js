@@ -56,7 +56,7 @@ router.put("/:id", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
     const [result] = await db.query(
-      "UPDATE user SET nom = ?, email = ? WHERE user_id = ?",
+      "UPDATE User SET nom = ?, email = ? WHERE user_id = ?",
       [nom, email, userId]
     );
     if (result.affectedRows === 0) {
