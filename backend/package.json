@@ -15,6 +15,7 @@
   "type": "commonjs",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "clamscan": "^2.4.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -24,6 +25,7 @@
     "moment": "^2.30.1",
     "multer": "^2.0.0",
     "mysql2": "^3.14.1",
+    "sharp": "^0.34.2",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
