@@ -60,7 +60,7 @@ export class EditCompteComponent implements OnInit {
       return;
     }
     // Ajoute un timestamp pour forcer le rafraîchissement du cache navigateur
-    this.avatarUrl = `http://localhost:3000/avatar/${this.playerInfo.user_id}?t=${Date.now()}`;
+    this.avatarUrl = `/api/avatar/${this.playerInfo.user_id}?t=${Date.now()}`;
   }
 
   onSubmit() {

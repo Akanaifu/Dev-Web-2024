@@ -285,7 +285,7 @@ describe('🎰 RouletteNetLogic - Jest pur', () => {
       const result = await service.calculateWin(7);
 
       expect(result).toEqual(mockWinResult);
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/roulette/calculate-win', {
+      expect(global.fetch).toHaveBeenCalledWith('/api/roulette/calculate-win', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
