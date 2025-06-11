@@ -65,18 +65,16 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 // Routes de l'API
-app.use("/sessions", sessionRoutes);
-app.use("/register", registerRoutes);
-app.use("/users", userRoutes);
-app.use("/stats", statsRoutes);
-app.use("/bets", betRoutes);
-app.use("/new-game", newGameRoutes);
-app.use("/get_id", playerRoutes);
-app.use("/edit-compte", editCompteRoutes);
-
+app.use("/api/sessions", sessionRoutes);
+app.use("/api/register", registerRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/stats", statsRoutes);
+app.use("/api/bets", betRoutes);
+app.use("/api/new-game", newGameRoutes);
+app.use("/api/get_id", playerRoutes);
+app.use("/api/edit-compte", editCompteRoutes);
 app.use("/api/roulette", rouletteRoutes);
-// app.use("/api/roulette-odds", rouletteOddsRoutes.router);
-app.use('/avatar', uploadAvatarRouter);
+app.use('/api/avatar', uploadAvatarRouter);
 app.use("/api/roulette-odds", rouletteNetPrepareBettingBoard.router);
 
 // Route pour servir la page HTML
@@ -91,7 +89,7 @@ app.get("/inject-data", (req, res) => {
 });
 
 // Sert le dossier avatar en statique
-app.use('/avatar', express.static(path.join(__dirname, 'avatar')));
+app.use('/api/avatar', express.static(path.join(__dirname, 'avatar')));
 
 // Démarrer le serveur
 server.listen(3000, () => {

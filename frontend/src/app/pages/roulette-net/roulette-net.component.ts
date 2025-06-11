@@ -4,6 +4,7 @@ import { IRouletteWheelSection } from '../../interfaces/roulette-wheel.interface
 import { IBettingBoardCell } from '../../interfaces/betting-board.interface';
 import { RouletteNetLogic } from './roulette-net-logic';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environments';
 
 /**
  * COMPOSANT PRINCIPAL DE LA ROULETTE EN LIGNE
@@ -101,7 +102,7 @@ export class RouletteNetComponent implements OnInit {
     topLabels = ['1 à 18', '19 à 36'];
 
     /** URL de base pour les appels API backend */
-    private BASE_URL = 'http://localhost:3000';
+    private BASE_URL = environment.production ? '/api' : 'http://localhost:3000/api';
 
     /**
      * CONSTRUCTEUR
@@ -170,7 +171,7 @@ export class RouletteNetComponent implements OnInit {
      * - Les erreurs sont loggées pour le débogage
      */
     loadBettingBoard() {
-        this.http.get<any>(`${this.BASE_URL}/api/roulette-odds/betting-board`).subscribe({
+        this.http.get<any>(`${this.BASE_URL}/roulette-odds/betting-board`).subscribe({
             next: (data) => {
                 // Attribution des données reçues aux propriétés du composant
                 this.outsideBets = data.outsideBets;
