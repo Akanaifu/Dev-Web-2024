@@ -159,7 +159,7 @@ router.post('/win', async (req, res) => {
     let soldeReel = null;
     if (userId) {
         try {
-            const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+            const [rows] = await db.query("SELECT solde FROM User WHERE user_id = ?", [userId]);
             if (rows.length > 0) {
                 soldeReel = rows[0].solde;
                 // console.log(`[ROULETTE WIN] 💰 Solde réel en base de données: ${soldeReel}`);
@@ -217,7 +217,7 @@ router.post('/win', async (req, res) => {
                 // console.log(`[ROULETTE WIN] 🔄 Transaction démarrée`);
                 
                 const updateResult = await connection.query(
-                    "UPDATE user SET solde = ? WHERE user_id = ?",
+                    "UPDATE User SET solde = ? WHERE user_id = ?",
                     [result.newsolde, userId]
                 );
                 
@@ -231,7 +231,7 @@ router.post('/win', async (req, res) => {
                 // console.log(`[ROULETTE WIN] ✅ Solde mis à jour avec succès: ${soldeReel} → ${result.newsolde}`);
                 
                 // Vérification avec la MÊME connexion après COMMIT
-                const [verificationRows] = await connection.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+                const [verificationRows] = await connection.query("SELECT solde FROM User WHERE user_id = ?", [userId]);
                 if (verificationRows.length > 0) {
                     const soldeLuApresUpdate = verificationRows[0].solde;
                     // console.log(`[ROULETTE WIN] 🔍 Vérification avec même connexion: ${soldeLuApresUpdate}`);
@@ -251,7 +251,7 @@ router.post('/win', async (req, res) => {
             }
             
             // Vérification supplémentaire avec une NOUVELLE connexion
-            const [verificationRows2] = await db.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+            const [verificationRows2] = await db.query("SELECT solde FROM User WHERE user_id = ?", [userId]);
             if (verificationRows2.length > 0) {
                 const soldeLuApresUpdate2 = verificationRows2[0].solde;
                 // Ce console.log() sert au fichier test
@@ -311,7 +311,7 @@ router.post('/test-update', async (req, res) => {
     
     try {
         // 1. Lecture du solde actuel
-        const [beforeRows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+        const [beforeRows] = await db.query("SELECT solde FROM User WHERE user_id = ?", [userId]);
         const soldeBefore = beforeRows.length > 0 ? beforeRows[0].solde : null;
         // console.log(`[TEST UPDATE] 📖 Solde avant mise à jour: ${soldeBefore}`);
         
@@ -323,7 +323,7 @@ router.post('/test-update', async (req, res) => {
             
             // 3. UPDATE
             const [updateResult] = await connection.query(
-                "UPDATE user SET solde = ? WHERE user_id = ?",
+                "UPDATE User SET solde = ? WHERE user_id = ?",
                 [newSolde, userId]
             );
             
@@ -335,7 +335,7 @@ router.post('/test-update', async (req, res) => {
             // console.log(`[TEST UPDATE] ✅ Transaction commitée`);
             
             // 5. Vérification avec même connexion
-            const [sameConnRows] = await connection.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+            const [sameConnRows] = await connection.query("SELECT solde FROM User WHERE user_id = ?", [userId]);
             const soldeSameConn = sameConnRows.length > 0 ? sameConnRows[0].solde : null;
             // console.log(`[TEST UPDATE] 🔍 Solde avec même connexion: ${soldeSameConn}`);
             
@@ -343,7 +343,7 @@ router.post('/test-update', async (req, res) => {
             await new Promise(resolve => setTimeout(resolve, 100));
             
             // 7. Vérification avec nouvelle connexion après délai
-            const [newConnRows] = await connection.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+            const [newConnRows] = await connection.query("SELECT solde FROM User WHERE user_id = ?", [userId]);
             const soldeNewConn = newConnRows.length > 0 ? newConnRows[0].solde : null;
             // console.log(`[TEST UPDATE] 🔍 Solde avec même connexion après délai: ${soldeNewConn}`);
             
@@ -352,7 +352,7 @@ router.post('/test-update', async (req, res) => {
         }
         
         // 8. Vérification finale avec pool
-        const [finalRows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [userId]);
+        const [finalRows] = await db.query("SELECT solde FROM User WHERE user_id = ?", [userId]);
         const soldeFinal = finalRows.length > 0 ? finalRows[0].solde : null;
         // console.log(`[TEST UPDATE] 🔍 Solde final avec pool: ${soldeFinal}`);
         
