@@ -171,7 +171,7 @@ export class RouletteNetComponent implements OnInit {
      * - Les erreurs sont loggées pour le débogage
      */
     loadBettingBoard() {
-        this.http.get<any>(`${this.BASE_URL}/api/roulette-odds/betting-board`).subscribe({
+        this.http.get<any>(`${this.BASE_URL}/roulette-odds/betting-board`).subscribe({
             next: (data) => {
                 // Attribution des données reçues aux propriétés du composant
                 this.outsideBets = data.outsideBets;

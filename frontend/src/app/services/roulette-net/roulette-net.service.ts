@@ -82,7 +82,7 @@ export class RouletteNetService {
    * Utilise le pattern Observable avec tap et map comme login.service.ts
    */
   spin(request: SpinRequest = {}): Observable<IRouletteResult> {
-    return this.http.post<SpinResponse>(`${this.BASE_URL}/api/roulette/spin`, request).pipe(
+    return this.http.post<SpinResponse>(`${this.BASE_URL}/roulette/spin`, request).pipe(
       tap((result) => {
         // Mise à jour du signal avec le résultat
         this.gameState.update(state => ({
@@ -105,7 +105,7 @@ export class RouletteNetService {
    * Utilise le pattern Observable avec tap et map
    */
   calculateWin(request: WinRequest): Observable<WinResponse> {
-    return this.http.post<WinResponse>(`${this.BASE_URL}/api/roulette/win`, request).pipe(
+    return this.http.post<WinResponse>(`${this.BASE_URL}/roulette/win`, request).pipe(
       tap((result) => {
         console.log('🎰 Résultat du calcul des gains:', result);
         // Optionnel : mettre à jour l'état si nécessaire
@@ -143,7 +143,7 @@ export class RouletteNetService {
    * Utilise le pattern Observable avec tap et map
    */
   loadBettingBoard(): Observable<BettingBoardData> {
-    return this.http.get<BettingBoardData>(`${this.BASE_URL}/api/roulette-odds/betting-board`).pipe(
+    return this.http.get<BettingBoardData>(`${this.BASE_URL}/roulette-odds/betting-board`).pipe(
       tap((data) => {
         // Mise à jour du signal avec les données du plateau
         this.bettingBoard.set(data);
@@ -158,7 +158,7 @@ export class RouletteNetService {
    * Utilise le pattern Observable avec tap et map
    */
   updateSolde(request: UpdateSoldeRequest): Observable<UpdateSoldeResponse> {
-    return this.http.post<UpdateSoldeResponse>(`${this.BASE_URL}/api/update_solde/update`, request, {
+    return this.http.post<UpdateSoldeResponse>(`${this.BASE_URL}/update_solde/update`, request, {
       withCredentials: true
     }).pipe(
       tap((result) => {

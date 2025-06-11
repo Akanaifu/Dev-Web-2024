@@ -34,7 +34,7 @@ interface IRouletteResult {
 describe('🎰 RouletteNetLogic - Jest pur', () => {
   let service: RouletteNetLogic;
   let httpClientMock: jest.Mocked<HttpClient>;
-  const BASE_URL = environment.production ? '/api' : 'http://localhost:3000';
+  const BASE_URL = environment.production ? '/api' : 'http://localhost:3000/api';
 
   beforeEach(() => {
     // Créer un mock HttpClient avec Jest

@@ -335,7 +335,7 @@ export class RouletteNetLogic {
         
         console.log('🎰 Lancement de la roulette pour l\'utilisateur:', userId);
         
-        const response = await fetch(`${this.BASE_URL}/api/roulette/spin`, {
+        const response = await fetch(`${this.BASE_URL}/roulette/spin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId })
@@ -392,7 +392,7 @@ export class RouletteNetLogic {
         newsolde: number;
         betTotal: number;
       }>(
-        `${this.BASE_URL}/api/roulette/win`, 
+        `${this.BASE_URL}/roulette/win`, 
         { 
           winningSpin, 
           bets: this.bet,
