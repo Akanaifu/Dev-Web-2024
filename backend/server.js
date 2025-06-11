@@ -85,8 +85,7 @@ app.use("/api/new-game", newGameRoutes);
 app.use("/api/get_id", playerRoutes);
 app.use("/api/edit-compte", editCompteRoutes);
 app.use("/api/roulette", rouletteRoutes);
-// app.use("/api/roulette-odds", rouletteOddsRoutes.router);
-app.use('/avatar', uploadAvatarRouter);
+app.use('/api/avatar', uploadAvatarRouter);
 app.use("/api/roulette-odds", rouletteNetPrepareBettingBoard.router);
 
 // Route pour servir la page HTML
@@ -101,7 +100,7 @@ app.get("/inject-data", (req, res) => {
 });
 
 // Sert le dossier avatar en statique
-app.use('/avatar', express.static(path.join(__dirname, 'avatar')));
+app.use('/api/avatar', express.static(path.join(__dirname, 'avatar')));
 
 // Démarrer le serveur
 server.listen(port, () => {
