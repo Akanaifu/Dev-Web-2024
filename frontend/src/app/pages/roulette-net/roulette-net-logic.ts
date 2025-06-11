@@ -34,7 +34,7 @@ import { environment } from '../../../environments/environments';
 @Injectable({ providedIn: 'root' })
 export class RouletteNetLogic {
   private http = inject(HttpClient);
-  private BASE_URL = environment.production ? '/api' : 'http://localhost:3000';
+  private BASE_URL = environment.production ? '/api' : 'http://localhost:3000/api';
   
   // ===== PROPRIÉTÉS PRIVÉES ENCAPSULÉES =====
   // L'encapsulation permet un contrôle strict de l'état et une validation automatique
