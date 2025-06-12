@@ -6,6 +6,8 @@ import { RouletteNetLogic } from './roulette-net-logic';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environments.prod';
 
+
+
 /**
  * COMPOSANT PRINCIPAL DE LA ROULETTE EN LIGNE
  * 
@@ -326,6 +328,7 @@ export class RouletteNetComponent implements OnInit {
                         console.error('❌ Erreur lors du calcul des gains:', winError);
                         this.resultMessage += ' - Erreur lors du calcul des gains';
                     }
+                    
                     
                     // 8. RÉACTIVATION DES INTERACTIONS UTILISATEUR
                     this.isSpinning = false;

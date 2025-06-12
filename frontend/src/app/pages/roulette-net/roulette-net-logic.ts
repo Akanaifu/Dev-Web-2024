@@ -5,7 +5,6 @@ import { IRouletteResult } from '../../interfaces/Roulette-Net-Resultat.interfac
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environments.prod';
-import { UserService } from '../../services/user/user.service';
 
 /**
  * SERVICE DE LOGIQUE MÉTIER POUR LE JEU DE ROULETTE EN LIGNE
@@ -35,7 +34,6 @@ import { UserService } from '../../services/user/user.service';
 @Injectable({ providedIn: 'root' })
 export class RouletteNetLogic {
   private http = inject(HttpClient);
-  private userService = inject(UserService);
   private BASE_URL = environment.production ? '/api' : 'http://localhost:3000';
   
   // ===== PROPRIÉTÉS PRIVÉES ENCAPSULÉES =====
@@ -396,7 +394,7 @@ export class RouletteNetLogic {
         this._originalSolde = this.currentUser.solde; // Solde de référence
         
         // Notifier la nav-bar via UserService avec le solde mis à jour
-        this.userService.balanceChanged.next(this.currentUser.solde);
+        
         
         return { 
           winValue: safeWinValue, 
