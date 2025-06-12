@@ -80,6 +80,16 @@ export class NavigationBarComponent implements OnInit {
         this.balance = newBalance;
       },
     });
+
+    // Observer le changement d'avatar
+    this.avatarUploadService.avatarChanged$.subscribe(() => {
+      // Force le rafraîchissement de l'avatar (ajoute un timestamp pour éviter le cache)
+      const user = this.loginService.user();
+      if (user?.userId) {
+        this.getAvatarUrl = () =>
+          this.avatarUploadService.getAvatarUrl(user.userId) + '?t=' + Date.now();
+      }
+    });
   }
 
   fetchBalance(): void {

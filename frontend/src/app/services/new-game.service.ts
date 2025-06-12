@@ -6,15 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class NewGameService {
-  private apiUrl = 'http://localhost:3000/new-game';
+  private apiUrl = '/api/new-game/add'; // URL de l'endpoint backend
 
   constructor(private http: HttpClient) {}
 
-  addNewGame(gameData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add`, gameData);
-  }
-
-  getPlayerInfo(): Observable<any> {
-    return this.http.get('http://localhost:3000/users/me');
+  addNewGame(data: any): Observable<any> {
+    return this.http.post(this.apiUrl, data);
   }
 }

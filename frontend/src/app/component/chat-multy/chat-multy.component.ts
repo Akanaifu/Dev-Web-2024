@@ -64,7 +64,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     
     if (this.isBrowser) {
       try {
-        this.audioElement = new Audio('./assets/audio/message-tone.mp3');
+        this.audioElement = new Audio('../../../public/audio/message-tone.mp3');
         this.audioElement.addEventListener('error', (e: any) => {
           console.error('Erreur audio:', e);
         });

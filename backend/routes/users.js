@@ -5,7 +5,7 @@ const router = express.Router();
 // Endpoint pour récupérer la liste des utilisateurs
 router.get("/", async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM user");
+    const [rows] = await db.query("SELECT * FROM User");
     res.json(rows);
   } catch (err) {
     console.error("Erreur SQL:", err); // Ajout d'un log pour afficher l'erreur
@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
-    const [rows] = await db.query("SELECT * FROM user WHERE id = ?", [userId]);
+    const [rows] = await db.query("SELECT * FROM User WHERE id = ?", [userId]);
     if (rows.length === 0) {
       return res.status(404).json({ error: "Utilisateur non trouvé" });
     }
@@ -35,7 +35,7 @@ router.get("/:id", async (req, res) => {
 router.get("/:id/balance", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
-    const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [
+    const [rows] = await db.query("SELECT solde FROM User WHERE user_id = ?", [
       userId,
     ]);
     if (rows.length === 0) {
@@ -56,7 +56,7 @@ router.put("/:id", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
     const [result] = await db.query(
-      "UPDATE user SET nom = ?, email = ? WHERE user_id = ?",
+      "UPDATE User SET nom = ?, email = ? WHERE user_id = ?",
       [nom, email, userId]
     );
     if (result.affectedRows === 0) {
@@ -74,7 +74,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const userId = parseInt(req.params.id);
   try {
-    const [result] = await db.query("DELETE FROM user WHERE user_id = ?", [
+    const [result] = await db.query("DELETE FROM User WHERE user_id = ?", [
       userId,
     ]);
     if (result.affectedRows === 0) {
@@ -115,7 +115,7 @@ router.put("/balance/add", async (req, res) => {
 
   try {
     // Récupérer le solde actuel
-    const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [
+    const [rows] = await db.query("SELECT solde FROM User WHERE user_id = ?", [
       userId,
     ]);
     if (rows.length === 0) {
@@ -124,7 +124,7 @@ router.put("/balance/add", async (req, res) => {
     let newBalance = rows[0].solde + value;
 
     // Mettre à jour le solde
-    await db.query("UPDATE user SET solde = ? WHERE user_id = ?", [
+    await db.query("UPDATE User SET solde = ? WHERE user_id = ?", [
       newBalance,
       userId,
     ]);
@@ -152,7 +152,7 @@ router.put("/balance/subtract", async (req, res) => {
 
   try {
     // Récupérer le solde actuel
-    const [rows] = await db.query("SELECT solde FROM user WHERE user_id = ?", [
+    const [rows] = await db.query("SELECT solde FROM User WHERE user_id = ?", [
       userId,
     ]);
     if (rows.length === 0) {
@@ -166,7 +166,7 @@ router.put("/balance/subtract", async (req, res) => {
     }
 
     // Mettre à jour le solde
-    await db.query("UPDATE user SET solde = ? WHERE user_id = ?", [
+    await db.query("UPDATE User SET solde = ? WHERE user_id = ?", [
       newBalance,
       userId,
     ]);

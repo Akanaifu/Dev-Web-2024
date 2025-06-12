@@ -1,3 +1,4 @@
+USE casino;
 -- Insérer des utilisateurs dans la table User
 INSERT INTO `User` (`user_id`, `username`, `name`, `firstname`, `birthdate`, `solde`, `email`, `password`, `avatar`) VALUES
 (1, 'Doe1', 'Doe', 'John', '1990-01-01', 100.50, 'john.doe@example.com', '$2a$10$VwYVtW5Pk0KZxfPo4Un2QesjK.TQRr.5toP9tmabUNxBZ2URfeXxm', NULL),

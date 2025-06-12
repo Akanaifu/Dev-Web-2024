@@ -12,7 +12,8 @@ export interface RoomStats {
 })
 export class SocketService {
   private socket: any = null;
-  private readonly socketUrl = 'http://localhost:3000';
+  // Utilisation d'une URL relative pour la production avec nginx reverse proxy
+  private readonly socketUrl =  '/';
   private isBrowser: boolean;
   
   // Nouveaux sujets pour suivre les statistiques des salons
@@ -36,11 +37,20 @@ export class SocketService {
     if (this.isBrowser) {
       if (!this.socket) {
         console.log('Connexion au serveur socket à:', this.socketUrl);
-        this.socket = io(this.socketUrl, {
+        
+        // Configuration différente pour la production
+        const socketConfig = {
+          path: '/socket.io',
           reconnectionAttempts: 5,
           reconnectionDelay: 1000,
-          transports: ['websocket'],
-        });
+          transports: ['websocket', 'polling'], // Ajout du polling en fallback pour la production
+          upgrade: true,
+          rememberUpgrade: true,
+          timeout: 20000,
+          forceNew: false
+        }
+
+        this.socket = io(this.socketUrl, socketConfig);
 
         this.socket.on('connect', () => {
           console.log('Socket connecté avec ID:', this.socket.id);
@@ -51,6 +61,18 @@ export class SocketService {
 
         this.socket.on('connect_error', (error: any) => {
           console.error('Erreur de connexion socket:', error);
+        });
+
+        this.socket.on('disconnect', (reason: string) => {
+          console.log('Socket déconnecté:', reason);
+        });
+
+        this.socket.on('reconnect', (attemptNumber: number) => {
+          console.log('Socket reconnecté après', attemptNumber, 'tentatives');
+        });
+
+        this.socket.on('reconnect_error', (error: any) => {
+          console.error('Erreur de reconnexion:', error);
         });
         
         // Écouter les mises à jour des statistiques
@@ -80,7 +102,7 @@ export class SocketService {
   }
 
   emit(eventName: string, data: any): void {
-    if (this.isBrowser && this.socket) {
+    if (this.isBrowser && this.socket && this.socket.connected) {
       // Ajouter le salon actuel aux données si nécessaire
       const enhancedData = {
         ...data,
@@ -96,7 +118,7 @@ export class SocketService {
   
   // Nouvelle méthode pour rejoindre un salon
   joinRoom(roomName: string): void {
-    if (this.isBrowser && this.socket) {
+    if (this.isBrowser && this.socket && this.socket.connected) {
       console.log('Joining room:', roomName);
       this.socket.emit('join-room', roomName);
     }
@@ -125,7 +147,7 @@ export class SocketService {
           } else {
             console.error('Socket still not initialized after timeout');
           }
-        }, 300);
+        }, 500); // Augmentation du timeout pour la production
       } else {
         console.log('Registering event listener for:', eventName);
         this.socket.on(eventName, (data: T) => {
@@ -150,5 +172,12 @@ export class SocketService {
   // Getter pour le salon actuel
   getCurrentRoom(): string {
     return this.currentRoomSubject.value;
+  }
+
+  // Méthode utile pour diagnostiquer les problèmes de connexion
+  getConnectionStatus(): string {
+    if (!this.isBrowser) return 'Not in browser';
+    if (!this.socket) return 'Socket not initialized';
+    return this.socket.connected ? 'Connected' : 'Disconnected';
   }
 }

@@ -36,7 +36,7 @@ router.post("/update", verifyToken, async (req, res) => {
     // Récupération de l'ancien solde pour comparaison et audit des modifications
     // Cette étape permet de tracer l'évolution du solde pour le débogage
     const [oldSoldeResult] = await db.query(
-      "SELECT solde FROM user WHERE user_id = ?",
+      "SELECT solde FROM User WHERE user_id = ?",
       [userId]
     );
     
@@ -47,7 +47,7 @@ router.post("/update", verifyToken, async (req, res) => {
     // Exécution de la mise à jour avec logging du résultat pour vérification
     // Les logs confirment que l'opération a bien affecté une ligne en base de données
     const [result] = await db.query(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
       [newSolde, userId]
     );
 

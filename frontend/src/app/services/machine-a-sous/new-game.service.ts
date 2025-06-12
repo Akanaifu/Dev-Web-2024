@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class NewGameService {
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = '/api';
 
   constructor(private http: HttpClient) {}
 

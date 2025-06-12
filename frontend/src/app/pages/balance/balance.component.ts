@@ -59,6 +59,7 @@ export class BalanceComponent implements OnInit {
   }
 
   handleDeposit(): void {
+    // depot
     if (this.userId == null) {
       console.warn('Aucun utilisateur connecté pour le dépôt.');
       return;
@@ -85,6 +86,7 @@ export class BalanceComponent implements OnInit {
   }
 
   handleWithdrawal(): void {
+    // retrait
     if (this.userId == null) {
       console.warn('Aucun utilisateur connecté pour le retrait.');
       return;

@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const secretKey = "ton_secret"; // Cette clé devrait être une variable d'environnement en production
+const secretKey = process.env.JWT_SECRET || "ton_secret";
 
 // Déclarer la Set pour stocker les tokens révoqués
 const blacklistedTokens = new Set();

@@ -63,12 +63,12 @@ describe("Tests de mise à jour du solde utilisateur", () => {
       expect(db.query).toHaveBeenCalledTimes(2); // Deux appels DB : SELECT + UPDATE
       // Vérification que le SELECT a été appelé avec les bons paramètres
       expect(db.query).toHaveBeenCalledWith(
-        "SELECT solde FROM user WHERE user_id = ?",
+        "SELECT solde FROM User WHERE user_id = ?",
         [1]
       );
       // Vérification que l'UPDATE a été appelé avec les bons paramètres
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [150, 1]
       );
     });
@@ -90,7 +90,7 @@ describe("Tests de mise à jour du solde utilisateur", () => {
       });
       // Vérification spécifique que la valeur 0 est bien passée
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [0, 1]
       );
     });
@@ -112,7 +112,7 @@ describe("Tests de mise à jour du solde utilisateur", () => {
       });
       // Vérification que les nombres négatifs sont acceptés
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [-50, 1]
       );
     });
@@ -134,7 +134,7 @@ describe("Tests de mise à jour du solde utilisateur", () => {
       });
       // Vérification que les nombres décimaux sont acceptés
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [123.45, 1]
       );
     });
@@ -365,13 +365,13 @@ describe("Tests de mise à jour du solde utilisateur", () => {
       
       // Vérification que le SELECT du solde a été appelé
       expect(db.query).toHaveBeenCalledWith(
-        "SELECT solde FROM user WHERE user_id = ?",
+        "SELECT solde FROM User WHERE user_id = ?",
         [1]
       );
       
       // Vérification que l'UPDATE du solde a été appelé avec le nouveau montant
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [500, 1]
       );
     });
@@ -451,11 +451,11 @@ describe("Tests de mise à jour du solde utilisateur", () => {
 
       // Vérification que les bonnes valeurs ont été utilisées
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [200, 1]
       );
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [50, 1]
       );
     });
@@ -475,7 +475,7 @@ describe("Tests de mise à jour du solde utilisateur", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [999999999.99, 1]
       );
     });
@@ -493,7 +493,7 @@ describe("Tests de mise à jour du solde utilisateur", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         [0.01, 1]
       );
     });
@@ -511,7 +511,7 @@ describe("Tests de mise à jour du solde utilisateur", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(db.query).toHaveBeenCalledWith(
-        "UPDATE user SET solde = ? WHERE user_id = ?",
+        "UPDATE User SET solde = ? WHERE user_id = ?",
         ["150.75", 1]
       );
     });
