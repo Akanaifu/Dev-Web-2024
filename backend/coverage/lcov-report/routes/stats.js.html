@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58% </span>
+                <span class="strong">59.18% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>29/50</span>
+                <span class='fraction'>29/49</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58% </span>
+                <span class="strong">59.18% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>29/50</span>
+                <span class='fraction'>29/49</span>
             </div>
         
             
@@ -226,14 +226,12 @@
 <a name='L161'></a><a href='#L161'>161</a>
 <a name='L162'></a><a href='#L162'>162</a>
 <a name='L163'></a><a href='#L163'>163</a>
-<a name='L164'></a><a href='#L164'>164</a>
-<a name='L165'></a><a href='#L165'>165</a>
-<a name='L166'></a><a href='#L166'>166</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L164'></a><a href='#L164'>164</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -242,7 +240,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -258,7 +256,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -295,7 +293,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -312,8 +310,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -324,7 +320,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -392,7 +388,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = require("express");
 const db = require("../config/dbConfig"); // Utilisation de MariaDB
 const router = express.Router();
@@ -465,7 +461,7 @@ router.get("/bets/:userId", <span class="fstat-no" title="function not covered" 
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const query = <span class="cstat-no" title="statement not covered" >`</span>
-      SELECT amount, bet_status, combinaison, created_at 
+      SELECT amount, bet_status, combinaison, timestamp 
       FROM Bets 
       WHERE user_id = ?
     `;
@@ -475,8 +471,6 @@ router.get("/bets/:userId", <span class="fstat-no" title="function not covered" 
     const results = <span class="cstat-no" title="statement not covered" >rows.map(<span class="fstat-no" title="function not covered" >(r</span>ow) =&gt; {</span>
       const rouleaux = <span class="cstat-no" title="statement not covered" >row.combinaison.split(",").map(Number);</span> // Convertir la combinaison en tableau de nombres
       const gain = <span class="cstat-no" title="statement not covered" >calculerGain(rouleaux, row.amount, row.bet_status);</span> // Appel avec bet_status
-<span class="cstat-no" title="statement not covered" >      console.log("🚀 ~ results ~ calculerGain:", calculerGain)</span>
-&nbsp;
 <span class="cstat-no" title="statement not covered" >      return { ...row, gain };</span>
     });
 &nbsp;
@@ -565,7 +559,7 @@ module.exports = router;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-30T14:55:20.531Z
+                at 2025-05-30T17:03:15.429Z
             </div>
         <script src="../prettify.js"></script>
         <script>

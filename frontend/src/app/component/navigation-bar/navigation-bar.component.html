@@ -10,7 +10,7 @@
     <img 
       [src]="getAvatarUrl()" 
       class="avatar-image"
-      style="width:32px; height:32px; border-radius:50%; margin-right:8px;"
+      style="width:45px; height:45px; border-radius:50%; margin-right:8px;"
     />
     {{ loginService.user()?.username }}
     <!-- {{ loginService.user()?.avatarUrl }} -->
@@ -41,7 +41,7 @@
     <mat-menu #menu="matMenu">
       <button mat-menu-item routerLink="/">Accueil</button>
       <button mat-menu-item routerLink="/stats">Statistique</button>
-      <button mat-menu-item routerLink="/compte">compte</button>
+      <button mat-menu-item routerLink="/compte">Compte</button>
     </mat-menu>
   </div>
 </nav>

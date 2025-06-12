@@ -4,6 +4,7 @@ import { Database } from '@angular/fire/database';
 import { MachineASousLogic } from './machine-a-sous.logic';
 import { FirebaseSendService } from './export_firebase.logic';
 import { NewGameService } from '../../services/machine-a-sous/new-game.service';
+import { UserService } from '../../services/user/user.service';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
@@ -16,7 +17,7 @@ import { Subscription } from 'rxjs';
 })
 export class MachineASousComponent implements OnInit {
   private firebaseSendService: FirebaseSendService;
-  private partiesSubscription?: Subscription;
+  public partiesSubscription?: Subscription;
   logic: MachineASousLogic;
   playerInfo: {
     user_id: number;
@@ -31,9 +32,13 @@ export class MachineASousComponent implements OnInit {
   };
   sendButtonDisabled: boolean = false;
 
-  constructor(private newGameService: NewGameService, public db: Database) {
-    this.logic = new MachineASousLogic(db, newGameService);
-    this.firebaseSendService = new FirebaseSendService(db); // Injection manuelle
+  constructor(
+    private newGameService: NewGameService,
+    public db: Database,
+    private userService: UserService // Ajout de l'injection
+  ) {
+    this.logic = new MachineASousLogic(db, newGameService, userService); // Correction ici
+    this.firebaseSendService = new FirebaseSendService(db);
   }
 
   ngOnInit(): void {

@@ -20,7 +20,6 @@ import { LoginService } from './services/login/login.service';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'frontend';
   @ViewChild('chatComponent') chatComponent!: ChatComponent;
 
   constructor(public loginService: LoginService) {}

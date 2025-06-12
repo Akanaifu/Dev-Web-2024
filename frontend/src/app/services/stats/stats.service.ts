@@ -15,7 +15,7 @@ export class StatsService {
     return this.http.get<any[]>(`${this.apiUrl}?user_id=${userId}`);
   }
 
-  getUserBets(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/bets/${userId}`);
+  getUserBets(userId: number): Observable<{ bets: any[]; created_at?: string }> {
+    return this.http.get<{ bets: any[]; created_at?: string }>(`${this.apiUrl}/bets/${userId}`);
   }
 }
