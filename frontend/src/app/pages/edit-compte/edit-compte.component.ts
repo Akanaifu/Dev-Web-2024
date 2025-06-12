@@ -17,7 +17,6 @@ import { AvatarUploadService } from '../../services/avatar-upload.service';
   templateUrl: './edit-compte.component.html',
   styleUrl: './edit-compte.component.css',
 })
-
 export class EditCompteComponent implements OnInit {
   editForm: FormGroup;
   playerInfo: {
@@ -32,6 +31,8 @@ export class EditCompteComponent implements OnInit {
 
   // Ajoute une propriété pour l'URL de l'avatar utilisateur
   avatarUrl: string = 'assets/default.png';
+
+  successMessage: string = ''; // Message de succès à afficher
 
   constructor(
     private fb: FormBuilder,
@@ -84,17 +85,19 @@ export class EditCompteComponent implements OnInit {
       password: password || null, // Include password only if provided
     };
 
-    this.http
-      .put('/api/edit-compte/edit-compte', formData)
-      .subscribe({
-        next: (response) => {
-          console.log('User updated successfully:', response);
-          this.editForm.reset();
-        },
-        error: (err) => {
-          console.error('Error updating user:', err);
-        },
-      });
+    this.http.put('/api/edit-compte/edit-compte', formData).subscribe({
+      next: (response) => {
+        console.log('User updated successfully:', response);
+        this.editForm.reset();
+        this.successMessage = 'Informations mises à jour avec succès !'; // <-- Ajouté
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 3000); // <-- Ajouté
+      },
+      error: (err) => {
+        console.error('Error updating user:', err);
+      },
+    });
   }
 
   getPlayerInfo(): void {
@@ -146,7 +149,7 @@ export class EditCompteComponent implements OnInit {
           this.loadAvatar(); // Recharge l'avatar après upload
         },
         error: (err) => {
-          console.error('Erreur lors de l\'upload de l\'avatar', err);
+          console.error("Erreur lors de l'upload de l'avatar", err);
         },
       });
   }
