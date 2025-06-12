@@ -134,3 +134,7 @@ button[mat-button].active-increment:hover {
 .overdraft-modal-content button {
   margin: 10px 8px 0 8px;
 }
+
+.success-message {
+  color: white;
+}

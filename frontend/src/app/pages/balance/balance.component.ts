@@ -14,6 +14,8 @@ export class BalanceComponent implements OnInit {
   maxAmount: number = 1000; // Maximum amount limit
   userId: number | null = null;
   showOverdraftModal: boolean = false; // Contrôle l'affichage du pop-up
+  successMessage: string = ''; // Message de succès à afficher
+
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
@@ -77,6 +79,10 @@ export class BalanceComponent implements OnInit {
             this.maxAmount = res.balance;
             this.amount = 0;
             this.userService.balanceChanged.next(res.balance); // <-- Ajouté
+            this.successMessage = 'Dépôt effectué avec succès !'; // <-- Ajouté
+            setTimeout(() => {
+              this.successMessage = '';
+            }, 3000); // <-- Ajouté
           }
         },
         error: (err) => {
@@ -114,6 +120,10 @@ export class BalanceComponent implements OnInit {
             this.maxAmount = res.balance;
             this.amount = 0;
             this.userService.balanceChanged.next(res.balance); // <-- Ajouté
+            this.successMessage = 'Retrait effectué avec succès !'; // <-- Ajouté
+            setTimeout(() => {
+              this.successMessage = '';
+            }, 3000); // <-- Ajouté
           }
         },
         error: (err) => {
