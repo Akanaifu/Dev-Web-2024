@@ -5,6 +5,7 @@ import { IRouletteResult } from '../../interfaces/Roulette-Net-Resultat.interfac
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environments.prod';
+import { UserService } from '../../services/user/user.service';
 
 /**
  * SERVICE DE LOGIQUE MÉTIER POUR LE JEU DE ROULETTE EN LIGNE
@@ -34,6 +35,7 @@ import { environment } from '../../../environments/environments.prod';
 @Injectable({ providedIn: 'root' })
 export class RouletteNetLogic {
   private http = inject(HttpClient);
+  private userService = inject(UserService);
   private BASE_URL = environment.production ? '/api' : 'http://localhost:3000';
   
   // ===== PROPRIÉTÉS PRIVÉES ENCAPSULÉES =====
@@ -60,9 +62,6 @@ export class RouletteNetLogic {
    * pour tous les calculs backend, évitant ainsi le double débit du solde
    */
   private _originalSolde = 0;
-  
-  // ===== GETTERS/SETTERS AVEC VALIDATION AUTOMATIQUE =====
-  // Ces accesseurs garantissent la cohérence des données et appliquent les règles métier
   
   /** 
    * ACCÈS CONTRÔLÉ AUX DONNÉES UTILISATEUR
@@ -281,12 +280,6 @@ export class RouletteNetLogic {
    * Retire une mise du plateau et recrédite visuellement le montant au solde.
    * Permet aux joueurs de corriger leurs erreurs avant le spin.
    * 
-   * LOGIQUE DE SUPPRESSION :
-   * 1. Trouve la mise correspondante dans le tableau
-   * 2. Soustrait le montant de la mise (ou la valeur du wager si plus petite)
-   * 3. Recrédite visuellement le montant au solde affiché
-   * 4. Supprime les mises à montant zéro
-   * 
    * @param cell Cellule du plateau contenant la mise à supprimer
    */
   removeBet(cell: IBettingBoardCell) {
@@ -322,11 +315,6 @@ export class RouletteNetLogic {
    * Effectue un appel API pour obtenir un numéro aléatoire selon les règles de la roulette européenne.
    * Cette méthode utilise fetch() pour une gestion d'erreur plus fine que HttpClient.
    * 
-   * SÉCURITÉ :
-   * - Validation de la réponse HTTP (response.ok)
-   * - Gestion d'erreur avec messages explicites
-   * - Transmission de l'userId pour l'audit et les statistiques
-   * 
    * @returns Promise<IRouletteResult> Numéro gagnant (0-36) et sa couleur
    */
   async spin(): Promise<IRouletteResult> {
@@ -360,18 +348,6 @@ export class RouletteNetLogic {
    * 
    * Méthode centrale qui coordonne avec le backend pour calculer les résultats d'un spin.
    * Implémente l'architecture anti-double-débit en envoyant le solde original non modifié.
-   * 
-   * LOGIQUE ANTI-DOUBLE-DÉBIT DÉTAILLÉE :
-   * 1. Frontend : débite visuellement currentUser.solde (UX immédiate)
-   * 2. Backend : reçoit _originalSolde (non débité) + mises
-   * 3. Backend : calcule soldeOriginal + gains - pertes = nouveau solde
-   * 4. Frontend : synchronise les deux valeurs avec le résultat backend
-   * 
-   * AVANTAGES :
-   * - Évite le double débit du solde
-   * - Calculs centralisés et sécurisés côté serveur
-   * - Synchronisation garantie avec la base de données
-   * - Gestion d'erreur robuste avec rollback automatique
    * 
    * @param winningSpin Numéro gagnant du spin (0-36)
    * @returns Promise avec winValue, payout, newsolde, betTotal
@@ -418,6 +394,9 @@ export class RouletteNetLogic {
         // SYNCHRONISATION CRUCIALE : mise à jour des deux soldes
         this.currentUser.solde = safeNewsolde;      // Solde affiché
         this._originalSolde = this.currentUser.solde; // Solde de référence
+        
+        // Notifier la nav-bar via UserService avec le solde mis à jour
+        this.userService.balanceChanged.next(this.currentUser.solde);
         
         return { 
           winValue: safeWinValue, 
@@ -493,11 +472,6 @@ export class RouletteNetLogic {
    * Trouve la mise correspondante à une cellule du plateau pour l'affichage des jetons.
    * Utilisé par le template pour afficher visuellement les mises placées.
    * 
-   * LOGIQUE DE CORRESPONDANCE :
-   * - Compare les numéros couverts (numbers) et le type de mise
-   * - Retourne la première mise correspondante trouvée
-   * - Null si aucune mise sur cette cellule
-   * 
    * @param cell Cellule du plateau de mise
    * @returns Objet mise correspondant ou null
    */
@@ -514,11 +488,6 @@ export class RouletteNetLogic {
    * Détermine la classe CSS à appliquer selon le montant de la mise.
    * Permet un affichage visuel cohérent et une identification rapide des montants.
    * 
-   * ÉCHELLE DES COULEURS :
-   * - < 5 : Rouge (petites mises)
-   * - < 10 : Bleu (mises moyennes)
-   * - < 100 : Orange (grosses mises)
-   * - >= 100 : Or (très grosses mises)
    * 
    * @param amount Montant de la mise
    * @returns Nom de la classe CSS correspondante
@@ -548,21 +517,6 @@ export class RouletteNetLogic {
    * Méthode centrale pour placer une mise sur une cellule du plateau.
    * Gère le débit visuel du solde et l'ajout de la mise au tableau des mises actives.
    * 
-   * PROCESSUS D'ENREGISTREMENT :
-   * 1. Validation de l'utilisateur et de la cellule
-   * 2. Ajustement du montant selon le solde disponible
-   * 3. Débit visuel du solde (UX immédiate)
-   * 4. Ajout ou mise à jour de la mise dans le tableau
-   * 5. Mise à jour de la liste des numéros misés
-   * 
-   * GESTION DU SOLDE :
-   * - Débite visuellement currentUser.solde pour l'UX
-   * - Conserve _originalSolde intact pour les calculs backend
-   * - Limite automatiquement la mise au solde disponible
-   * 
-   * GESTION DES MISES MULTIPLES :
-   * - Si une mise existe déjà sur la cellule : additionne les montants
-   * - Sinon : crée une nouvelle entrée dans le tableau des mises
    * 
    * @param cell Cellule du plateau sur laquelle placer la mise
    */
@@ -616,17 +570,6 @@ export class RouletteNetLogic {
    * 
    * Gère la sélection des jetons et l'action spéciale "clear bet".
    * Cette méthode centralise la logique de changement de jeton et de nettoyage.
-   * 
-   * FONCTIONNALITÉS :
-   * - Sélection d'un jeton avec valeur prédéfinie (1, 5, 10, 100)
-   * - Action "clear bet" : efface toutes les mises et recrédite le solde
-   * - Validation de l'état du jeu (bloqué pendant le spin)
-   * 
-   * LOGIQUE "CLEAR BET" :
-   * 1. Recrédite visuellement toutes les mises au solde
-   * 2. Remet currentBet à zéro
-   * 3. Vide le tableau des mises
-   * 
    * @param index Index du jeton sélectionné (dernier index = clear bet)
    * @returns true si l'action a été effectuée, false si bloquée
    */

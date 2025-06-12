@@ -138,10 +138,6 @@ export class RouletteNetComponent implements OnInit {
      * - Attribution des couleurs selon les règles de la roulette européenne
      * - Création des objets IRouletteWheelSection pour le template
      * 
-     * LOGIQUE DES COULEURS :
-     * - 0 : Vert (#016D29)
-     * - Numéros rouges : Rouge (#E0080B)
-     * - Autres numéros : Noir (#000)
      */
     prepareWheelSections() {
         const numbers = this.game.getWheelNumbers();
@@ -166,9 +162,6 @@ export class RouletteNetComponent implements OnInit {
      * - Mises spéciales (colonnes, douzaines, etc.)
      * - Cotes associées à chaque type de mise
      * 
-     * GESTION D'ERREUR :
-     * - En cas d'échec API, un fallback local pourrait être implémenté
-     * - Les erreurs sont loggées pour le débogage
      */
     loadBettingBoard() {
         this.http.get<any>(`${this.BASE_URL}/roulette-odds/betting-board`).subscribe({
@@ -237,11 +230,6 @@ export class RouletteNetComponent implements OnInit {
      * 4. L'affichage des résultats
      * 5. La mise à jour de l'historique
      * 
-     * ANIMATION DE LA BILLE :
-     * - Durée : 5000ms (5 secondes)
-     * - Rotations : 5 tours complets + position finale
-     * - Utilise requestAnimationFrame pour une animation fluide
-     * - Calcul de l'angle final basé sur la position du numéro gagnant
      * 
      * GESTION D'ÉTAT :
      * - isSpinning = true pendant toute la durée
