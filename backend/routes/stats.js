@@ -60,7 +60,6 @@ router.get("/bets/:userId", async (req, res) => {
       WHERE b.user_id = ?
     `;
     const [rows] = await db.execute(query, [userId]);
-    console.log("🚀 ~ router.get ~ rows:", rows);
 
     // Passe chaque combinaison et mise dans la fonction calculerGain
     const results = rows.map((row) => {
@@ -73,7 +72,6 @@ router.get("/bets/:userId", async (req, res) => {
 
     const createdAt = rows[0]?.created_at; // Extract created_at
     results.forEach((row) => delete row.created_at); // Remove created_at from each bet
-    console.log("🚀 ~ router.get ~ response:", { results, createdAt });
     res.status(200).json({ bets: results, created_at: createdAt });
   } catch (error) {
     console.error("Erreur lors de la récupération des paris :", error);
