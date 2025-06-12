@@ -1,9 +1,6 @@
-<div style="display: flex; gap: 2em;">
+<div style="display: flex; gap: 2em">
   <!-- Formulaire principal à gauche -->
-  <form
-    [formGroup]="editForm"
-    (ngSubmit)="onSubmit()"
-  >
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
     <div>
       <label for="username">Username : </label>
       <input
@@ -46,6 +43,9 @@
     <div>
       <button type="submit">Submit</button>
     </div>
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
   </form>
 
   <section class="avatar-section">
@@ -57,21 +57,19 @@
           class="avatar-preview"
           alt=""
         />
-        <span class="avatar-preview-text" *ngIf="!selectedFile">Aperçu avatar</span>
+        <span class="avatar-preview-text" *ngIf="!selectedFile"
+          >Aperçu avatar</span
+        >
       </div>
       <input
         type="file"
         id="avatar"
         (change)="onFileSelected($event)"
         accept="image/*"
-        style="display: none;"
+        style="display: none"
       />
     </label>
-    <button
-      type="button"
-      (click)="uploadAvatar()"
-      [disabled]="!selectedFile"
-    >
+    <button type="button" (click)="uploadAvatar()" [disabled]="!selectedFile">
       Envoyer l'avatar
     </button>
   </section>
