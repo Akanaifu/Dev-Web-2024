@@ -142,6 +142,7 @@ export class EditCompteComponent implements OnInit {
         next: (res) => {
           console.log('Avatar uploadé avec succès', res);
           this.selectedFile = null;
+          this.avatarUploadService.notifyAvatarChanged(); // Ajouté
           this.loadAvatar(); // Recharge l'avatar après upload
         },
         error: (err) => {
