@@ -7,6 +7,8 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { RouletteNetLogic } from './roulette-net-logic';
+import { environment } from '../../../environments/environments';
+
 
 // Types pour TypeScript
 interface IUser {
@@ -28,9 +30,11 @@ interface IRouletteResult {
   color: string;
 }
 
+
 describe('🎰 RouletteNetLogic - Jest pur', () => {
   let service: RouletteNetLogic;
   let httpClientMock: jest.Mocked<HttpClient>;
+  const BASE_URL = environment.production ? '/api' : 'http://localhost:3000/api';
 
   beforeEach(() => {
     // Créer un mock HttpClient avec Jest
@@ -207,7 +211,7 @@ describe('🎰 RouletteNetLogic - Jest pur', () => {
       service.fetchIUser();
 
       expect(httpClientMock.get).toHaveBeenCalledWith(
-        'http://localhost:3000/get_id/info',
+        `${BASE_URL}/get_id/info`,
         { withCredentials: true }
       );
     });
@@ -242,7 +246,7 @@ describe('🎰 RouletteNetLogic - Jest pur', () => {
       const result = await service.spin();
 
       expect(result).toEqual(mockSpinResult);
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/roulette/spin', {
+      expect(global.fetch).toHaveBeenCalledWith(`${BASE_URL}/api/roulette/spin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -281,7 +285,7 @@ describe('🎰 RouletteNetLogic - Jest pur', () => {
       const result = await service.calculateWin(7);
 
       expect(result).toEqual(mockWinResult);
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/roulette/calculate-win', {
+      expect(global.fetch).toHaveBeenCalledWith('/api/roulette/calculate-win', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

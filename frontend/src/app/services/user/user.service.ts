@@ -6,7 +6,7 @@ import { Observable, throwError } from 'rxjs';
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'http://localhost:3000/users'; // Replace with your backend URL
+  private apiUrl = '/api/users'; // Replace with your backend URL
 
   balanceChanged: EventEmitter<number> = new EventEmitter<number>();
 
@@ -22,7 +22,7 @@ export class UserService {
 
   getUserId(): Observable<{ solde: number; user_id: number }> {
     return this.http.get<{ solde: number; user_id: number }>(
-      'http://localhost:3000/get_id/info',
+      '/api/get_id/info',
       { withCredentials: true }
     );
   }

@@ -1,3 +1,12 @@
+CREATE DATABASE IF NOT EXISTS casino;
+
+CREATE USER IF NOT EXISTS 'dev'@'%' IDENTIFIED BY 'casino';
+GRANT ALL PRIVILEGES ON casino.* TO 'dev'@'%';
+FLUSH PRIVILEGES;
+
+
+USE casino;
+
 CREATE TABLE `User` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(50) NULL,

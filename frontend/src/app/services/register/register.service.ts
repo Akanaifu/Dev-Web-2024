@@ -15,7 +15,7 @@ export interface RegisterData {
 })
 export class RegisterService {
   private http = inject(HttpClient);
-  private BASE_URL = 'http://localhost:3000';
+  private BASE_URL = '/api';
 
   register(userData: RegisterData): Observable<any> {
     return this.http.post(`${this.BASE_URL}/register`, userData);

@@ -1,6 +1,7 @@
 import { Database, ref, get, child, set } from '@angular/fire/database';
 import { NewGameService } from '../../services/machine-a-sous/new-game.service';
 import { UserService } from '../../services/user/user.service';
+import { userInfo } from 'os';
 
 interface Combination {
   id: string;
@@ -313,27 +314,35 @@ export class MachineASousLogic {
             part.joueurId[part.joueurId.length - 1] || 0,
             part.mise || 0,
             part.combinaison[part.combinaison.length - 1] || [],
-            part.timestamp || new Date().toISOString()
+            part.timestamp || new Date().toISOString(),
+            () => {
+              // Notifier la nav-bar via UserService avec le solde mis à jour
+              if (this.userService && typeof part.gain === 'number') {
+                // mettre à jour le solde du joueur
+                this.playerInfo.solde += part.gain - part.mise;
+                this.userService.balanceChanged.next(this.playerInfo.solde);
+              }
+              callback();
+            }
           );
-          // Notifier la nav-bar via UserService
-          if (this.userService && typeof part.gain === 'number') {
-            this.userService.balanceChanged.next(part.gain);
-          }
+          part.partieAffichee = true;
+          // Mettre à jour le flag dans Firebase
+          set(
+            ref(this.db, part.key ? `/${part.key}/partieAffichee` : '/'),
+            true
+          )
+            .then(() => {
+              console.log(`partieAffichee mis à jour pour ${part.key}`);
+            })
+            .catch((err) => {
+              console.error(
+                `Erreur lors de la mise à jour de partieAffichee pour ${part.key}:`,
+                err
+              );
+            });
+        } else {
+          callback();
         }
-        part.partieAffichee = true;
-        // Mettre à jour le flag dans Firebase
-        set(ref(this.db, part.key ? `/${part.key}/partieAffichee` : '/'), true)
-          .then(() => {
-            console.log(`partieAffichee mis à jour pour ${part.key}`);
-          })
-          .catch((err) => {
-            console.error(
-              `Erreur lors de la mise à jour de partieAffichee pour ${part.key}:`,
-              err
-            );
-          });
-
-        callback();
       }
     };
 
@@ -345,7 +354,8 @@ export class MachineASousLogic {
     playerId: string,
     solde: number,
     combinaison: number[],
-    timestamp: string
+    timestamp: string,
+    onSuccess?: () => void
   ): void {
     const gameData = {
       partieId: 1,
@@ -363,9 +373,11 @@ export class MachineASousLogic {
     this.newGameService.addNewGame(gameData).subscribe({
       next: (response) => {
         console.log('Partie ajoutée avec succès :', response);
+        if (onSuccess) onSuccess();
       },
       error: (error) => {
         console.error("Erreur lors de l'ajout de la partie :", error);
+        if (onSuccess) onSuccess(); // Optionnel: appeler même en cas d'erreur si nécessaire
       },
     });
   }

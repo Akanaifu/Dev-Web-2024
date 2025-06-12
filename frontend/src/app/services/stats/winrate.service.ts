@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root' // Ensure the service is provided at the root level
 })
 export class WinRateService {
-  private baseUrl = 'http://localhost:3000/stats'; // Backend API base URL
+  private baseUrl = '/api/stats'; // Backend API base URL
 
   constructor(private http: HttpClient) {}
 

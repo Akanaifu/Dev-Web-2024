@@ -56,7 +56,7 @@ router.get("/bets/:userId", async (req, res) => {
       SELECT b.amount, b.bet_status, b.combinaison, gs.timestamp, u.created_at
       FROM Bets b
       JOIN Games_session gs ON b.game_session_id = gs.game_session_id
-      JOIN user u ON b.user_id = u.user_id -- Correct table name to lowercase 'user'
+      JOIN User u ON b.user_id = u.user_id -- Correct table name to lowercase 'user'
       WHERE b.user_id = ?
     `;
     const [rows] = await db.execute(query, [userId]);
