@@ -13,7 +13,7 @@ export interface LoginCredentials {
 export class LoginService {
 
  private http = inject(HttpClient);
- private BASE_URL = environment.production ? '/api' : 'http://localhost:3000';
+ private BASE_URL = environment.production ? '/api' : 'http://localhost:3000/api';
 
  user = signal<User | undefined | null>(undefined);
  loginEvent = new EventEmitter<User | null | undefined>(); // Define loginEvent with proper type

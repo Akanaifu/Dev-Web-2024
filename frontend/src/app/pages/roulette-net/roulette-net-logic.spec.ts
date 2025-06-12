@@ -7,7 +7,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { RouletteNetLogic } from './roulette-net-logic';
-import { environment } from '../../../environments/environments';
+import { environment } from '../../../environments/environments.prod';
 
 
 // Types pour TypeScript

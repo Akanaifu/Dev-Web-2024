@@ -4,7 +4,7 @@ import { IUser } from '../../interfaces/users.interface';
 import { IRouletteResult } from '../../interfaces/Roulette-Net-Resultat.interface';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environments';
+import { environment } from '../../../environments/environments.prod';
 
 /**
  * SERVICE DE LOGIQUE MÉTIER POUR LE JEU DE ROULETTE EN LIGNE

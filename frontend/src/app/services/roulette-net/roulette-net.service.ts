@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map, firstValueFrom } from 'rxjs';
 import { IBettingBoardCell } from '../../interfaces/betting-board.interface';
 import { IRouletteResult } from '../../interfaces/Roulette-Net-Resultat.interface';
-import { environment } from '../../../environments/environments';
+import { environment } from '../../../environments/environments.prod';
 // Interfaces pour le service
 export interface SpinRequest {
   userId?: number;
@@ -62,7 +62,7 @@ export interface UpdateSoldeResponse {
 export class RouletteNetService {
 
   private http = inject(HttpClient);
-  private BASE_URL = environment.production ? '/api' : 'http://localhost:3000/';
+  private BASE_URL = environment.production ? '/api' : 'http://localhost:3000/api';
 
   // Signals pour l'état du jeu - inspiré du pattern login.service.ts
   gameState = signal<{
