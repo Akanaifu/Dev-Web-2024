@@ -32,6 +32,9 @@
       +/- 100
     </button>
   </div>
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
   <div class="action-buttons">
     <button mat-button (click)="handleDeposit()">Faire un dépôt</button>
     <button mat-button (click)="handleWithdrawal()">Faire un retrait</button>
