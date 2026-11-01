@@ -27,7 +27,11 @@ router.post("/update", verifyToken, async (req, res) => {
 
     // Validation rigoureuse du montant pour éviter les erreurs de base de données
     // Cette vérification empêche l'insertion de valeurs non numériques ou infinies
-    if (isNaN(newSolde) || !isFinite(newSolde)) {
+    const parsedSolde =
+      typeof newSolde === "number" || typeof newSolde === "string"
+        ? Number(newSolde)
+        : NaN;
+    if (!Number.isFinite(parsedSolde)) {
       // Ce console.log() sert au fichier test
       // console.log(`[SOLDE UPDATE] Erreur: Valeur de solde invalide - ${newSolde}`);
       return res.status(400).json({ error: "Valeur de solde invalide" });
