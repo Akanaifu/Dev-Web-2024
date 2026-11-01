@@ -1,35 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1793226766411" clover="3.2.0">
-  <project timestamp="1793226766411" name="All files">
-    <metrics statements="26" coveredstatements="24" conditionals="6" coveredconditionals="6" methods="2" coveredmethods="2" elements="34" coveredelements="32" complexity="0" loc="26" ncloc="26" packages="1" files="1" classes="1"/>
-    <file name="upload-avatar.js" path="/home/ben/Projets/Dev-Web-2024/backend/routes/upload-avatar.js">
-      <metrics statements="26" coveredstatements="24" conditionals="6" coveredconditionals="6" methods="2" coveredmethods="2"/>
+<coverage generated="1748631091311" clover="3.2.0">
+  <project timestamp="1748631091311" name="All files">
+    <metrics statements="49" coveredstatements="49" conditionals="6" coveredconditionals="6" methods="9" coveredmethods="9" elements="64" coveredelements="64" complexity="0" loc="49" ncloc="49" packages="1" files="1" classes="1"/>
+    <file name="roulette-net-prepareBettingBoard.js" path="C:\Users\antoi\Desktop\GitHub\Dev-Web-2024\backend\routes\roulette-net-prepareBettingBoard.js">
+      <metrics statements="49" coveredstatements="49" conditionals="6" coveredconditionals="6" methods="9" coveredmethods="9"/>
       <line num="1" count="1" type="stmt"/>
       <line num="2" count="1" type="stmt"/>
-      <line num="3" count="1" type="stmt"/>
-      <line num="4" count="1" type="stmt"/>
-      <line num="5" count="1" type="stmt"/>
       <line num="6" count="1" type="stmt"/>
-      <line num="7" count="1" type="stmt"/>
-      <line num="8" count="1" type="stmt"/>
-      <line num="9" count="1" type="stmt"/>
-      <line num="12" count="1" type="stmt"/>
-      <line num="13" count="3" type="stmt"/>
-      <line num="14" count="3" type="cond" truecount="4" falsecount="0"/>
-      <line num="16" count="1" type="stmt"/>
-      <line num="18" count="1" type="stmt"/>
-      <line num="21" count="1" type="stmt"/>
-      <line num="46" count="1" type="stmt"/>
-      <line num="49" count="1" type="stmt"/>
-      <line num="54" count="1" type="stmt"/>
-      <line num="56" count="0" type="stmt"/>
-      <line num="57" count="0" type="stmt"/>
-      <line num="64" count="1" type="stmt"/>
-      <line num="65" count="2" type="stmt"/>
-      <line num="66" count="2" type="cond" truecount="2" falsecount="0"/>
-      <line num="67" count="1" type="stmt"/>
-      <line num="69" count="2" type="stmt"/>
-      <line num="72" count="1" type="stmt"/>
+      <line num="13" count="194" type="stmt"/>
+      <line num="17" count="194" type="stmt"/>
+      <line num="18" count="3492" type="stmt"/>
+      <line num="19" count="3492" type="stmt"/>
+      <line num="24" count="194" type="stmt"/>
+      <line num="25" count="194" type="stmt"/>
+      <line num="26" count="2328" type="stmt"/>
+      <line num="27" count="2328" type="stmt"/>
+      <line num="28" count="6984" type="stmt"/>
+      <line num="29" count="6984" type="stmt"/>
+      <line num="36" count="2328" type="stmt"/>
+      <line num="41" count="194" type="stmt"/>
+      <line num="45" count="194" type="stmt"/>
+      <line num="53" count="194" type="stmt"/>
+      <line num="54" count="2328" type="stmt"/>
+      <line num="55" count="2328" type="stmt"/>
+      <line num="56" count="2328" type="stmt"/>
+      <line num="61" count="194" type="stmt"/>
+      <line num="62" count="194" type="stmt"/>
+      <line num="65" count="6984" type="cond" truecount="2" falsecount="0"/>
+      <line num="71" count="194" type="stmt"/>
+      <line num="72" count="194" type="stmt"/>
+      <line num="73" count="2328" type="stmt"/>
+      <line num="74" count="6984" type="stmt"/>
+      <line num="76" count="6984" type="cond" truecount="2" falsecount="0"/>
+      <line num="77" count="4656" type="stmt"/>
+      <line num="85" count="6984" type="cond" truecount="2" falsecount="0"/>
+      <line num="86" count="6402" type="stmt"/>
+      <line num="98" count="194" type="stmt"/>
+      <line num="99" count="194" type="stmt"/>
+      <line num="100" count="2134" type="stmt"/>
+      <line num="101" count="4268" type="stmt"/>
+      <line num="102" count="4268" type="stmt"/>
+      <line num="113" count="194" type="stmt"/>
+      <line num="114" count="194" type="stmt"/>
+      <line num="115" count="2328" type="stmt"/>
+      <line num="116" count="2328" type="stmt"/>
+      <line num="126" count="194" type="stmt"/>
+      <line num="127" count="194" type="stmt"/>
+      <line num="128" count="2134" type="stmt"/>
+      <line num="129" count="2134" type="stmt"/>
+      <line num="137" count="194" type="stmt"/>
+      <line num="144" count="1" type="stmt"/>
+      <line num="145" count="14" type="stmt"/>
+      <line num="146" count="14" type="stmt"/>
+      <line num="149" count="1" type="stmt"/>
     </file>
   </project>
 </coverage>
